@@ -1,0 +1,95 @@
+﻿@model SchoolProject.Models.User
+
+@{
+    if (Model == null || Model.Cpf.Length < 11)
+    {
+        <h3>Não é possivel Realizar essa solicitação</h3>
+        <h4>É necessario Informar o Usuario para Poder acessar os Detalhes.</h4>
+        <h4>@Html.ActionLink("Clique Aqui", "Login") para Informar o Login</h4>
+    }
+    else
+    {
+        ViewBag.Title = "Excluir Usuario";
+
+        <h2>@ViewBag.Title: @Model.Name</h2>
+
+        <h3>Você tem certeza que deseja Excluir ?</h3>
+        <p>*Após Clicar em deletar, não é possivel reverter o Processo</p>
+
+            <dl class="dl-horizontal">
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Cpf)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Cpf)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Logradouro)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Logradouro)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Cidade)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Estado)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Estado)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Numero)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Numero)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Complemento)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Complemento)
+                </dd>
+
+            </dl>
+
+        using (Html.BeginForm())
+        {
+
+            <div class="col-md-offset-1">
+                @Html.ActionLink("Voltar", "Login", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
+                <button type="submit" value="Excluir" class="btn btn-default" style="margin-left:10px">Excluir</button>
+            </div>
+
+        }
+
+    }
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

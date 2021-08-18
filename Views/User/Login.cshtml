@@ -1,0 +1,66 @@
+﻿@model SchoolProject.Models.User
+
+@{
+    ViewBag.Title = "Acesso do Usuario";
+}
+
+<h2>@ViewBag.Title</h2>
+<hr />  
+
+@{
+
+    if(ViewBag.Message != null)
+    {
+        <h3>@ViewBag.Message</h3>
+    }
+
+    if (Model == null)
+    {
+        <h4>Insira os Dados para Buscar o Usuario</h4>
+        <br />
+
+        using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Cpf, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Cpf, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="reset" class="btn btn-default">Limpar</button>
+                        <button type="submit" value="Login" class="btn btn-default" style="margin-left:10px">Buscar</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+
+        <h3>Seja Bem-Vindo(a) @Model.Name</h3>
+
+        <h4 style="margin-top:30px">Como Podemos ajudar ?</h4>
+        <ul>
+            <li>@Html.ActionLink("Detalhes do Usuario", "Detalhes", new { cpf = Model.Cpf })</li>
+            <li>@Html.ActionLink("Atualizar Usuario", "Atualizar", new { cpf = Model.Cpf })</li>
+            <li>@Html.ActionLink("Excluir Usuario", "Excluir", new { cpf = Model.Cpf })</li>
+        </ul>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,94 @@
+﻿@model SchoolProject.Models.User
+
+@{
+    ViewBag.Title = "Detalhes do Usuario";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<hr />
+
+@{
+    if (Model == null || Model.Cpf.Length < 11)
+    {
+        <h3>Não é possivel Realizar essa solicitação</h3>
+        <h4>É necessario Informar o Usuario para Poder acessar os Detalhes.</h4>
+        <h4>@Html.ActionLink("Clique Aqui", "Login") para Informar o Login</h4>
+    }
+    else
+    {
+        <div>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Cpf)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Cpf)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Logradouro)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Logradouro)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Cidade)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Estado)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Estado)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Numero)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Numero)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Complemento)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Complemento)
+                </dd>
+
+            </dl>
+        </div>
+
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-1 col-md-10">
+                    @Html.ActionLink("Voltar", "Login", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
+                    @Html.ActionLink("Editar Usuario", "Atualizar", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
