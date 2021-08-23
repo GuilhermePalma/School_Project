@@ -5,15 +5,20 @@
 }
 
 <h2>@ViewBag.Title</h2>
-
 <hr />
 
 @{
-    if (Model == null || Model.Cpf.Length < 11)
+    if (Model == null || Model.Cpf.Length != 11|| ViewBag.Message != null)
     {
-        <h3>Não é possivel Realizar essa solicitação</h3>
-        <h4>É necessario Informar o Usuario para Poder acessar os Detalhes.</h4>
-        <h4>@Html.ActionLink("Clique Aqui", "Login") para Informar o Login</h4>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>@ViewBag.Message</h4>
+            <p>@Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro ou
+                    @Html.ActionLink("Clique Aqui", "Login", "User") para Consultar o Login</p>
+            <p><i>@ViewBag.Erro</i></p>
+        </div>
     }
     else
     {
@@ -67,13 +72,18 @@
                     @Html.DisplayFor(model => model.Numero)
                 </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Complemento)
-                </dt>
+                @{
+                    if (Model.Complemento != null)
+                    {
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Complemento)
+                        </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Complemento)
-                </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Complemento)
+                        </dd>
+                    }
+                }
 
             </dl>
         </div>
@@ -81,12 +91,17 @@
         <div class="form-horizontal">
             <div class="form-group">
                 <div class="col-md-offset-1 col-md-10">
-                    @Html.ActionLink("Voltar", "Login", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
                     @Html.ActionLink("Editar Usuario", "Atualizar", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
                 </div>
             </div>
         </div>
+
+        using (Html.BeginForm("Login", "User", new { Cpf = Model.Cpf }, FormMethod.Post))
+        {
+            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+        }
     }
+
 }
 
 @section Scripts {

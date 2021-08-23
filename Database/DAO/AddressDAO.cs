@@ -1,16 +1,13 @@
 ﻿using MySql.Data.MySqlClient;
-using OpreationsDatabase.DLLs;
+using SchoolProject.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Database.DAO
 {
     public class AddressDAO
     {
         private Database database;
+        MySqlDataReader reader;
         private string command;
         private string error_operation = "";
 
@@ -20,16 +17,24 @@ namespace Database.DAO
         private const int ERROR = -1;
         private const int NOT_FOUND = 0;
 
+        // Busca se Existe um Endereço Cadastrado no Banco de Dados
         public bool existsAddress(int code)
         {
-            command = String.Format("SELECT COUNT({0}) FROM address WHERE {0}={1}",
-               CODE, code);
+            if(code <= 0)
+            {
+                error_operation = "Codigo de Endereço Invalido. O codigo tem que ser" +
+                    " um valor Positivo e Diferente de 0";
+                return false;
+            }
 
             try
             {
                 database = new Database();
 
-                MySqlDataReader reader = database.readerTable(command);
+                command = String.Format("SELECT COUNT({0}) FROM address WHERE {0}={1}",
+                    CODE, code);
+
+                reader = database.readerTable(command);
 
                 if (reader == null)
                 {
@@ -39,7 +44,7 @@ namespace Database.DAO
 
                 if (reader.HasRows)
                 {
-                    int quantity = 0;
+                    int quantity = NOT_FOUND;
 
                     while (reader.Read())
                     {
@@ -60,23 +65,39 @@ namespace Database.DAO
                 System.Diagnostics.Debug.WriteLine(error_operation);
                 return false;
             }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
         }
 
+        // Caso o Endereço não exista = Cadastra
         public bool insertAddress(Address address)
         {
+            if (address == null)
+            {
+                error_operation = "Usuario não Informado";
+                return false;
+            }
+
+            if (existsAddress(returnCodeAddress(address)))
+            {
+                System.Diagnostics.Debug.WriteLine("Dados: ");
+                return false;
+            }
+
             try
             {
                 database = new Database();
 
-                command = String.Format("INSERT INTO address({0}) VALUE('{1}')", ADDRESS, address);
-               
+                command = String.Format("INSERT INTO address({0}) VALUE('{1}')", ADDRESS, address.Logradouro);
+
                 if (database.runCommand(command) == 0)
                 {
                     error_operation = "Não foi Possivel Cadsatrar no Banco de Dados";
                     return false;
                 }
                 else return true;
-
             }
             catch (Exception ex)
             {
@@ -86,8 +107,15 @@ namespace Database.DAO
             }
         }
 
+        // Caso um Endereço exista = Exclui
         public bool deleteAddress(int code)
         {
+            if (!existsAddress(code))
+            {
+                error_operation += " Endereço não Cadastrado no Sistema";
+                return false;
+            }
+
             try
             {
                 database = new Database();
@@ -108,35 +136,46 @@ namespace Database.DAO
             }
         }
 
+        // Caso o Endereço Exista, Retorna a Classe uma instanciada
         public Address selectAddress(int code)
         {
+            if (!existsAddress(code))
+            {
+                error_operation += " Endereço não Cadastrado no Sistema";
+                return null;
+            }
+
             try
             {
-                if (existsAddress(code))
-                { 
-                    database = new Database();
+                database = new Database();
 
-                    command = String.Format("SELECT * FROM address WHERE {0}={1}", CODE, code);
+                command = String.Format("SELECT * FROM address WHERE {0}={1}", CODE, code);
 
-                    MySqlDataReader reader = database.readerTable(command);
+                reader = database.readerTable(command);
 
-                    if (reader.HasRows)
-                    {
-                        Address address = new Address();
-
-                        while (reader.Read())
-                        {
-                            address.Code_address = reader.GetInt32(reader.GetOrdinal(CODE));
-                            address.Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS));
-                        }
-
-                        return address;
-                    }
+                if (reader == null)
+                {
+                    error_operation = "Não foi possivel consultar a Tabela";
+                    return null;
                 }
 
-                // Caso HasRows = false ou não existe no Banco de Dados
-                error_operation = "Dados não Encontrados no Banco de Dados";
-                return null;
+                if (reader.HasRows)
+                {
+                    Address address = new Address();
+
+                    while (reader.Read())
+                    {
+                        address.Code_address = reader.GetInt32(reader.GetOrdinal(CODE));
+                        address.Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS));
+                    }
+
+                    return address;
+                }
+                else
+                {
+                    error_operation = "Não foi possivel consultar a Tabela";
+                    return null;
+                }
             }
             catch (Exception ex)
             {
@@ -144,10 +183,22 @@ namespace Database.DAO
                 System.Diagnostics.Debug.WriteLine(error_operation);
                 return null;
             }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
         }
 
+        // Busca o Codigo de um Endereço se for Valido
         public int returnCodeAddress(Address address)
         {
+            if (address == null || address.Logradouro.Length < 5)
+            {
+                error_operation = "Endereço Invalido. O Preenchimento do Logradouro" +
+                    " é Obrigatorio";
+                return ERROR;
+            }
+
             try
             {
                 database = new Database();
@@ -155,25 +206,31 @@ namespace Database.DAO
                 command = String.Format("SELECT {0} FROM address " +
                     "WHERE {1}='{2}'", CODE, ADDRESS, address.Logradouro);
 
-                MySqlDataReader reader = database.readerTable(command);
+                reader = database.readerTable(command);
 
-                if (reader != null)
+
+                if (reader == null)
                 {
-                    if (reader.HasRows)
+                    error_operation = "Não foi Possivel Acessar os Dados do Banco de Dados. ";
+                    return ERROR;
+                }
+
+                if (reader.HasRows)
+                {
+                    int code = NOT_FOUND;
+
+                    while (reader.Read())
                     {
-                        // Retorna o Codigo
-                        return reader.GetInt32(reader.GetOrdinal(CODE));
+                        code = reader.GetInt32(reader.GetOrdinal(CODE));
                     }
-                    else
-                    {
-                        error_operation = "Dados não Encontrados no Banco de Dados";
-                        return NOT_FOUND;
-                    }
+
+                    // Retorna o Codigo ou 0 (não encontrado)
+                    return code;
                 }
                 else
                 {
-                    error_operation = "Não foi Possivel Acessar o Banco de Dados";
-                    return ERROR;
+                    error_operation = "Dados não Encontrados no Banco de Dados";
+                    return NOT_FOUND;
                 }
             }
             catch (Exception ex)
@@ -181,6 +238,65 @@ namespace Database.DAO
                 error_operation = "Não foi possivel obter o Codigo do Endereço. Exceção:" + ex;
                 System.Diagnostics.Debug.WriteLine(error_operation);
                 return ERROR;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
+        // Busca se Existe um Endereço Cadastrado no Banco de Dados
+        public bool onlyAddress(int code)
+        {
+            if (code <= 0)
+            {
+                error_operation = "Codigo de Endereço Invalido. O codigo tem que ser" +
+                    " um valor Positivo e Diferente de 0";
+                return false;
+            }
+
+            try
+            {
+                database = new Database();
+
+                // Obtem a quantidade de Usuarios com aquele codigo de Endereço
+                command = String.Format("SELECT COUNT({0}) FROM user WHERE {0}={1}",
+                    UserDAO.ADDRESS, code);
+
+                reader = database.readerTable(command);
+
+                if (reader == null)
+                {
+                    error_operation = "Não foi possivel consultar a Tabela";
+                    return false;
+                }
+
+                if (reader.HasRows)
+                {
+                    int quantity = NOT_FOUND;
+
+                    while (reader.Read())
+                    {
+                        quantity = reader.GetInt32(reader.GetOrdinal("COUNT(code_address)"));
+                    }
+
+                    return quantity == 1 ? true : false;
+                }
+                else
+                {
+                    error_operation = "Dados não Encontrados no Banco de Dados";
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                error_operation = "Não foi Possivel verificar no Banco de dados. Exceção:" + ex;
+                System.Diagnostics.Debug.WriteLine(error_operation);
+                return false;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
             }
         }
 

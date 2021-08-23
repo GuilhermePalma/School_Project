@@ -59,28 +59,3 @@ SELECT * FROM user;
 
 /*Verificar se Os Codigos da Cidade foram colocados corretamente com os Codigos de Endereço*/
 SELECT * FROM user ORDER BY code_state_city ASC;
-
-/*Altera Todos os Dados exceto o CPF*/
-UPDATE user SET name='Pali', code_state_city=1, code_address=4, residential_number=1000 WHERE cpf='12345678901';
-SELECT * FROM user;
-
-/*Exclusão de Usuarios*/
-DELETE FROM user WHERE cpf='12345678901';
-SELECT * FROM user;
-
-/*Inserção de Usuarios*/
-INSERT INTO user(cpf,name,code_state_city,code_address,residential_number,complement)VALUE
-("12345678901", "Roberta", 3,1,1202,"Apto 12, Bl 9");
-SELECT * FROM user;
-SELECT * FROM user WHERE cpf='12345678901';
-
-/*Codigos do state_city*/
-SELECT * FROM state_city;
-DELETE FROM state_city WHERE code_state_city=2;
-
-/*Codigos do address*/
-SELECT code_address FROM address WHERE logradouro='Rua Rei de Luis';
-
-SELECT * FROM state_city;
-SELECT * FROM address;
-SELECT * FROM user;

@@ -50,8 +50,6 @@ namespace Database
         {   
             try
             {
-                //MySqlCommand command = new MySqlCommand(querry, mysqlConnection);
-
                 MySqlCommand command = new MySqlCommand
                 {
                     CommandText = querry,

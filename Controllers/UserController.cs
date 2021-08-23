@@ -7,21 +7,13 @@ using System.Web.Mvc;
 namespace SchoolProject.Controllers
 {
     public class UserController : Controller
-    {
-
-
-        // GET: User
-        public ActionResult Index()
-        {
-            return View("Home");
-        }
+    { 
 
         // GET: User/Cadastro
         public ActionResult Cadastro()
         {
             // Disponibiliza uma Lista com os Estados
-            User user = new User();
-            ViewBag.Estados = user.listStates();
+            ViewBag.Estados = new StateCity().listStates();
 
             return View("Register");
         }
@@ -32,22 +24,32 @@ namespace SchoolProject.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
+                ViewBag.Estados = new StateCity().listStates();
 
-                UserDAO userDAO = new UserDAO();
-                bool insert_complet = userDAO.insertUser(user);
-
-                if (insert_complet)
+                // Caso não seja infromado o CPF
+                if (user.Cpf == null || user.Cpf.Length != 11)
                 {
-                    return View("Login", user);
-                }
-                else
-                {
-                    Exception exception = new Exception("Não foi Possivel realizar" +
-                        "o Cadastro. Erro: " + userDAO.error_operation);
+                    Exception exception = new Exception("CPF não Informado ou Incorreto. " +
+                        "Informe o CPF para Realizar a Alteração");
                     return View("Error", exception);
                 }
 
+                // Instancia um novo User e Insere um Usuario no Banco de Dados
+                UserDAO userDAO = new UserDAO();
+                bool is_insert_user = userDAO.insertUser(user);
+
+                // Verifica se o Usuario foi Inserido
+                if (is_insert_user)
+                {
+                    // Redireciona para a Action Login --> Menu de Metodos CRUD
+                    return RedirectToAction("Detalhes","User", new { cpf = user.Cpf });
+                }
+                else
+                {
+                    ViewBag.Message = "Não foi possivel Cadastrar o Usuario no Sistema";
+                    ViewBag.Erro = userDAO.error_operation;
+                    return View("Register");
+                }
             }
             catch (Exception ex)
             {
@@ -55,17 +57,18 @@ namespace SchoolProject.Controllers
             }
         }
 
+        // GET: User/Login
         public ActionResult Login()
-        {
+        { 
             return View("Login");
-        }
+        }   
 
         // POST: User/Login
         [HttpPost]
-        public ActionResult Login(User user)
+        public ActionResult Login(string cpf)
         {
             // Caso não seja infromado o CPF
-            if (user.Cpf == null || user.Cpf.Length < 11)
+            if (cpf == null || cpf.Length != 11)
             {
                 Exception exception = new Exception("CPF não Informado ou Incorreto. " +
                     "Informe o CPF para Realizar a Alteração");
@@ -74,34 +77,17 @@ namespace SchoolProject.Controllers
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
-
+                // Instancia um novo User e Busca o Usuario no Banco de Dados
                 UserDAO userDAO = new UserDAO();
-                bool exist_user = userDAO.existsUser(user.Cpf);
+                User userDatabase = userDAO.selectUser(cpf);
 
-                if (exist_user)
+                if(userDatabase == null)
                 {
-                    User userDatabase = new User();
-                    user = userDAO.selectUser(user.Cpf);
-
-                    if(user == null)
-                    {
-                        Exception ex = new Exception("Não foi possivel Localizar o Usuario." +
-                            "Erro: " + userDAO.error_operation);
-                        return View("Error", ex);
-                    }
-                    else
-                    {
-                        return View("Login", userDatabase);
-                    }
-
-                }
-                else
-                {
-                    ViewBag.Message = "Usuario não cadastrado no Sistema" +userDAO.error_operation;
+                    ViewBag.Message = "Usuario não cadastrado no Sistema";
+                    ViewBag.Erro = userDAO.error_operation;
                     return View("Login");
                 }
+                else return View("Login", userDatabase);
             }
             catch (Exception ex)
             {
@@ -110,10 +96,11 @@ namespace SchoolProject.Controllers
         }
 
         // GET: User/Detalhes?cpf={cpf}
+        [HttpGet]
         public ActionResult Detalhes(string cpf)
         {
             // Caso não seja infromado o CPF
-            if (cpf == null || cpf.Length < 11)
+            if (cpf == null || cpf.Length != 11)
             {
                 Exception exception = new Exception("CPF não Informado ou Incorreto. " +
                     "Informe o CPF para Realizar a Alteração");
@@ -122,17 +109,17 @@ namespace SchoolProject.Controllers
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
+                // Instancia um novo User e Busca o Usuario no Banco de Dados
+                UserDAO userDAO = new UserDAO();
+                User userDatabase = userDAO.selectUser(cpf);
 
-                User user = new User
+                if (userDatabase == null)
                 {
-                    Name = "Robson",
-                    Cpf = cpf
-                };
-
-                // Busca o CPF no Banco de Dados
-                return View("Details", user);
+                    ViewBag.Message = "Usuario não cadastrado no Sistema";
+                    ViewBag.Erro = userDAO.error_operation;
+                    return View("Login");
+                }
+                else return View("Details", userDatabase);
             }
             catch (Exception ex)
             {
@@ -145,7 +132,7 @@ namespace SchoolProject.Controllers
         public ActionResult Atualizar(string cpf)
         {
             // Caso não seja infromado o CPF
-            if (cpf == null || cpf.Length < 11)
+            if (cpf == null || cpf.Length != 11)
             {
                 Exception exception = new Exception("CPF não Informado ou Incorreto. " +
                     "Informe o CPF para Realizar a Alteração");
@@ -154,20 +141,23 @@ namespace SchoolProject.Controllers
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
+                UserDAO userDAO = new UserDAO();
 
+                // Obtem um Usuario no Banco de Dados. Se não consegue = null
+                User user = userDAO.selectUser(cpf);
 
-                User user = new User()
+                if (user != null)
                 {
-                    Cpf = cpf
-                };
-
-                // Disponibiliza uma Lista com os Estados
-                ViewBag.Estados = user.listStates();
-
-                // Busca o CPF no Banco de Dados
-                return View("Update", user);
+                    // Disponibiliza uma Lista com os Estados
+                    ViewBag.Estados = new StateCity().listStates();
+                    return View("Update", user);
+                }
+                else
+                {
+                    ViewBag.Message = "Usuario não cadastrado no Sistema.";
+                    ViewBag.Erro = userDAO.error_operation;
+                    return View("Update");
+                }
             }
             catch (Exception ex)
             {
@@ -180,25 +170,24 @@ namespace SchoolProject.Controllers
         public ActionResult Atualizar(User user)
         {
             // Caso não seja infromado o CPF
-            if (user == null)
+            if (user == null || user.Cpf.Length != 11)
             {
-                Exception exception = new Exception("Usuario não Encontrado. Informe os" +
-                    " Dados do Usuario para Realizar a Alteração");
+                Exception exception = new Exception("Usuario Invalido. Informe os" +
+                    " Dados do Usuario corretamente para Realizar a Alteração");
                 return View("Error", exception);
-            } else if (user.Cpf == null || user.Cpf.Length < 11)
-            {
-                Exception exception = new Exception("CPF não Informado ou Incorreto. " +
-                    "Informe o CPF para Realizar a Alteração");
-                return View("Error", exception);
-            } 
+            }
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
+                UserDAO userDAO = new UserDAO();
+                bool is_update_user = userDAO.updateUser(user);
 
-                // Caso realize a opereação no BD, mostra os dados do Usuario
-                return View("Details", user);
+                if (is_update_user) return RedirectToAction("Detalhes", "User", new { Cpf = user.Cpf });
+
+                // Caso o Usuario não Atualize ou Não Obteve um Select do Usuario
+                ViewBag.Message = "Usuario não Atualizado no Sistema";
+                ViewBag.Erro = userDAO.error_operation;
+                return View("Details");
             }
             catch (Exception ex)
             {
@@ -206,29 +195,35 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: User/Atualizar?cpf={cpf}
+        // GET: User/Excluir?cpf={cpf}
         public ActionResult Excluir(string cpf)
         {
             // Caso não seja infromado o CPF
-            if (cpf == null || cpf.Length < 11)
+            if (cpf == null || cpf.Length != 11)
             {
                 Exception exception = new Exception("CPF não Informado ou Incorreto. " +
-                    "Informe o CPF para Realizar a Alteração");
+                    "Informe o CPF para Realizar a Exclusão do Usuario");
                 return View("Error", exception);
             }
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
+                UserDAO userDAO = new UserDAO();
 
-                User user = new User()
+                // Obtem um Usuario no Banco de Dados. Se não consegue = null
+                User user = userDAO.selectUser(cpf);
+
+                if (user != null)
                 {
-                    Name = "Robson",
-                    Cpf = cpf
-                };
-                // Busca o CPF no Banco de Dados
-                return View("Delete", user);
+                    return View("Delete", user);
+                }
+                else
+                {
+                    ViewBag.Message = "Usuario não cadastrado no Sistema";
+                    ViewBag.Erro = userDAO.error_operation;
+                    return View("Delete");
+                }
+
             }
             catch (Exception ex)
             {
@@ -238,28 +233,32 @@ namespace SchoolProject.Controllers
 
         // POST: User/Excluir
         [HttpPost]
-        public ActionResult Excluir(string cpf, User user)
+        public ActionResult Excluir(User user)
         {
             // Caso não seja infromado o CPF
-            if (cpf == null || cpf.Length < 11)
+            if (user == null || user.Cpf.Length != 11)
             {
-                Exception exception = new Exception("CPF não Informado ou Incorreto. " +
-                    "Informe o CPF para Realizar a Alteração");
+                Exception exception = new Exception("Usuario Invalido. Informe os" +
+                    " Dados do Usuario corretamente para Realizar a Alteração");
                 return View("Error", exception);
             }
 
             try
             {
-                // TODO: Add update logic here
-                // Busca o BD o CPF ---> Se não Existir ---> Error
+                UserDAO userDAO = new UserDAO();
 
-                // Busca o CPF no Banco de Dados
-                ViewBag.Message = "Usuario " + user.Name  + " Excluido";
-                return RedirectToAction("Login", "User");
+                bool is_deleted_user = userDAO.deleteUser(user.Cpf);
+
+                if (is_deleted_user) return RedirectToAction("Login", "User");
+
+                // Caso o Usuario não Atualize ou Não Obteve um Select do Usuario
+                ViewBag.Message = "Usuario não Excluido do Sistema";
+                ViewBag.Erro = userDAO.error_operation;
+                return View("Details");
             }
             catch (Exception ex)
             {
-                return View("Error", ex);
+                return View("Error" + ex);
             }
         }
 

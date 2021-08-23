@@ -189,6 +189,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="script.sql" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="readme.md" />
@@ -222,11 +223,11 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
-    <Content Include="Views\User\Home.cshtml" />
     <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\User\Update.cshtml" />
     <Content Include="Views\User\Delete.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
+    <Content Include="Views\User\Excluir2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

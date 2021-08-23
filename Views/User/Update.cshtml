@@ -1,21 +1,28 @@
 ﻿@model SchoolProject.Models.User
 
+@{ 
+    ViewBag.Title = "Atualizar Usuario";
+}
+
+<h2>@ViewBag.Title</h2>
+<hr />
+
+
 @{
-    if (Model == null || Model.Cpf.Length < 11)
+    if (Model == null || Model.Cpf.Length != 11|| ViewBag.Message != null)
     {
-        <h3>Não é possivel Realizar essa solicitação</h3>
-        <h4>É necessario Informar o Usuario para Poder acessar os Detalhes.</h4>
-        <h4>@Html.ActionLink("Clique Aqui", "Login") para Informar o Login</h4>
-        <h2>@ViewBag.Title: @Model.Cpf</h2>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>@ViewBag.Message</h4>
+            <p>@Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro ou
+                    @Html.ActionLink("Clique Aqui", "Login", "User") para Consultar o Login</p>
+            <p><i>@ViewBag.Erro</i></p>
+        </div>
     }
     else
     {
-        ViewBag.Title = "Atualizar Usuario";
-
-        <h2>@ViewBag.Title</h2>
-
-        <hr />
-
         using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
@@ -92,13 +99,15 @@
 
         </div>
 
-            }
         }
-    }
 
-<div>
-    @Html.ActionLink("Voltar", "Login", new { cpf = Model.Cpf })
-</div>
+        using (Html.BeginForm("Login", "User", new { Cpf = Model.Cpf }, FormMethod.Post))
+        {
+            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+        }
+
+    }
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -5,13 +5,19 @@
 }
 
 <h2>@ViewBag.Title</h2>
-<hr />  
+<hr />
 
 @{
-
-    if(ViewBag.Message != null)
+    if (ViewBag.Message != null)
     {
-        <h3>@ViewBag.Message</h3>
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>@ViewBag.Message</h4>
+            <p>@Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro</p>
+            <p>@ViewBag.Erro</p>
+        </div>
     }
 
     if (Model == null)
@@ -49,15 +55,19 @@
     }
     else
     {
-
         <h3>Seja Bem-Vindo(a) @Model.Name</h3>
 
         <h4 style="margin-top:30px">Como Podemos ajudar ?</h4>
         <ul>
-            <li>@Html.ActionLink("Detalhes do Usuario", "Detalhes", new { cpf = Model.Cpf })</li>
-            <li>@Html.ActionLink("Atualizar Usuario", "Atualizar", new { cpf = Model.Cpf })</li>
-            <li>@Html.ActionLink("Excluir Usuario", "Excluir", new { cpf = Model.Cpf })</li>
+            <li>@Html.ActionLink("Detalhes do Usuario", "Detalhes", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
+            <li>@Html.ActionLink("Atualizar Usuario", "Atualizar", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
+            <li>@Html.ActionLink("Excluir Usuario", "Excluir", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
         </ul>
+
+        <br />
+
+        @Html.ActionLink("Sair", "Login", "User", new { }, new { @class = "badge badge-warning" })
+
     }
 }
 
