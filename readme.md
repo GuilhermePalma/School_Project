@@ -39,3 +39,5 @@ Obs: SGBD = Sistema de Gerenciamento de Banco de Dados
 [Lista dos Estados](https://gist.github.com/quagliato/9282728)
 
 [Icone DropDown Menu](https://pt.stackoverflow.com/questions/330840/bootstrap-3-dropdown-toggle-mudar-de-menu-com-ele-aberto-é-possível)
+
+[Correção IDispose C#](https://pt.stackoverflow.com/questions/6913/fechar-conexão-com-banco-de-dados-c)

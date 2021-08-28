@@ -3,12 +3,13 @@ using System;
 using System.Configuration;
 using System.Data;
 
-namespace Database
+namespace SchoolProject.Models.Database
 {
     // ADO = Active Data Objects - Objeto de Dados Ativos
     class Database : IDisposable
     {
         private readonly MySqlConnection mysqlConnection;
+        private MySqlDataReader dataReader;
 
         public Database()
         {
@@ -56,7 +57,9 @@ namespace Database
                     CommandType = CommandType.Text,
                     Connection = mysqlConnection
                 };
-                return command.ExecuteReader();
+
+                dataReader = command.ExecuteReader();
+                return dataReader;
             }
             catch (Exception ex)
             {
@@ -69,6 +72,7 @@ namespace Database
         public void Dispose()
         {
             if (mysqlConnection.State == ConnectionState.Open) mysqlConnection.Close();
+            if (dataReader != null) dataReader.Close();
         }
     }
 }

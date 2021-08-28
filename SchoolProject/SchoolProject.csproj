@@ -163,10 +163,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Database\ADO\Database.cs" />
-    <Compile Include="Database\DAO\AddressDAO.cs" />
-    <Compile Include="Database\DAO\StateCityDAO.cs" />
-    <Compile Include="Database\DAO\UserDAO.cs" />
+    <Compile Include="Models\Database\ADO\Database.cs" />
+    <Compile Include="Models\Database\DAO\AddressDAO.cs" />
+    <Compile Include="Models\Database\DAO\StateCityDAO.cs" />
+    <Compile Include="Models\Database\DAO\UserDAO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

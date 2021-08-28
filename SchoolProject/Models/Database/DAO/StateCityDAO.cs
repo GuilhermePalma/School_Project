@@ -1,12 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
-using SchoolProject.Models;
 using System;
 
-namespace Database.DAO
+namespace SchoolProject.Models.Database.DAO
 {
     public class StateCityDAO
     {
-        private Database database;
+
         private MySqlDataReader reader;
         private string command;
         private string error_operation = "";
@@ -31,35 +30,36 @@ namespace Database.DAO
             }
 
             try
-            {
-                database = new Database();
-
-                command = String.Format("SELECT COUNT({0}) FROM state_city WHERE {0}={1}",
-                    CODE, code);
-
-                reader = database.readerTable(command);
-
-                if (reader == null)
+            {    
+                using (Database database = new Database())
                 {
-                    error_operation = "Não foi possivel Ler os dados do Banco de Dados. ";
-                    return false;
-                }
+                    command = String.Format("SELECT COUNT({0}) FROM state_city WHERE {0}={1}",
+                        CODE, code);
 
-                if (reader.HasRows)
-                {
-                    int quantity = NOT_FOUND;
+                    reader = database.readerTable(command);
 
-                    while (reader.Read())
+                    if (reader == null)
                     {
-                        quantity = reader.GetInt32(reader.GetOrdinal("COUNT(code_state_city)"));
+                        error_operation = "Não foi possivel Ler os dados do Banco de Dados. ";
+                        return false;
                     }
 
-                    return quantity == 1 ? true : false;
-                }
-                else
-                {
-                    error_operation = "Dados não Encontrados no Banco de Dados. ";
-                    return false;
+                    if (reader.HasRows)
+                    {
+                        int quantity = NOT_FOUND;
+
+                        while (reader.Read())
+                        {
+                            quantity = reader.GetInt32(reader.GetOrdinal("COUNT(code_state_city)"));
+                        }
+
+                        return quantity == 1 ? true : false;
+                    }
+                    else
+                    {
+                        error_operation = "Dados não Encontrados no Banco de Dados. ";
+                        return false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -88,15 +88,16 @@ namespace Database.DAO
                 command = String.Format("INSERT INTO state_city({0},{1}) VALUE" +
                     "('{2}','{3}')", CITY, STATE, stateCity.Cidade, stateCity.Estado);
 
-
-                database = new Database();
-
-                if (database.runCommand(command) == 0)
+                using (Database database = new Database())
                 {
-                    error_operation = "Não foi possivel Cadastrar no Banco de Dados. ";
-                    return false;
+
+                    if (database.runCommand(command) == 0)
+                    {
+                        error_operation = "Não foi possivel Cadastrar no Banco de Dados. ";
+                        return false;
+                    }
+                    else return true;
                 }
-                else return true;
             }
             catch (Exception ex)
             {
@@ -120,14 +121,16 @@ namespace Database.DAO
                 command = String.Format("DELETE FROM state_city WHERE {0}={1}",
                     CODE, code);
 
-                database = new Database();
-
-                if (database.runCommand(command) == 0)
+                using (Database database = new Database())
                 {
-                    error_operation = "Não foi possivel Excluir do Banco de Dados. ";
-                    return false;
+
+                    if (database.runCommand(command) == 0)
+                    {
+                        error_operation = "Não foi possivel Excluir do Banco de Dados. ";
+                        return false;
+                    }
+                    else return true;
                 }
-                else return true;
             }
             catch (Exception ex)
             {
@@ -147,36 +150,37 @@ namespace Database.DAO
                     error_operation += "Estado e Cidade não Cadastrado no Banco de Dados. ";
                     return null;
                 }
-
-                database = new Database();
-
-                command = String.Format("SELECT * FROM state_city WHERE {0}={1}", CODE, code);
-
-                reader = database.readerTable(command);
-
-                if (reader == null)
+                using (Database database = new Database())
                 {
-                    error_operation = "Não foi Possivel Acessar os Dados do Banco de Dados. ";
-                    return null;
-                }
 
-                if (reader.HasRows)
-                {
-                    StateCity stateCity = new StateCity();
+                    command = String.Format("SELECT * FROM state_city WHERE {0}={1}", CODE, code);
 
-                    while (reader.Read())
+                    reader = database.readerTable(command);
+
+                    if (reader == null)
                     {
-                        stateCity.Code_statecity = reader.GetInt32(reader.GetOrdinal(CODE));
-                        stateCity.Cidade = reader.GetString(reader.GetOrdinal(CITY));
-                        stateCity.Estado = reader.GetString(reader.GetOrdinal(STATE));
+                        error_operation = "Não foi Possivel Acessar os Dados do Banco de Dados. ";
+                        return null;
                     }
 
-                    return stateCity;
-                }
-                else
-                {
-                    error_operation += "Estado e Cidade não Encontrados no Banco de Dados. ";
-                    return null;
+                    if (reader.HasRows)
+                    {
+                        StateCity stateCity = new StateCity();
+
+                        while (reader.Read())
+                        {
+                            stateCity.Code_statecity = reader.GetInt32(reader.GetOrdinal(CODE));
+                            stateCity.Cidade = reader.GetString(reader.GetOrdinal(CITY));
+                            stateCity.Estado = reader.GetString(reader.GetOrdinal(STATE));
+                        }
+
+                        return stateCity;
+                    }
+                    else
+                    {
+                        error_operation += "Estado e Cidade não Encontrados no Banco de Dados. ";
+                        return null;
+                    }
                 }
             }
             catch (Exception ex)
@@ -191,7 +195,50 @@ namespace Database.DAO
             }
         }
 
-        // Por meio do Estado e Cidade Informado, obtem o codigo
+        // Atualiza o Estado e Cidade no Banco de Dados
+        public bool updateStateCity(int code_stateCity,StateCity stateCity)
+        {
+            if (stateCity == null || stateCity.Cidade == null ||
+                stateCity.Estado == null)
+            {
+                error_operation = "Estado/Cidade não Informado";
+                return false;
+            }
+
+            stateCity.Code_statecity = code_stateCity;
+
+            if (!existsStateCity(stateCity.Code_statecity))
+            {
+                error_operation = "Estado/Cidade não Cadastrado no Sistema";
+                return false;
+            }
+
+            try
+            {
+                using (Database database = new Database())
+                {
+                    command = String.Format("UPDATE state_city SET {0}='{1}',{2}='{3}'" +
+                        " WHERE {4}={5}", CITY, stateCity.Cidade, STATE, stateCity.Estado,
+                        CODE, stateCity.Code_statecity);
+
+                    if (database.runCommand(command) == 0)
+                    {
+                        error_operation = "Não foi Possivel Atualizar no Banco de Dados";
+                        return false;
+                    }
+                    else return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                error_operation = "Não foi possivel Alterar o Estado e Cidade " +
+                    "no Banco de dados. Exceção:" + ex;
+                System.Diagnostics.Debug.WriteLine(error_operation);
+                return false;
+            }
+        }
+
+        // Obtem o Codigo a partir do Estado e Cidade
         public int returnCodeStateCity(StateCity stateCity)
         {
             if (stateCity == null || stateCity.Cidade.Length < 5 || stateCity.Estado.Length != 2)
@@ -203,35 +250,37 @@ namespace Database.DAO
 
             try
             {
-                database = new Database();
+                using (Database database = new Database())
+                {
 
-                command = String.Format("SELECT {0} FROM state_city WHERE " +
+                    command = String.Format("SELECT {0} FROM state_city WHERE " +
                     "{1}='{2}' AND {3}='{4}'", CODE, CITY, stateCity.Cidade,
                     STATE, stateCity.Estado);
 
-                reader = database.readerTable(command);
+                    reader = database.readerTable(command);
 
-                if (reader == null)
-                {
-                    error_operation = "Não foi Possivel Acessar os Dados do Banco de Dados. ";
-                    return ERROR;
-                }
-
-                if (reader.HasRows)
-                {
-                    int code = NOT_FOUND;
-
-                    while (reader.Read())
+                    if (reader == null)
                     {
-                        code = reader.GetInt32(reader.GetOrdinal(CODE));
+                        error_operation = "Não foi Possivel Acessar os Dados do Banco de Dados. ";
+                        return ERROR;
                     }
-                    // Retorna o Codigo do Banco de Dados ou 0 (Não encontrado)
-                    return code;
-                }
-                else
-                {
-                    error_operation = "Dados não Encontrados no Banco de Dados. ";
-                    return NOT_FOUND;
+
+                    if (reader.HasRows)
+                    {
+                        int code = NOT_FOUND;
+
+                        while (reader.Read())
+                        {
+                            code = reader.GetInt32(reader.GetOrdinal(CODE));
+                        }
+                        // Retorna o Codigo do Banco de Dados ou 0 (Não encontrado)
+                        return code;
+                    }
+                    else
+                    {
+                        error_operation = "Dados não Encontrados no Banco de Dados. ";
+                        return NOT_FOUND;
+                    }
                 }
             }
             catch (Exception ex)
@@ -245,6 +294,130 @@ namespace Database.DAO
                 if (reader != null) reader.Close();
             }
         }
+
+        // Obtem o Codigo do EstadoCidade. Caso não exista, tenta Inserir
+        public int codeStateCityValid(StateCity stateCity)
+        {
+            if (stateCity == null)
+            {
+                error_operation += " Estado e/ou Cidade não Informado";
+                return ERROR;
+            }
+
+            try
+            {
+                // Obtem o Codigo State_city
+                int code_state_city = new StateCityDAO().returnCodeStateCity(stateCity);
+
+                // Erro nos Metodos do StateCity = Reader = null ou Problema na Execução (catch)
+                if (code_state_city == ERROR)
+                {
+                    error_operation += " Erro na Busca do Codigo da Cidade e/ou Estado";
+                    return ERROR;
+                }
+                // Caso não exista no Banco de Dados ---> Insere
+                if (code_state_city == NOT_FOUND)
+                {
+                    bool is_insert = new StateCityDAO().insertStateCity(stateCity);
+
+                    if (!is_insert)
+                    {
+                        error_operation = "Não foi Possivel Inserir o Estado e/ou Cidadeno Banco de Dados";
+                        return ERROR;
+                    }
+                    else
+                    {
+                        // Validação = Busca no Banco de Dados os Dados Inseridos (Estado e Cidade)
+                        code_state_city = new StateCityDAO().returnCodeStateCity(stateCity);
+                    }
+                }
+
+                if (code_state_city == ERROR || code_state_city == NOT_FOUND)
+                {
+                    error_operation += "Estado e/ou Cidade não Localizados no Banco de Dados";
+                    return ERROR;
+                }
+                else
+                {
+                    return code_state_city;
+                }
+            }
+            catch (Exception ex)
+            {
+                error_operation = "Erro ao buscar Estado e/ou Cidade no Banco de dados. Exceção:" + ex;
+                Console.WriteLine(error_operation);
+                return ERROR;
+            }
+        }
+
+        // Verifica se o Usuario é o Unico com aquela Cidade e Estado
+        public bool isOnlyStateCity(StateCity stateCity)
+        {
+
+            if (stateCity == null)
+            {
+                error_operation = "Cidade e Estado Invalido. Confira os Dados Inseridos ";
+                return false;
+            }
+
+            StateCityDAO stateCityDAO = new StateCityDAO();
+
+            try
+            {
+
+                stateCity.Code_statecity = stateCityDAO.returnCodeStateCity(stateCity);
+                if (stateCity.Code_statecity <= 0)
+                {
+                    error_operation = "Codigo de Cidade e Estado não Encontrado. ";
+                    return false;
+                }
+
+                using (Database database = new Database())
+                {
+                    // Obtem a Quantiade de vezes que o codigo é usado
+                    command = String.Format("SELECT COUNT({0}) FROM user WHERE {0}={1}",
+                   UserDAO.STATE_CITY, stateCity.Code_statecity);
+
+                    reader = database.readerTable(command);
+
+                    if (reader == null)
+                    {
+                        error_operation = "Não foi possivel consultar a Tabela";
+                        return false;
+                    }
+
+                    if (reader.HasRows)
+                    {
+                        String formated_count = String.Format("COUNT({0})", UserDAO.STATE_CITY);
+                        int quantity_register = NOT_FOUND;
+
+                        while (reader.Read())
+                        {
+                            quantity_register = reader.GetInt32(reader.GetOrdinal(formated_count));
+                        }
+
+                        // Se for o Unico ---> Retorna True. Se não ---> Retorna False
+                        return quantity_register == 1;
+                    }
+                    else
+                    {
+                        error_operation = "Erro na Leitura dos Dados do Banco de Dados";
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                error_operation = "Não foi possivel Consultar o Estado e Cidade no Banco de dados. Exceção:" + ex;
+                System.Diagnostics.Debug.WriteLine(error_operation);
+                return false;
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
 
     }
 }

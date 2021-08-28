@@ -1,5 +1,5 @@
-﻿using Database.DAO;
-using SchoolProject.Models;
+﻿using SchoolProject.Models;
+using SchoolProject.Models.Database.DAO;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
@@ -111,7 +111,8 @@ namespace SchoolProject.Controllers
             {
                 // Instancia um novo User e Busca o Usuario no Banco de Dados
                 UserDAO userDAO = new UserDAO();
-                User userDatabase = userDAO.selectUser(cpf);
+                User userDatabase = new User();
+                userDatabase = userDAO.selectUser(cpf);
 
                 if (userDatabase == null)
                 {
@@ -248,9 +249,6 @@ namespace SchoolProject.Controllers
                 UserDAO userDAO = new UserDAO();
 
                 bool is_deleted_user = userDAO.deleteUser(user.Cpf);
-
-                System.Diagnostics.Debug.WriteLine("Teste: " + is_deleted_user);
-
                 if (is_deleted_user) return RedirectToAction("Login", "User");
 
                 // Caso o Usuario não Atualize ou Não Obteve um Select do Usuario
