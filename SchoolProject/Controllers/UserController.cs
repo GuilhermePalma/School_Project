@@ -249,6 +249,8 @@ namespace SchoolProject.Controllers
 
                 bool is_deleted_user = userDAO.deleteUser(user.Cpf);
 
+                System.Diagnostics.Debug.WriteLine("Teste: " + is_deleted_user);
+
                 if (is_deleted_user) return RedirectToAction("Login", "User");
 
                 // Caso o Usuario não Atualize ou Não Obteve um Select do Usuario

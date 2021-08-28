@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS school_project;
 CREATE DATABASE if not exists school_project;
-USE school_project;
+use school_project;
 
 CREATE TABLE if not exists user(
   cpf VARCHAR(11) NOT NULL,
@@ -9,9 +9,7 @@ CREATE TABLE if not exists user(
   code_address INT NOT NULL,
   residential_number INT NOT NULL,
   complement VARCHAR(40) DEFAULT NULL,
-  PRIMARY KEY(cpf),
-  FOREIGN KEY(code_state_city) REFERENCES state_city(code_state_city),
-  FOREIGN KEY(code_address) REFERENCES address(code_address)
+  PRIMARY KEY(cpf)
 );
 
 CREATE TABLE if not exists state_city(
@@ -26,6 +24,13 @@ CREATE TABLE IF NOT EXISTS address(
   logradouro VARCHAR(80) NOT NULL,
   PRIMARY KEY(code_address)
 );
+
+/* Criação das Chaves Estrangeiras */
+ALTER TABLE user
+ADD FOREIGN KEY (code_state_city) REFERENCES state_city(code_state_city);
+ALTER TABLE user
+ADD FOREIGN KEY (code_address) REFERENCES address(code_address);
+
 
 INSERT INTO state_city(code_state_city, city, state) VALUES
 (1, "São Paulo", "SP"),
