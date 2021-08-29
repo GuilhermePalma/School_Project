@@ -10,9 +10,10 @@ namespace SchoolProject.Models.Database.DAO
         private string command;
         private string error_operation = "";
 
-        private const string CODE = "code_state_city";
-        private const string CITY = "city";
-        private const string STATE = "state";
+        public const string TABLE_STATE_CITY = "state_city";
+        public const string CODE = "code_state_city";
+        public const string CITY = "city";
+        public const string STATE = "state";
 
         private const int ERROR = -1;
         private const int NOT_FOUND = 0;
@@ -22,7 +23,7 @@ namespace SchoolProject.Models.Database.DAO
         public bool existsStateCity(int code)
         {
 
-            if(code <= 0)
+            if (code <= 0)
             {
                 error_operation = "Codigo do Estado e Cidade Invalido. O Codigo tem que " +
                     "ser um valor Positivo e Diferente de 0. ";
@@ -30,11 +31,11 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             try
-            {    
+            {
                 using (Database database = new Database())
                 {
-                    command = String.Format("SELECT COUNT({0}) FROM state_city WHERE {0}={1}",
-                        CODE, code);
+                    command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}={2}",
+                        CODE, TABLE_STATE_CITY, code);
 
                     reader = database.readerTable(command);
 
@@ -70,7 +71,7 @@ namespace SchoolProject.Models.Database.DAO
             }
             finally
             {
-                if(reader != null) reader.Close();
+                if (reader != null) reader.Close();
             }
         }
 
@@ -78,15 +79,16 @@ namespace SchoolProject.Models.Database.DAO
         public bool insertStateCity(StateCity stateCity)
         {
             try
-            {                   
+            {
                 if (existsStateCity(returnCodeStateCity(stateCity)))
                 {
                     error_operation += "Estado e Cidade já Cadastrado no Banco de Dados. ";
                     return false;
                 }
 
-                command = String.Format("INSERT INTO state_city({0},{1}) VALUE" +
-                    "('{2}','{3}')", CITY, STATE, stateCity.Cidade, stateCity.Estado);
+                command = String.Format("INSERT INTO {0}({1},{2}) VALUE" +
+                    "('{3}','{4}')", TABLE_STATE_CITY, CITY, STATE,
+                    stateCity.Cidade, stateCity.Estado);
 
                 using (Database database = new Database())
                 {
@@ -118,8 +120,8 @@ namespace SchoolProject.Models.Database.DAO
                     return false;
                 }
 
-                command = String.Format("DELETE FROM state_city WHERE {0}={1}",
-                    CODE, code);
+                command = String.Format("DELETE FROM {0} WHERE {1}={2}",
+                    TABLE_STATE_CITY, CODE, code);
 
                 using (Database database = new Database())
                 {
@@ -153,7 +155,8 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("SELECT * FROM state_city WHERE {0}={1}", CODE, code);
+                    command = String.Format("SELECT * FROM {0} WHERE {1}={2}",
+                        TABLE_STATE_CITY, CODE, code);
 
                     reader = database.readerTable(command);
 
@@ -196,7 +199,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Atualiza o Estado e Cidade no Banco de Dados
-        public bool updateStateCity(int code_stateCity,StateCity stateCity)
+        public bool updateStateCity(int code_stateCity, StateCity stateCity)
         {
             if (stateCity == null || stateCity.Cidade == null ||
                 stateCity.Estado == null)
@@ -217,9 +220,9 @@ namespace SchoolProject.Models.Database.DAO
             {
                 using (Database database = new Database())
                 {
-                    command = String.Format("UPDATE state_city SET {0}='{1}',{2}='{3}'" +
-                        " WHERE {4}={5}", CITY, stateCity.Cidade, STATE, stateCity.Estado,
-                        CODE, stateCity.Code_statecity);
+                    command = String.Format("UPDATE {0} SET {1}='{2}',{3}='{4}'" +
+                        " WHERE {5}={6}", TABLE_STATE_CITY, CITY, stateCity.Cidade,
+                        STATE, stateCity.Estado, CODE, stateCity.Code_statecity);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -253,9 +256,9 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("SELECT {0} FROM state_city WHERE " +
-                    "{1}='{2}' AND {3}='{4}'", CODE, CITY, stateCity.Cidade,
-                    STATE, stateCity.Estado);
+                    command = String.Format("SELECT {0} FROM {1} WHERE " +
+                    "{2}='{3}' AND {4}='{5}'", CODE, TABLE_STATE_CITY, CITY,
+                    stateCity.Cidade, STATE, stateCity.Estado);
 
                     reader = database.readerTable(command);
 
@@ -375,8 +378,8 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
                     // Obtem a Quantiade de vezes que o codigo é usado
-                    command = String.Format("SELECT COUNT({0}) FROM user WHERE {0}={1}",
-                   UserDAO.STATE_CITY, stateCity.Code_statecity);
+                    command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}={2}",
+                   UserDAO.STATE_CITY, UserDAO.TABLE_USER, stateCity.Code_statecity);
 
                     reader = database.readerTable(command);
 

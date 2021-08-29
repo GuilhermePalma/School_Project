@@ -10,8 +10,9 @@ namespace SchoolProject.Models.Database.DAO
         private string command;
         private string error_operation = "";
 
-        private const string CODE = "code_address";
-        private const string ADDRESS = "logradouro";
+        public const string TABLE_ADDRESS = "address";
+        public const string CODE = "code_address";
+        public const string ADDRESS = "logradouro";
 
         private const int ERROR = -1;
         private const int NOT_FOUND = 0;
@@ -30,8 +31,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 using(Database database = new Database())
                 {
-                    command = String.Format("SELECT COUNT({0}) FROM address WHERE {0}={1}",
-                    CODE, code);
+                    command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}={2}",
+                    CODE, TABLE_ADDRESS, code);
 
                     reader = database.readerTable(command);
 
@@ -43,11 +44,12 @@ namespace SchoolProject.Models.Database.DAO
 
                     if (reader.HasRows)
                     {
+                        string formmated_count = String.Format("COUNT({0})", CODE);
                         int quantity = NOT_FOUND;
 
                         while (reader.Read())
                         {
-                            quantity = reader.GetInt32(reader.GetOrdinal("COUNT(code_address)"));
+                            quantity = reader.GetInt32(reader.GetOrdinal(formmated_count));
                         }
 
                         return quantity == 1 ? true : false;
@@ -89,7 +91,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 using (Database database = new Database())
                 {
-                    command = String.Format("INSERT INTO address({0}) VALUE('{1}')", ADDRESS, address.Logradouro);
+                    command = String.Format("INSERT INTO {0}({1}) VALUE('{2}')", 
+                        TABLE_ADDRESS, ADDRESS, address.Logradouro);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -120,7 +123,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 using (Database database = new Database())
                 {
-                    command = String.Format("DELETE FROM address WHERE {0}={1}", CODE, code);
+                    command = String.Format("DELETE FROM {0} WHERE {1}={2}", 
+                        TABLE_ADDRESS, CODE, code);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -213,8 +217,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 using (Database database = new Database())
                 {
-                    command = String.Format("UPDATE address SET {0}='{1}' WHERE {2}={3}",
-                        ADDRESS, address.Logradouro, CODE, address.Code_address);
+                    command = String.Format("UPDATE {0} SET {1}='{2}' WHERE {3}={4}",
+                        TABLE_ADDRESS, ADDRESS, address.Logradouro, CODE, address.Code_address);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -248,8 +252,8 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("SELECT {0} FROM address " +
-                        "WHERE {1}='{2}'", CODE, ADDRESS, address.Logradouro);
+                    command = String.Format("SELECT {0} FROM {1} WHERE {2}='{3}'", 
+                        CODE, TABLE_ADDRESS, ADDRESS, address.Logradouro);
 
                     reader = database.readerTable(command);
 
@@ -371,8 +375,8 @@ namespace SchoolProject.Models.Database.DAO
                 // Endereço existe no Banco de Dados
                 using (Database database = new Database())
                 {
-                    command = String.Format("SELECT COUNT({0}) FROM user WHERE {0}={1}",
-                    UserDAO.ADDRESS, address.Code_address);
+                    command = String.Format("SELECT COUNT({0}) FROM {0} WHERE {1}={2}",
+                    UserDAO.ADDRESS, UserDAO.TABLE_USER, UserDAO.TABLE_USER, address.Code_address);
 
                     reader = database.readerTable(command);
 

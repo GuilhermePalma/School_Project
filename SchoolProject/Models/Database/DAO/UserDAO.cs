@@ -11,6 +11,7 @@ namespace SchoolProject.Models.Database.DAO
         private string command;
         public string error_operation = "";
 
+        public const string TABLE_USER = "user";
         public const string CPF = "cpf";
         public const string NAME = "name";
         public const string STATE_CITY = "code_state_city";
@@ -35,8 +36,8 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("SELECT COUNT({0}) FROM user WHERE {0}='{1}'",
-                        CPF, cpf_user);
+                    command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}='{2}'",
+                        CPF,TABLE_USER, cpf_user);
 
                     reader = database.readerTable(command);
 
@@ -48,11 +49,12 @@ namespace SchoolProject.Models.Database.DAO
 
                     if (reader.HasRows)
                     {
+                        string count_formatted = String.Format("COUNT({0})", CPF);
                         int quantity = NOT_FOUND;
 
                         while (reader.Read())
                         {
-                            quantity = reader.GetInt32(reader.GetOrdinal("COUNT(cpf)"));
+                            quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
                         }
 
                         return quantity == 1 ? true : false;
@@ -118,10 +120,10 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("INSERT INTO user({0},{1},{2},{3},{4},{5}) VALUE(" +
-                        "'{6}', '{7}', {8}, {9}, {10}, '{11}')", CPF, NAME, STATE_CITY, ADDRESS, NUMBER,
-                        COMPLEMENT, user.Cpf, user.Name, code_state_city, code_address,
-                        user.Numero, user.Complemento);
+                    command = String.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) VALUE(" +
+                        "'{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_USER, CPF, NAME, STATE_CITY,
+                        ADDRESS, NUMBER, COMPLEMENT, user.Cpf, user.Name, code_state_city,
+                        code_address, user.Numero, user.Complemento);
 
                     // Erro na Inserção do Banco de DAdos
                     if (database.runCommand(command) == 0)
@@ -201,7 +203,8 @@ namespace SchoolProject.Models.Database.DAO
 
                 using (Database database = new Database())
                 {
-                    command = String.Format("DELETE FROM user WHERE {0}='{1}'", CPF, cpf);
+                    command = String.Format("DELETE FROM {0} WHERE {1}='{2}'", TABLE_USER,
+                        CPF, cpf);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -287,18 +290,7 @@ namespace SchoolProject.Models.Database.DAO
                         }
                     }
                 }
-              /* else
-                {
-                    // Novo Estado/Cidade já Existente no Banco de Dados.
-                    // Verifica se o Usuario é o Unico com aquele Estado/Cidade
-                    if (stateCityDAO.isOnlyStateCity(oldStateCity))
-                    {
-                        // Exclui o Endereço Antigos e Assume o Já Existente
-                        int old_code_stateCity = stateCityDAO.returnCodeStateCity(oldStateCity);
-                        stateCityDAO.deleteStateCity(old_code_stateCity);
-                    }
-                }
-              */
+
                 // Erro ao obter o Codigo do Estado/Cidade ou ao Inserir o novo no Banco de Dados  
                 if (code_state_city == ERROR)
                 {
@@ -348,18 +340,6 @@ namespace SchoolProject.Models.Database.DAO
                         }
                     }
                 }
-             /*   else
-                {
-                    // Verifica se o Usuario é o Unico com aquele Endereço Antigo
-                    if (addressDAO.isOnlyAddress(oldAddress))
-                    {
-                        // Exclui o Endereço Antigos e Assume o Já Existente
-                        int old_code_address = addressDAO.returnCodeAddress(oldAddress);
-                        addressDAO.deleteAddress(old_code_address);
-                    }
-                }
-             */
-                
 
                 // Erro ao obter o Codigo do Endereço ou ao Inserir o novo no banco
                 if (code_address == ERROR)
@@ -371,9 +351,10 @@ namespace SchoolProject.Models.Database.DAO
                 // Codigos ja obtidos (Inseridos ou Atualizados ou Obtidos) --> Atualiza o Usuario
                 using (Database database = new Database())
                 {
-                    command = String.Format("UPDATE user SET {0}='{1}',{2}={3}, {4}={5}, {6}={7}, {8}='{9}'" +
-                        " WHERE {10}='{11}'", NAME, user.Name, STATE_CITY, code_state_city, ADDRESS,
-                        code_address, NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
+                    command = String.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
+                        "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_USER,
+                        NAME, user.Name, STATE_CITY, code_state_city, ADDRESS, code_address, 
+                        NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
 
                     if (database.runCommand(command) == 0)
                     {
@@ -412,7 +393,8 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
 
-                    command = String.Format("SELECT * FROM user WHERE {0}='{1}'", CPF, cpf);
+                    command = String.Format("SELECT * FROM {0} WHERE {1}='{2}'",
+                        TABLE_USER, CPF, cpf);
 
                     reader = database.readerTable(command);
 
