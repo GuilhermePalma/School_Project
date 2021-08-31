@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace SchoolProject.Models.Database.DAO
 {
-    public class UserDAO
+    public class ClientDAO
     {
 
         private MySqlDataReader reader;
         private string command;
         public string error_operation = "";
 
-        public const string TABLE_USER = "user";
+        public const string TABLE_CLIENT = "client";
         public const string CPF = "cpf";
         public const string NAME = "name";
         public const string STATE_CITY = "code_state_city";
@@ -23,7 +23,7 @@ namespace SchoolProject.Models.Database.DAO
         private const int NOT_FOUND = 0;
 
         // Verifica se um Usuario existe no Banco de Dados
-        public bool existsUser(string cpf_user)
+        public bool existsClient(string cpf_user)
         {
             if (cpf_user == null || cpf_user.Length != 11)
             {
@@ -37,7 +37,7 @@ namespace SchoolProject.Models.Database.DAO
                 {
 
                     command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}='{2}'",
-                        CPF,TABLE_USER, cpf_user);
+                        CPF,TABLE_CLIENT, cpf_user);
 
                     reader = database.readerTable(command);
 
@@ -79,14 +79,14 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Insere um Usuario (Com dados Normalizados) se for Validado e não Existir
-        public bool insertUser(User user)
+        public bool insertClient(Client user)
         {
             if (user == null)
             {
                 error_operation = "Usuario não Informado";
                 return false;
             }
-            else if (existsUser(user.Cpf))
+            else if (existsClient(user.Cpf))
             {
                 error_operation = "Usuario já Cadastrado no Sistema";
                 return false;
@@ -121,7 +121,7 @@ namespace SchoolProject.Models.Database.DAO
                 {
 
                     command = String.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) VALUE(" +
-                        "'{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_USER, CPF, NAME, STATE_CITY,
+                        "'{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_CLIENT, CPF, NAME, STATE_CITY,
                         ADDRESS, NUMBER, COMPLEMENT, user.Cpf, user.Name, code_state_city,
                         code_address, user.Numero, user.Complemento);
 
@@ -144,18 +144,18 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Exlcui o Usuario e se Existir
-        public bool deleteUser(string cpf)
+        public bool deleteClient(string cpf)
         {
             try
             {
-                if (!existsUser(cpf))
+                if (!existsClient(cpf))
                 {
                     error_operation = "Usuario não Existe no Banco de Dados";
                     return false;
                 }
 
-                User user = new User();
-                user = selectUser(cpf);
+                Client user = new Client();
+                user = selectClient(cpf);
                 if (user == null)
                 {
                     error_operation = "Usuario não Localizado no Banco de Dados";
@@ -203,7 +203,7 @@ namespace SchoolProject.Models.Database.DAO
 
                 using (Database database = new Database())
                 {
-                    command = String.Format("DELETE FROM {0} WHERE {1}='{2}'", TABLE_USER,
+                    command = String.Format("DELETE FROM {0} WHERE {1}='{2}'", TABLE_CLIENT,
                         CPF, cpf);
 
                     if (database.runCommand(command) == 0)
@@ -223,14 +223,14 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Atualiza (Com dados Normalizados) um Usuario caso Exista
-        public bool updateUser(User user)
+        public bool updateClient(Client user)
         {
             if (user == null)
             {
                 error_operation = "Usuario não Informado";
                 return false;
             }
-            else if (!existsUser(user.Cpf))
+            else if (!existsClient(user.Cpf))
             {
                 error_operation = "Usuario não Cadastrado no Sistema";
                 return false;
@@ -245,8 +245,8 @@ namespace SchoolProject.Models.Database.DAO
             {
 
                 // Obtem a Cidade/Estado/Endereço antes de Atualizar
-                User oldUser = new User();
-                oldUser = selectUser(user.Cpf);
+                Client oldUser = new Client();
+                oldUser = selectClient(user.Cpf);
 
                 StateCityDAO stateCityDAO = new StateCityDAO();
                 int code_state_city = NOT_FOUND;
@@ -352,7 +352,7 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
                     command = String.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
-                        "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_USER,
+                        "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT,
                         NAME, user.Name, STATE_CITY, code_state_city, ADDRESS, code_address, 
                         NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
 
@@ -373,7 +373,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Retorna um User se o usuario existir e obter seus Dados
-        public User selectUser(string cpf)
+        public Client selectClient(string cpf)
         {
             if (cpf == null || cpf.Length != 11)
             {
@@ -383,7 +383,7 @@ namespace SchoolProject.Models.Database.DAO
 
             try
             {
-                if (!existsUser(cpf))
+                if (!existsClient(cpf))
                 {
                     error_operation = "Usuario não Cadastrado no Sistema";
                     return null;
@@ -394,7 +394,7 @@ namespace SchoolProject.Models.Database.DAO
                 {
 
                     command = String.Format("SELECT * FROM {0} WHERE {1}='{2}'",
-                        TABLE_USER, CPF, cpf);
+                        TABLE_CLIENT, CPF, cpf);
 
                     reader = database.readerTable(command);
 
@@ -406,7 +406,7 @@ namespace SchoolProject.Models.Database.DAO
 
                     if (reader.HasRows)
                     {
-                        User user = new User();
+                        Client user = new Client();
 
                         int code_state_city = 0, code_address = 0;
 

@@ -1,33 +1,19 @@
-﻿@model SchoolProject.Models.User
+﻿@model SchoolProject.Models.Client
 
 @{
-    ViewBag.Title = "Acesso do Usuario";
-}
+    ViewBag.Title = "Acesso do Cliente";
 
-<h2>@ViewBag.Title</h2>
-<hr />
-
-@{
-    if (ViewBag.Message != null)
-    {
-        <div class="alert alert-danger" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4>@ViewBag.Message</h4>
-            <p>@Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro</p>
-            <p>@ViewBag.Erro</p>
-        </div>
-    }
+    <h2>@ViewBag.Title</h2>
+    <hr />
 
     if (Model == null)
     {
         <h4>Insira os Dados para Buscar o Usuario</h4>
         <br />
 
-        using (Html.BeginForm())
+        using (Html.BeginForm("Login","Client",FormMethod.Post))
         {
-            @Html.AntiForgeryToken()
+            Html.AntiForgeryToken();
 
             <div class="form-horizontal">
 
@@ -59,17 +45,19 @@
 
         <h4 style="margin-top:30px">Como Podemos ajudar ?</h4>
         <ul>
-            <li>@Html.ActionLink("Detalhes do Usuario", "Detalhes", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
-            <li>@Html.ActionLink("Atualizar Usuario", "Atualizar", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
-            <li>@Html.ActionLink("Excluir Usuario", "Excluir", "User", new { Cpf = Model.Cpf }, new { @class = "" })</li>
+            <li>@Html.ActionLink("Detalhes do Usuario", "Detalhes", "Client", new { Cpf = Model.Cpf }, new { @class = "" })</li>
+            <li>@Html.ActionLink("Atualizar Usuario", "Atualizar", "Client", new { Cpf = Model.Cpf }, new { @class = "" })</li>
+            <li>@Html.ActionLink("Excluir Usuario", "Excluir", "Client", new { Cpf = Model.Cpf }, new { @class = "" })</li>
         </ul>
 
         <br />
 
-        @Html.ActionLink("Sair", "Login", "User", new { }, new { @class = "badge badge-warning" })
-
+        Html.ActionLink("Sair", "Index", "Client", new { }, new { @class = "badge badge-warning" });
     }
+
+    Html.ActionLink("Voltar ao Incio", "Index", "Home", new { }, new { @class = "badge badge-warning" });
 }
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

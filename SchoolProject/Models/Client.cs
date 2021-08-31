@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SchoolProject.Models
 {
-    public class User
+    public class Client
     {
 
         private string name;
@@ -14,7 +14,12 @@ namespace SchoolProject.Models
         private int numero;
         private string complemento;
 
-        public User() { }
+        public Client() { }
+
+        public bool validationCPF(string cpf)
+        {
+            return cpf != null && cpf.Length == 11;
+        }
 
         [DisplayName("Nome")]
         [RegularExpression(@"^[A-Za-zà-úÀ-Ú\s]*", ErrorMessage = "O Nome deve ter apenas Letras")]

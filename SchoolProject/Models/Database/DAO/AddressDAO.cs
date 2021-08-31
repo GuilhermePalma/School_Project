@@ -376,7 +376,7 @@ namespace SchoolProject.Models.Database.DAO
                 using (Database database = new Database())
                 {
                     command = String.Format("SELECT COUNT({0}) FROM {0} WHERE {1}={2}",
-                    UserDAO.ADDRESS, UserDAO.TABLE_USER, UserDAO.TABLE_USER, address.Code_address);
+                    ClientDAO.ADDRESS, ClientDAO.TABLE_CLIENT, ClientDAO.TABLE_CLIENT, address.Code_address);
 
                     reader = database.readerTable(command);
 
@@ -388,7 +388,7 @@ namespace SchoolProject.Models.Database.DAO
 
                     if (reader.HasRows)
                     {
-                        String formated_count = String.Format("COUNT({0})", UserDAO.ADDRESS);
+                        String formated_count = String.Format("COUNT({0})", ClientDAO.ADDRESS);
                         int quantity_register = NOT_FOUND;
 
                         while (reader.Read())

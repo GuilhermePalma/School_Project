@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "Operação";
+
+    <br />
+
+    if (ViewBag.Erro != null)
+    {
+        // Caso houve algum erro
+        <div class="alert alert-danger" role="alert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <h4>@ViewBag.Message</h4>
+
+            <p>
+                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
+                @Html.ActionLink("Clique Aqui", "Index", "Client") para Consultar o Login
+            </p>
+
+            <p><i>@ViewBag.Erro</i></p>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success" role="alert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <h4>@ViewBag.Message</h4>
+        </div>
+    }
+
+    <p>@Html.ActionLink("Voltar ao Inicio", "Index", "Home") |
+        @Html.ActionLink("Realizar Login", "Index", "Client")
+    </p>
+}

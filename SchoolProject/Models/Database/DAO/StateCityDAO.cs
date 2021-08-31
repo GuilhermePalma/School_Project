@@ -379,7 +379,7 @@ namespace SchoolProject.Models.Database.DAO
                 {
                     // Obtem a Quantiade de vezes que o codigo é usado
                     command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}={2}",
-                   UserDAO.STATE_CITY, UserDAO.TABLE_USER, stateCity.Code_statecity);
+                   ClientDAO.STATE_CITY, ClientDAO.TABLE_CLIENT, stateCity.Code_statecity);
 
                     reader = database.readerTable(command);
 
@@ -391,7 +391,7 @@ namespace SchoolProject.Models.Database.DAO
 
                     if (reader.HasRows)
                     {
-                        String formated_count = String.Format("COUNT({0})", UserDAO.STATE_CITY);
+                        String formated_count = String.Format("COUNT({0})", ClientDAO.STATE_CITY);
                         int quantity_register = NOT_FOUND;
 
                         while (reader.Read())

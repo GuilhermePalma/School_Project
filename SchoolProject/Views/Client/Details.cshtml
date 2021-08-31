@@ -1,34 +1,33 @@
-﻿@model SchoolProject.Models.User
+﻿@model SchoolProject.Models.Client
 
 @{
-    ViewBag.Title = "Excluir Usuario";
-}
+    ViewBag.Title = "Detalhes do Cliente";
 
-<h2>@ViewBag.Title: @Model.Name</h2>
-<hr />
-
-@{
-    if (Model == null || Model.Cpf.Length != 11 || ViewBag.Message != null)
+    if (Model == null || Model.Cpf.Length != 11)
     {
         <div class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <h4>@ViewBag.Message</h4>
+            <h4>Não é Possivel Acessar essa Pagina</h4>
             <p>
-                @Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro ou
-                @Html.ActionLink("Clique Aqui", "Login", "User") para Consultar o Login
+                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
+                 @Html.ActionLink("Clique Aqui", "Index", "Client") para Realizar o Login
             </p>
-            <p><i>@ViewBag.Erro</i></p>
+            <p>
+                Recomendamos que Faça a navegação pelo Site usando as opções 
+                 disponibilizadas após realizar o @Html.ActionLink("Login", "Index", "Client")
+            </p>
+            <p><i>Parametros Invalidos</i></p>
         </div>
     }
     else
     {
-        <h3>Você tem certeza que deseja Excluir ?</h3>
-        <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
+        <h2>@ViewBag.Title</h2>
+        <hr />
 
+        <div>
             <dl class="dl-horizontal">
-
                 <dt>
                     @Html.DisplayNameFor(model => model.Name)
                 </dt>
@@ -77,33 +76,33 @@
                     @Html.DisplayFor(model => model.Numero)
                 </dd>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.Complemento)
-                </dt>
+                @if (Model.Complemento != null)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Complemento)
+                    </dt>
 
-                <dd>
-                    @Html.DisplayFor(model => model.Complemento)
-                </dd>
+                    <dd>
+                        @Html.DisplayFor(model => model.Complemento)
+                    </dd>
+                }                
 
             </dl>
+        </div>
 
-            
-            using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
-                <div class="col-md-offset-1">
-                    <input type="submit" value="Excluir" class="btn btn-default" />
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-offset-1 col-md-10">
+                    @Html.ActionLink("Editar Usuario", "Atualizar", new { cpf = Model.Cpf }, new { @class = "btn btn-default" })
                 </div>
-            }
+            </div>
+        </div>
 
-        <br />
-
-        using (Html.BeginForm("Login", "User", new { Cpf = Model.Cpf }, FormMethod.Post))
+        using (Html.BeginForm("Login", "Client", new { Cpf = Model.Cpf }, FormMethod.Post))
         {
             <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
         }
     }
-
 }
 
 @section Scripts {

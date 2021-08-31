@@ -1,46 +1,29 @@
-﻿@model SchoolProject.Models.User
-
-@{ 
-    ViewBag.Title = "Atualizar Usuario";
-}
-
-<h2>@ViewBag.Title</h2>
-<hr />
-
+﻿@model SchoolProject.Models.Client
 
 @{
-    if (Model == null || Model.Cpf.Length != 11|| ViewBag.Message != null)
+    ViewBag.Title = "Cadastro do Cliente";
+
+    <h2>@ViewBag.Title</h2>
+    <hr />
+
+    if (ViewBag.Message != null)
     {
         <div class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
             <h4>@ViewBag.Message</h4>
-            <p>@Html.ActionLink("Clique Aqui", "Cadastro", "User") para Realizar o Cadastro ou
-                    @Html.ActionLink("Clique Aqui", "Login", "User") para Consultar o Login</p>
-            <p><i>@ViewBag.Erro</i></p>
+            <p>@Html.ActionLink("Clique Aqui", "Index", "Client") para Realizar o Login</p>
         </div>
     }
-    else
+
+    using (Html.BeginForm("Cadastro", "Client", FormMethod.Post))
     {
-        using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
+        Html.AntiForgeryToken();
 
         <div class="form-horizontal">
 
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayNameFor(model => model.Cpf)
-                </dt>
-
-                <dd>
-                    @Html.DisplayFor(model => model.Cpf)
-                </dd>
-            </dl>
-
             <div class="form-group">
                 @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
@@ -49,11 +32,19 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                @Html.LabelFor(model => model.Cpf, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Cpf, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Cpf, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
             <div class="form-group" style="margin-top:35px">
                 @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.DropDownListFor(model => model.Estado, ViewBag.Estados as IEnumerable<SelectListItem>,
-                       htmlAttributes: new { @required = "required", @class = "form-control" })
+                    htmlAttributes: new { @required = "required", @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -66,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-top:35px">
                 @Html.LabelFor(model => model.Logradouro, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.Logradouro, new { htmlAttributes = new { @class = "form-control" } })
@@ -74,7 +65,7 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-top:35px">
+            <div class="form-group">
                 @Html.LabelFor(model => model.Numero, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.Numero, new { htmlAttributes = new { @class = "form-control" } })
@@ -90,23 +81,16 @@
                 </div>
             </div>
 
-            <div class="form-group">
+
+            <div class="form-group" style="margin-top:30px">
                 <div class="col-md-offset-2 col-md-10">
                     <button type="reset" class="btn btn-default">Limpar</button>
-                    <button type="submit" value="Atualizar" class="btn btn-default" style="margin-left:10px">Atualizar</button>
+                    <button type="submit" value="Create" class="btn btn-default" style="margin-left:10px">Cadatrar</button>
                 </div>
             </div>
-
         </div>
-
-        }
-
-        using (Html.BeginForm("Login", "User", new { Cpf = Model.Cpf }, FormMethod.Post))
-        {
-            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
-        }
-
     }
+        Html.ActionLink("Voltar ao Incio", "Index", "Home", new { }, new { @class = "badge badge-warning" });
 }
 
 @section Scripts {

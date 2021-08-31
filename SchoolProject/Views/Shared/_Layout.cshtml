@@ -2,14 +2,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" lang="pt-br" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - School Project</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
 
+    <!--Menu Superior-->
     <nav class="navbar navbar-inverse bg-dark navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -25,13 +26,13 @@
                     <li>@Html.ActionLink("Início", "Index", "Home")</li>
                     <li class="nav-item dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            Usuario <span class="caret"></span>
+                            Cliente <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Login", "Login", "User", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Cadastro", "Cadastro", "User", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Login", "Index", "Client", new { }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Cadastro", "Cadastro", "Client", new { area = "" }, new { @class = "dropdown-item" })</li>
                             <li role="separator" class="divider"></li>
-                            <li>@Html.ActionLink("Listar Usuarios", "ListUsers", "User", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Listar Clientes", "ListUsers", "Client", new { area = "" }, new { @class = "dropdown-item" })</li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -49,6 +50,7 @@
     </nav>
 
     <div class="container body-content">
+        <!--Renderiza o Body das Actions-->
         @RenderBody()
         <hr />
         <footer>

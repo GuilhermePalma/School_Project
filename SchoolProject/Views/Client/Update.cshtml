@@ -1,0 +1,117 @@
+﻿@model SchoolProject.Models.Client
+
+@{ 
+    ViewBag.Title = "Atualizar Usuario";
+
+    if (Model == null || Model.Cpf.Length != 11)
+    {
+        
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>Não é Possivel Acessar essa Pagina</h4>
+            <p>
+                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
+                 @Html.ActionLink("Clique Aqui", "Index", "Client") para Realizar o Login
+            </p>
+            <p>
+                Recomendamos que Faça a navegação pelo Site usando as opções 
+                 disponibilizadas após realizar o @Html.ActionLink("Login", "Index", "Client")
+            </p>
+            <p><i>Parametros Invalidos</i></p>
+        </div>
+    }
+    else
+    {
+        <h2>@ViewBag.Title</h2>
+        <hr />
+
+        using (Html.BeginForm())
+        {
+            Html.AntiForgeryToken();
+
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Cpf)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Cpf)
+                    </dd>
+                </dl>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:35px">
+                    @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.Estado, ViewBag.Estados as IEnumerable<SelectListItem>,
+                           htmlAttributes: new { @required = "required", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Cidade, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Cidade, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Cidade, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Logradouro, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Logradouro, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Logradouro, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:35px">
+                    @Html.LabelFor(model => model.Numero, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Numero, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Numero, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Complemento, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Complemento, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Complemento, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="reset" class="btn btn-default">Limpar</button>
+                        <button type="submit" value="Atualizar" class="btn btn-default" style="margin-left:10px">Atualizar</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+        using (Html.BeginForm("Login", "Client", new { Cpf = Model.Cpf }, FormMethod.Post))
+        {
+            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+        }
+
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
