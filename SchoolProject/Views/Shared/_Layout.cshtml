@@ -9,8 +9,6 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-
-    <!--Menu Superior-->
     <nav class="navbar navbar-inverse bg-dark navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -21,7 +19,7 @@
                 </button>
                 @Html.ActionLink("School Project", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
-            <div class="navbar-collapse collapse "  id="navbarSupportedContent">
+            <div class="navbar-collapse collapse " id="navbarSupportedContent">
                 <ul class="nav navbar-nav mr-auto">
                     <li>@Html.ActionLink("Início", "Index", "Home")</li>
                     <li class="nav-item dropdown">
@@ -49,12 +47,18 @@
         </div>
     </nav>
 
-    <div class="container body-content">
+    <div class="container body-content" id="content_body">
         <!--Renderiza o Body das Actions-->
         @RenderBody()
-        <hr />
         <footer>
-            <p class="text-center">&copy; <a title="GitHub" href="https://github.com/guilhermepalma">Guilherme Peres Lins da Palma</a>, @DateTime.Now.Year - School Project ASP.NET Framework</p>
+            <hr />
+            <p class="pull-right"><a href="#content_body">Ir para Cima</a></p>
+            <p>
+                &copy; <a title="Perfil GitHub" href="https://github.com/guilhermepalma">Guilherme Peres Lins da Palma</a>, @DateTime.Now.Year
+                · <a title="GitHub" href="https://github.com/guilhermepalma/School_Project">
+                    <img alt="Repositorio GitHub" src="https://img.shields.io/badge/-School%20Project-333333?&style=flat-square&logo=github" />
+                </a>
+            </p>
         </footer>
     </div>
 
