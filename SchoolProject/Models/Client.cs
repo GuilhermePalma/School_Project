@@ -5,7 +5,6 @@ namespace SchoolProject.Models
 {
     public class Client
     {
-
         private string name;
         private string cpf;
         private string logradouro;
@@ -16,9 +15,9 @@ namespace SchoolProject.Models
 
         public Client() { }
 
-        public bool validationCPF(string cpf)
+        public static bool ValidationCPF(string cpf)
         {
-            return cpf != null && cpf.Length == 11;
+            return !string.IsNullOrEmpty(cpf) && cpf.Length == 11;
         }
 
         [DisplayName("Nome")]

@@ -1,16 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 
 namespace SchoolProject.Models.Database.DAO
 {
     public class ClientDAO
     {
-
-        private MySqlDataReader reader;
-        private string command;
-        public string error_operation = "";
-
         public const string TABLE_CLIENT = "client";
         public const string CPF = "cpf";
         public const string NAME = "name";
@@ -19,456 +13,516 @@ namespace SchoolProject.Models.Database.DAO
         public const string NUMBER = "residential_number";
         public const string COMPLEMENT = "complement";
 
+        private MySqlDataReader reader;
         private const int ERROR = -1;
         private const int NOT_FOUND = 0;
 
+        public string Error_operation { get; set; }
+
         // Verifica se um Usuario existe no Banco de Dados
-        public bool existsClient(string cpf_user)
+        public bool ExistsClient(string cpf_user)
         {
-            if (cpf_user == null || cpf_user.Length != 11)
+            if (string.IsNullOrEmpty(cpf_user) || cpf_user.Length != 11)
             {
-                error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
+                Error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
                 return false;
             }
 
+            string count_formatted, command;
             try
             {
-                using (Database database = new Database())
+                count_formatted = string.Format("COUNT({0})", CPF);
+                command = string.Format("SELECT {0} FROM {1} WHERE {2}='{3}'",
+                        count_formatted, TABLE_CLIENT, CPF, cpf_user);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
                 {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
 
-                    command = String.Format("SELECT COUNT({0}) FROM {1} WHERE {0}='{2}'",
-                        CPF,TABLE_CLIENT, cpf_user);
+                reader = database.ReaderTable(command);
+                if (reader == null)
+                {
+                    Error_operation = "Não foi possivel consultar a Tabela";
+                    return false;
+                }
 
-                    reader = database.readerTable(command);
+                try
+                {
+                    int quantity = NOT_FOUND;
+                    reader.Read();
+                    quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
 
-                    if (reader == null)
+                    if (quantity > 1)
                     {
-                        error_operation = "Não foi possivel consultar a Tabela";
+                        Error_operation = "Houve um erro no Banco de Dados. " +
+                            "Mais de 1 Registro Encontrado";
                         return false;
                     }
-
-                    if (reader.HasRows)
+                    else if (quantity == 1)
                     {
-                        string count_formatted = String.Format("COUNT({0})", CPF);
-                        int quantity = NOT_FOUND;
-
-                        while (reader.Read())
-                        {
-                            quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
-                        }
-
-                        return quantity == 1 ? true : false;
+                        return true;
                     }
                     else
                     {
-                        error_operation = "Dados não Encontrados no Banco de Dados";
+                        Error_operation = "Registro não Encontrado no Banco de Dados";
                         return false;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                error_operation = "Não foi Possivel verificar no Banco de dados. Exceção:" + ex;
-                System.Diagnostics.Debug.WriteLine(error_operation);
-                return false;
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
+                catch (Exception ex)
+                {
+                    Error_operation = "Não foi possivel obter o Verificar o Cliente.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
             }
         }
 
         // Insere um Usuario (Com dados Normalizados) se for Validado e não Existir
-        public bool insertClient(Client user)
+        public bool InsertClient(Client user)
         {
+
             if (user == null)
             {
-                error_operation = "Usuario não Informado";
+                Error_operation = "Usuario não Informado";
                 return false;
             }
-            else if (existsClient(user.Cpf))
+            else if (ExistsClient(user.Cpf))
             {
-                error_operation = "Usuario já Cadastrado no Sistema";
+                Error_operation = "Usuario já Cadastrado no Sistema";
                 return false;
             }
 
-            if (user.Complemento == "")
-            {
-                user.Complemento = "";
-            }
+            // Intancia das Classes de Endereço
+            StateCity stateCity = new StateCity();
+            stateCity.Estado = user.Estado;
+            stateCity.Cidade = user.Cidade;
 
+            Address address = new Address();
+            address.Logradouro = user.Logradouro;
+
+            // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
+            int code_state_city = new StateCityDAO().codeStateCityValid(stateCity);
+            int code_address = new AddressDAO().CodeAddressValid(address);
+
+            if (code_state_city == ERROR || code_state_city == NOT_FOUND) return false;
+            if (code_address == ERROR || code_address == NOT_FOUND) return false;
+
+            string command;
             try
             {
-                // Intancia das Classes de Endereço
-                StateCity stateCity = new StateCity()
+                command = string.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) " +
+                    "VALUE('{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_CLIENT, CPF,
+                    NAME, STATE_CITY, ADDRESS, NUMBER, COMPLEMENT, user.Cpf, user.Name,
+                    code_state_city, code_address, user.Numero, user.Complemento);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
                 {
-                    Estado = user.Estado,
-                    Cidade = user.Cidade
-                };
-                Address address = new Address()
-                {
-                    Logradouro = user.Logradouro
-                };
-
-                // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
-                int code_state_city = new StateCityDAO().codeStateCityValid(stateCity);
-                int code_address = new AddressDAO().codeAddressValid(address);
-
-                if (code_state_city == ERROR || code_state_city == NOT_FOUND) return false;
-                if (code_address == ERROR || code_address == NOT_FOUND) return false;
-
-                using (Database database = new Database())
-                {
-
-                    command = String.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) VALUE(" +
-                        "'{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_CLIENT, CPF, NAME, STATE_CITY,
-                        ADDRESS, NUMBER, COMPLEMENT, user.Cpf, user.Name, code_state_city,
-                        code_address, user.Numero, user.Complemento);
-
-                    // Erro na Inserção do Banco de DAdos
-                    if (database.runCommand(command) == 0)
-                    {
-                        error_operation = "Não foi Possivel Cadastrar no Banco de Dados";
-                        return false;
-                    }
-                    else return true;
+                    Error_operation = database.Error_operation;
+                    return false;
                 }
 
-            }
-            catch (Exception ex)
-            {
-                error_operation = "Não foi Cadastrar o Usuario no Banco de dados. Exceção:" + ex;
-                System.Diagnostics.Debug.WriteLine(error_operation);
-                return false;
+                // Erro na Inserção do Banco de DAdos
+                if (database.ExecuteCommand(command) <= 0)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+                else return true;
             }
         }
 
         // Exlcui o Usuario e se Existir
-        public bool deleteClient(string cpf)
+        public bool DeleteClient(string cpf)
         {
-            try
+            Client user = new Client();
+            user = SelectClient(cpf);
+            if (user == null)
             {
-                if (!existsClient(cpf))
+                Error_operation = "Usuario não Localizado no Banco de Dados";
+                return false;
+            }
+
+            AddressDAO addressDAO = new AddressDAO();
+            Address address = new Address();
+            address.Logradouro = user.Logradouro;
+
+            // Verificar se o Usuario é o unico usando aquele endereço 
+            if (addressDAO.IsOnlyAddress(address))
+            {
+                // É o unico com aquele Endereço ---> Exclui o Endereço
+                bool is_deleted_address = addressDAO.
+                    DeleteAddress(addressDAO.ReturnCodeAddress(address));
+
+                if (!is_deleted_address)
                 {
-                    error_operation = "Usuario não Existe no Banco de Dados";
+                    Error_operation = "Não foi Possivel excluir o Endereço " +
+                        "do Banco de Dados. ";
                     return false;
-                }
-
-                Client user = new Client();
-                user = selectClient(cpf);
-                if (user == null)
-                {
-                    error_operation = "Usuario não Localizado no Banco de Dados";
-                    return false;
-                }
-
-                AddressDAO addressDAO = new AddressDAO();
-                Address address = new Address();
-                address.Logradouro = user.Logradouro;
-
-                // Verificar se o Usuario é o unico usando aquele endereço 
-                if (addressDAO.isOnlyAddress(address))
-                {
-                    // É o unico com aquele Endereço ---> Exclui o Endereço
-                    bool is_deleted_address = addressDAO.
-                        deleteAddress(addressDAO.returnCodeAddress(address));
-
-                    if (!is_deleted_address)
-                    {
-                        error_operation = "Não foi Possivel excluir o Endereço " +
-                            "do Banco de Dados. ";
-                        return false;
-                    }
-                }
-
-                StateCityDAO stateCityDAO = new StateCityDAO();
-                StateCity stateCity = new StateCity();
-                stateCity.Estado = user.Estado;
-                stateCity.Cidade = user.Cidade;
-
-                // Verificar se o Usuario é o unico usando aquele endereço 
-                if (stateCityDAO.isOnlyStateCity(stateCity))
-                {
-                    // É o unico com aquela Cidade e Estado ---> Exclui ambos do banco de dados
-                    bool is_deleted_stateCity = stateCityDAO.
-                        deleteStateCity(stateCityDAO.returnCodeStateCity(stateCity));
-
-                    if (!is_deleted_stateCity)
-                    {
-                        error_operation = "Não foi Possivel excluir o Estado e Ciade" +
-                            " do Banco de Dados. ";
-                        return false;
-                    }
-                }
-
-                using (Database database = new Database())
-                {
-                    command = String.Format("DELETE FROM {0} WHERE {1}='{2}'", TABLE_CLIENT,
-                        CPF, cpf);
-
-                    if (database.runCommand(command) == 0)
-                    {
-                        error_operation = "Não foi Possivel Excluir do Banco de Dados";
-                        return false;
-                    }
-                    else return true;
                 }
             }
-            catch (Exception ex)
+
+            StateCityDAO stateCityDAO = new StateCityDAO();
+            StateCity stateCity = new StateCity();
+            stateCity.Estado = user.Estado;
+            stateCity.Cidade = user.Cidade;
+
+            // Verificar se o Usuario é o unico usando aquele endereço 
+            if (stateCityDAO.isOnlyStateCity(stateCity))
             {
-                error_operation = "Não foi possivel Excluir do Usuario no Banco de dados. Exceção:" + ex;
-                System.Diagnostics.Debug.WriteLine(error_operation);
+                // É o unico com aquela Cidade e Estado ---> Exclui ambos do banco de dados
+                bool is_deleted_stateCity = stateCityDAO.
+                    deleteStateCity(stateCityDAO.returnCodeStateCity(stateCity));
+
+                if (!is_deleted_stateCity)
+                {
+                    Error_operation = "Não foi Possivel excluir o Estado e Ciade" +
+                        " do Banco de Dados. ";
+                    return false;
+                }
+            }
+
+            string command;
+            try
+            {
+                command = string.Format("DELETE FROM {0} WHERE {1}='{2}'",
+                    TABLE_CLIENT, CPF, cpf);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
                 return false;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+
+                if (database.ExecuteCommand(command) <= 0)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+                else return true;
             }
         }
 
         // Atualiza (Com dados Normalizados) um Usuario caso Exista
-        public bool updateClient(Client user)
+        public bool UpdateClient(Client user)
         {
             if (user == null)
             {
-                error_operation = "Usuario não Informado";
+                Error_operation = "Usuario não Informado";
                 return false;
             }
-            else if (!existsClient(user.Cpf))
+            else if (!ExistsClient(user.Cpf))
             {
-                error_operation = "Usuario não Cadastrado no Sistema";
+                Error_operation = "Usuario não Cadastrado no Sistema";
                 return false;
             }
 
-            if (user.Complemento == "")
+            // Obtem a Cidade/Estado/Endereço antes de Atualizar
+            Client oldUser = new Client();
+            oldUser = SelectClient(user.Cpf);
+
+            StateCityDAO stateCityDAO = new StateCityDAO();
+            int code_state_city = NOT_FOUND;
+
+            // Usado para obter o Antigo Codigo do Estado/Cidade
+            StateCity oldStateCity = new StateCity();
+            oldStateCity.Estado = oldUser.Estado;
+            oldStateCity.Cidade = oldUser.Cidade;
+
+            StateCity newStateCity = new StateCity();
+            newStateCity.Estado = user.Estado;
+            newStateCity.Cidade = user.Cidade;
+
+            code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
+
+            if (code_state_city == NOT_FOUND)
             {
-                user.Complemento = null;
-            }
-
-            try
-            {
-
-                // Obtem a Cidade/Estado/Endereço antes de Atualizar
-                Client oldUser = new Client();
-                oldUser = selectClient(user.Cpf);
-
-                StateCityDAO stateCityDAO = new StateCityDAO();
-                int code_state_city = NOT_FOUND;
-
-                // Usado para obter o Antigo Codigo do Estado/Cidade
-                StateCity oldStateCity = new StateCity();
-                oldStateCity.Estado = oldUser.Estado;
-                oldStateCity.Cidade = oldUser.Cidade;
-
-                StateCity newStateCity = new StateCity();
-                newStateCity.Estado = user.Estado;
-                newStateCity.Cidade = user.Cidade;
-
-                code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
-
-                if(code_state_city == NOT_FOUND)
+                // Verifica se o Usuario é o Unico com aquele Estado/Cidade
+                if (stateCityDAO.isOnlyStateCity(oldStateCity))
                 {
-                    // Verifica se o Usuario é o Unico com aquele Estado/Cidade
-                    if (stateCityDAO.isOnlyStateCity(oldStateCity))
+                    // Obtem o codigo da Antiga Cidade/Estado e Atualiza os Valores
+                    code_state_city = stateCityDAO.returnCodeStateCity(oldStateCity);
+                    if (!stateCityDAO.updateStateCity(code_state_city, newStateCity))
                     {
-                        // Obtem o codigo da Antiga Cidade/Estado e Atualiza os Valores
-                        code_state_city = stateCityDAO.returnCodeStateCity(oldStateCity);
-                        if (!stateCityDAO.updateStateCity(code_state_city, newStateCity))
-                        {
-                            error_operation = "Não foi Possivel Atualizar o Estado e Cidade";
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        // Usuario não é o Unico com Cidade/Estado Antigo e o Endereço não existe no BD
-                        if (stateCityDAO.insertStateCity(newStateCity))
-                        {
-                            // Conseguiu Inserir a Cidade/Estado no Banco ---> Retorna o Codigo
-                            code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
-                        }
-                        else
-                        {
-                            error_operation = "Não foi Possivel Cadastrar o novo Estado e Cidade";
-                            return false;
-                        }
-                    }
-                }
-
-                // Erro ao obter o Codigo do Estado/Cidade ou ao Inserir o novo no Banco de Dados  
-                if (code_state_city == ERROR)
-                {
-                    error_operation = "Houve um erro na Atualização do Estado e Cidade";
-                    return false;
-                }
-
-                AddressDAO addressDAO = new AddressDAO();
-                int code_address = NOT_FOUND;
-
-                // Usado para obter o antigo Codigo do Endereço
-                Address oldAddress = new Address();
-                oldAddress.Logradouro = oldUser.Logradouro;
-
-                Address newAdrress = new Address();
-                newAdrress.Logradouro = user.Logradouro;
-
-                // Obtem o Codigo do novo Endereço (Codigo ou NOT_FOUND ou ERROR)
-                code_address = addressDAO.returnCodeAddress(newAdrress);
-
-                // Verifica se o Novo endereço já existe
-                if (code_address == NOT_FOUND)
-                {
-                    // Verifica se o Usuario é o Unico com aquele Endereço Antigo
-                    if (addressDAO.isOnlyAddress(oldAddress))
-                    {
-                        // Obtem o Codigo dos Antigos valores do Endereço e Atualiza
-                        code_address = addressDAO.returnCodeAddress(oldAddress);
-                        if (!addressDAO.updateAddress(code_address, newAdrress))
-                        {
-                            error_operation = "Não foi Possivel Atualizar o Logradouro";
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        // Usuario não é o unico com endereço antigo e o Endereço não existe no Banco de Dados
-                        if (addressDAO.insertAddress(newAdrress))
-                        {
-                            // Conseguiu inserir no banco de dados ---> Obtem o Codigo
-                            code_address = addressDAO.returnCodeAddress(newAdrress);
-                        }
-                        else
-                        {
-                            error_operation = "Não foi Possivel Cadastrar o novo Logradouro";
-                            return false;
-                        }
-                    }
-                }
-
-                // Erro ao obter o Codigo do Endereço ou ao Inserir o novo no banco
-                if (code_address == ERROR)
-                {
-                    error_operation = "Houve um erro na Atualização do Logradouro";
-                    return false;
-                }
-
-                // Codigos ja obtidos (Inseridos ou Atualizados ou Obtidos) --> Atualiza o Usuario
-                using (Database database = new Database())
-                {
-                    command = String.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
-                        "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT,
-                        NAME, user.Name, STATE_CITY, code_state_city, ADDRESS, code_address, 
-                        NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
-
-                    if (database.runCommand(command) == 0)
-                    {
-                        error_operation = "Não foi Possivel Atualizar no Banco de Dados";
+                        Error_operation = "Não foi Possivel Atualizar o Estado e Cidade";
                         return false;
                     }
-                    else return true;
+                }
+                else
+                {
+                    // Usuario não é o Unico com Cidade/Estado Antigo e o Endereço não existe no BD
+                    if (stateCityDAO.insertStateCity(newStateCity))
+                    {
+                        // Conseguiu Inserir a Cidade/Estado no Banco ---> Retorna o Codigo
+                        code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
+                    }
+                    else
+                    {
+                        Error_operation = "Não foi Possivel Cadastrar o novo Estado e Cidade";
+                        return false;
+                    }
                 }
             }
-            catch (Exception ex)
+
+            // Erro ao obter o Codigo do Estado/Cidade ou ao Inserir o novo no Banco de Dados  
+            if (code_state_city == ERROR)
             {
-                error_operation = "Não foi possivel Alterar o Usuario no Banco de dados. Exceção:" + ex;
-                System.Diagnostics.Debug.WriteLine(error_operation);
+                Error_operation = "Houve um erro na Atualização do Estado e Cidade";
                 return false;
             }
+
+            AddressDAO addressDAO = new AddressDAO();
+            int code_address = NOT_FOUND;
+
+            // Usado para obter o antigo Codigo do Endereço
+            Address oldAddress = new Address();
+            oldAddress.Logradouro = oldUser.Logradouro;
+
+            Address newAdrress = new Address();
+            newAdrress.Logradouro = user.Logradouro;
+
+            // Obtem o Codigo do novo Endereço (Codigo ou NOT_FOUND ou ERROR)
+            code_address = addressDAO.ReturnCodeAddress(newAdrress);
+
+            // Verifica se o Novo endereço já existe
+            if (code_address == NOT_FOUND)
+            {
+                // Verifica se o Usuario é o Unico com aquele Endereço Antigo
+                if (addressDAO.IsOnlyAddress(oldAddress))
+                {
+                    // Obtem o Codigo dos Antigos valores do Endereço e Atualiza
+                    code_address = addressDAO.ReturnCodeAddress(oldAddress);
+                    if (!addressDAO.UpdateAddress(code_address, newAdrress))
+                    {
+                        Error_operation = "Não foi Possivel Atualizar o Logradouro";
+                        return false;
+                    }
+                }
+                else
+                {
+                    // Usuario não é o unico com endereço antigo e o Endereço não existe no Banco de Dados
+                    if (addressDAO.InsertAddress(newAdrress))
+                    {
+                        // Conseguiu inserir no banco de dados ---> Obtem o Codigo
+                        code_address = addressDAO.ReturnCodeAddress(newAdrress);
+                    }
+                    else
+                    {
+                        Error_operation = "Não foi Possivel Cadastrar o novo Logradouro";
+                        return false;
+                    }
+                }
+            }
+
+            // Erro ao obter o Codigo do Endereço ou ao Inserir o novo no banco
+            if (code_address == ERROR)
+            {
+                Error_operation = "Houve um erro na Atualização do Logradouro";
+                return false;
+            }
+
+            string command;
+            try
+            {
+                command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
+                    "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT,
+                    NAME, user.Name, STATE_CITY, code_state_city, ADDRESS, code_address,
+                    NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+
+            // Codigos ja obtidos (Inseridos ou Atualizados ou Obtidos) --> Atualiza o Usuario
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+
+                if (database.ExecuteCommand(command) <= 0)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+                else return true;
+            }
+
         }
 
         // Retorna um User se o usuario existir e obter seus Dados
-        public Client selectClient(string cpf)
+        public Client SelectClient(string cpf)
         {
             if (cpf == null || cpf.Length != 11)
             {
-                error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
+                Error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
+                return null;
+            }
+            else if (!ExistsClient(cpf))
+            {
+                Error_operation = "Usuario não Cadastrado no Sistema";
                 return null;
             }
 
+            string command;
             try
             {
-                if (!existsClient(cpf))
+                command = string.Format("SELECT * FROM {0} WHERE {1}='{2}'",
+                    TABLE_CLIENT, CPF, cpf);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+
+            int code_state_city = 0, code_address = 0;
+            Client userDatabase = new Client();
+            // Usuario existe no Banco de Dados
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
                 {
-                    error_operation = "Usuario não Cadastrado no Sistema";
+                    Error_operation = database.Error_operation;
                     return null;
                 }
 
-                // Usuario existe no Banco de Dados
-                using (Database database = new Database())
+                reader = database.ReaderTable(command);
+                if (reader == null)
                 {
-
-                    command = String.Format("SELECT * FROM {0} WHERE {1}='{2}'",
-                        TABLE_CLIENT, CPF, cpf);
-
-                    reader = database.readerTable(command);
-
-                    if (reader == null)
-                    {
-                        error_operation = "Não foi possivel consultar a Tabela";
-                        return null;
-                    }
-
+                    Error_operation = "Não foi possivel consultar a Tabela";
+                    return null;
+                }
+                try
+                {
                     if (reader.HasRows)
                     {
-                        Client user = new Client();
+                        reader.Read();
 
-                        int code_state_city = 0, code_address = 0;
+                        userDatabase.Cpf = reader.GetString(reader.GetOrdinal(CPF));
+                        userDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
+                        userDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
 
-                        while (reader.Read())
+                        if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
                         {
-                            user.Cpf = reader.GetString(reader.GetOrdinal(CPF));
-                            user.Name = reader.GetString(reader.GetOrdinal(NAME));
-                            user.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
-
-                            if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
-                            {
-                                user.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
-                            }
-
-                            code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
-                            code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
+                            userDatabase.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
                         }
 
-                        // Formata os Dados Normalizados do Banco de Dados
-                        StateCity stateCity = new StateCity();
-                        stateCity = new StateCityDAO().selectStateCity(code_state_city);
-
-                        if (stateCity == null || stateCity.Cidade == null)
-                        {
-                            stateCity = new StateCity();
-                            stateCity.Cidade = "Cidade não Definida";
-                            stateCity.Estado = "Estado não Definido";
-                        }
-
-                        user.Cidade = stateCity.Cidade;
-                        user.Estado = stateCity.Estado;
-
-                        Address addressClass = new Address();
-                        addressClass = new AddressDAO().selectAddress(code_address);
-
-                        if (addressClass == null)
-                        {
-                            addressClass = new Address();
-                            addressClass.Logradouro = "Endereço não Definido";
-                        }
-
-                        user.Logradouro = addressClass.Logradouro;
-
-                        return user;
+                        code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
+                        code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
                     }
                     else
                     {
-                        error_operation = "Erro na Leitura dos Dados do Banco de Dados";
+                        Error_operation = "Erro na Leitura dos Dados do Banco de Dados";
                         return null;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Error_operation = "Não foi Possivel Selecionar o Cliente no Banco de dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
             }
-            catch (Exception ex)
+
+            // Formata os Dados Normalizados do Banco de Dados
+            StateCity stateCity = new StateCity();
+            stateCity = new StateCityDAO().selectStateCity(code_state_city);
+            Address addressClass = new Address();
+            addressClass = new AddressDAO().SelectAddress(code_address);
+
+            if (stateCity == null || string.IsNullOrEmpty(stateCity.Cidade)
+                || string.IsNullOrEmpty(stateCity.Estado))
             {
-                error_operation = "Não foi possivel Encontrar o Usuario no Banco de dados. Exceção:" + ex;
-                System.Diagnostics.Debug.WriteLine(error_operation);
-                return null;
+                stateCity = new StateCity();
+                stateCity.Cidade = "Cidade não Definida";
+                stateCity.Estado = "Estado não Definido";
             }
-            finally
+            else if (addressClass == null
+                || string.IsNullOrEmpty(addressClass.Logradouro))
             {
-                if (reader != null) reader.Close();
+                addressClass = new Address();
+                addressClass.Logradouro = "Endereço não Definido";
             }
+            else
+            {
+                userDatabase.Cidade = stateCity.Cidade;
+                userDatabase.Estado = stateCity.Estado;
+                userDatabase.Logradouro = addressClass.Logradouro;
+            }
+            return userDatabase;
         }
 
     }

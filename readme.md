@@ -44,4 +44,4 @@ Obs: SGBD = Sistema de Gerenciamento de Banco de Dados
 
 [Pagina de Erro](https://qastack.com.br/programming/619895/how-can-i-properly-handle-404-in-asp-net-mvc)
 
-[Footer no Fim da Pagina](https://cursos.alura.com.br/forum/topico-footer-sempre-ao-final-da-pagina-22772)
+[Pagina Inicial - Bootstrap](https://getbootstrap.com/docs/3.4/examples/carousel/#)
