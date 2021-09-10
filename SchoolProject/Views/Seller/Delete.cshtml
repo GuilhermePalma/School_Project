@@ -1,0 +1,113 @@
+﻿@model SchoolProject.Models.Seller
+
+@{
+    ViewBag.Title = "Excluir Vendedor";
+    string controller = "Seller";
+
+    if (Model == null || Model.Cnpj.Length != 14)
+    {
+        
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>Não é Possivel Acessar essa Pagina</h4>
+            <p>
+                @Html.ActionLink("Clique Aqui", "Cadastro", controller) para Realizar o Cadastro ou
+                 @Html.ActionLink("Clique Aqui", "Index", controller) para Realizar o Login
+            </p>
+            <p>
+                Recomendamos que Faça a navegação pelo Site usando as opções 
+                 disponibilizadas após realizar o @Html.ActionLink("Login", "Index", controller)
+            </p>
+            <p><i>Parametros Invalidos</i></p>
+        </div>
+    }
+    else
+    {
+        <h2>@ViewBag.Title: @Model.Name</h2>
+        <hr />
+
+        <h3>Você tem certeza que deseja Excluir ?</h3>
+        <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
+
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cnpj)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Cnpj)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Logradouro)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Logradouro)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cidade)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Cidade)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Estado)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Numero)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Numero)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Complemento)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Complemento)
+            </dd>
+
+        </dl>
+            
+        using (Html.BeginForm())
+        {
+            Html.AntiForgeryToken();
+            <div class="col-md-offset-1">
+                <input type="submit" value="Excluir" class="btn btn-default" />
+            </div>
+        }
+
+        <br />
+
+        using (Html.BeginForm("Login", controller, new { Cnpj = Model.Cnpj}, FormMethod.Post))
+        {
+            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+        }
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

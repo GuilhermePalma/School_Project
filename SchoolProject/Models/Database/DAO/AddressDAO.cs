@@ -5,6 +5,7 @@ namespace SchoolProject.Models.Database.DAO
 {
     public class AddressDAO
     {
+        private const string NAME_FOREIGN_CODE = "code_address";
         public const string TABLE_ADDRESS = "address";
         public const string CODE = "code_address";
         public const string ADDRESS = "logradouro";
@@ -396,6 +397,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Verifica se o Usuario excluido é o Unico com aquele Endereço
+        // TODO: refatorar --> Alterar o metodo p/ buscar nas 2 tabelas se é unico
         public bool IsOnlyAddress(Address address)
         {
 
@@ -406,64 +408,76 @@ namespace SchoolProject.Models.Database.DAO
             }
             else if (ReturnCodeAddress(address) <= 0) return false;
 
-            string command, count_formmated;
-            try
-            {
-                count_formmated = string.Format("COUNT({0})", ClientDAO.ADDRESS);
-                command = string.Format("SELECT {0} FROM {1} WHERE {2}={3}",
-                count_formmated, ClientDAO.TABLE_CLIENT, ClientDAO.ADDRESS,
-                address.Code_address);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
+            string[] tables_search = new string[2];
+            tables_search[0] = ClientDAO.TABLE_CLIENT;
+            tables_search[1] = SellerDAO.TABLE_SELLER;
 
-            // Endereço existe no Banco de Dados
-            using (Database database = new Database())
+            // Variavel que controlará se é o unico registro
+            bool isOnlyStateCity = false;
+
+            // Laço de Repetição com as operações de busca de registro nas 2 tabelas
+            foreach (string table in tables_search)
             {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-
-                reader = database.ReaderTable(command);
-                if (reader == null)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-
+                string command, count_formmated;
                 try
                 {
-                    int quantity_register = NOT_FOUND;
-
-                    reader.Read();
-                    quantity_register = reader.GetInt32(reader.GetOrdinal(count_formmated));
-
-                    // Se for o Unico ---> Retorna True. Se não ---> Retorna False
-                    return quantity_register == 1;
+                    count_formmated = string.Format("COUNT({0})", NAME_FOREIGN_CODE);
+                    command = string.Format("SELECT {0} FROM {1} WHERE {2}={3}",
+                    count_formmated, table, NAME_FOREIGN_CODE, address.Code_address);
                 }
-                catch (Exception ex)
+                catch (ArgumentNullException ex)
                 {
-                    Error_operation = "Não foi possivel obter o Verificar do Endereço.";
+                    Error_operation = "Erro: Argumento Nulo na Criação da Query";
                     System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
                     return false;
                 }
-                finally
+                catch (FormatException ex)
                 {
-                    if (reader != null) reader.Close();
+                    Error_operation = "Erro: Formação da String SQL Invalida";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+
+                // Endereço existe no Banco de Dados
+                using (Database database = new Database())
+                {
+                    if (!database.IsAvalibleDatabase)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+
+                    reader = database.ReaderTable(command);
+                    if (reader == null)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+
+                    try
+                    {
+                        int quantity_register = NOT_FOUND;
+
+                        reader.Read();
+                        quantity_register = reader.GetInt32(reader.GetOrdinal(count_formmated));
+
+                        // Se for o Unico ---> Retorna True. Se não, retorna False
+                        isOnlyStateCity = quantity_register == 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        Error_operation = "Não foi possivel obter o Verificar do Endereço.";
+                        System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                        return false;
+                    }
+                    finally
+                    {
+                        if (reader != null) reader.Close();
+                    }
                 }
             }
+
+            return isOnlyStateCity;
         }
 
 

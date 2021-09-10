@@ -39,17 +39,21 @@ namespace SchoolProject.Models.Database
             }
             catch(ConfigurationErrorsException ex)
             {
-                Error_operation = "Erro ao recuperar a String de Conexão do Banco de Dados";
-                System.Diagnostics.Debug.WriteLine("Erro ao recuperar a String Connection. " +
-                    "Exception: " + ex);
+                Error_operation = "Erro ao recuperar a Conexão do Banco de Dados";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exception: " + ex);
                 IsAvalibleDatabase = false;
 
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro ao recuperar a Conexão do Banco de Dados";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exception: " + ex);
+                IsAvalibleDatabase = false;
             }
             catch (Exception ex)
             {
                 Error_operation = "Erro ao conectar com o Banco de Dados";
-                System.Diagnostics.Debug.WriteLine("Erro ao conectar com o Banco de Dados. " +
-                    "Exception: " + ex);
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exception: " + ex);
                 IsAvalibleDatabase = false;
             }
         }
@@ -85,18 +89,25 @@ namespace SchoolProject.Models.Database
                 if (row_affected <= 0)
                 {
                     Error_operation = "Não foi Possivel Executar o Comando.";
-                    System.Diagnostics.Debug.WriteLine("Erro ao Executar o Comando: "
-                        + command.CommandText);
+                    System.Diagnostics.Debug.WriteLine(Error_operation + 
+                        " Comando: " + command.CommandText);
                     return ERROR;
                 }
                 else return row_affected;
 
             }
+            catch(MySqlException ex)
+            {
+                Error_operation = "Houve um Erro (Exceção SQL) ao Executar o Comando.";
+                System.Diagnostics.Debug.WriteLine(Error_operation +
+                    " Exception: " + ex);
+                return ERROR;
+            }
             catch (Exception ex)
             {
                 Error_operation = "Houve um Erro ao Executar o Comando.";
-                System.Diagnostics.Debug.WriteLine("Não foi Possivel Executar o " +
-                    "Comando. Exception: \n" + ex);
+                System.Diagnostics.Debug.WriteLine(Error_operation + 
+                    " Exception: " + ex);
                 return ERROR;
             }
         }
@@ -132,16 +143,23 @@ namespace SchoolProject.Models.Database
                 if (dataReader == null || !dataReader.HasRows)
                 {
                     Error_operation = "Dados não encontrados no Banco de Dados";
-                    System.Diagnostics.Debug.WriteLine("Erro ao Ler a Tabela: "
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: "
                         + command.CommandText);
                     return null;
                 } else return dataReader;
             }
+            catch (MySqlException ex)
+            {
+                Error_operation = "Houve um Erro (Exceção SQL) ao Executar o Comando.";
+                System.Diagnostics.Debug.WriteLine(Error_operation +
+                    " Exception: " + ex);
+                return null;
+            }
             catch (Exception ex)
             {
                 Error_operation = "Não foi Possivel acessar o Banco de Dados";
-                System.Diagnostics.Debug.WriteLine("Não foi Possivel Ler a Tabela. " +
-                    "Exception: \n" + ex);
+                System.Diagnostics.Debug.WriteLine(Error_operation +
+                    " Exception: " + ex);
                 return null;
             }
         }

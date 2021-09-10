@@ -164,14 +164,17 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
+    <Compile Include="Controllers\SellerController.cs" />
     <Compile Include="Models\Database\ADO\Database.cs" />
     <Compile Include="Models\Database\DAO\AddressDAO.cs" />
+    <Compile Include="Models\Database\DAO\SellerDAO.cs" />
     <Compile Include="Models\Database\DAO\StateCityDAO.cs" />
     <Compile Include="Models\Database\DAO\ClientDAO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Seller.cs" />
     <Compile Include="Models\StateCity.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -236,6 +239,12 @@
     <Content Include="Views\Client\Login.cshtml" />
     <Content Include="Views\Client\ResultOperation.cshtml" />
     <Content Include="Views\Error\PageNotFound.cshtml" />
+    <Content Include="Views\Seller\Delete.cshtml" />
+    <Content Include="Views\Seller\Details.cshtml" />
+    <Content Include="Views\Seller\Login.cshtml" />
+    <Content Include="Views\Seller\Register.cshtml" />
+    <Content Include="Views\Seller\Update.cshtml" />
+    <Content Include="Views\Seller\ResultOperation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

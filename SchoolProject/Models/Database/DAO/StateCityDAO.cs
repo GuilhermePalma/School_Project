@@ -5,6 +5,7 @@ namespace SchoolProject.Models.Database.DAO
 {
     public class StateCityDAO
     {
+        private const string NAME_FOREIGN_CODE = "code_state_city";
         public const string TABLE_STATE_CITY = "state_city";
         public const string CODE = "code_state_city";
         public const string CITY = "city";
@@ -18,7 +19,7 @@ namespace SchoolProject.Models.Database.DAO
 
 
         // Verifica se Existe um Estado e Cidade com o Codigo Informado
-        public bool existsStateCity(int code)
+        public bool ExistsStateCity(int code)
         {
 
             if (code <= 0)
@@ -85,9 +86,9 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Insere um Estado/Cidade se não Existir
-        public bool insertStateCity(StateCity stateCity)
+        public bool InsertStateCity(StateCity stateCity)
         {
-            if (existsStateCity(returnCodeStateCity(stateCity)))
+            if (ExistsStateCity(ReturnCodeStateCity(stateCity)))
             {
                 Error_operation += "Estado e Cidade já Cadastrado no Banco de Dados. ";
                 return false;
@@ -130,9 +131,9 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Exclui um Estado e Cidade se existir
-        public bool deleteStateCity(int code)
+        public bool DeleteStateCity(int code)
         {
-            if (!existsStateCity(code))
+            if (!ExistsStateCity(code))
             {
                 Error_operation += "Estado e Cidade não Cadastrado no Banco de Dados. ";
                 return false;
@@ -174,9 +175,9 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Retorna os Dados se o Estado e Cidade existir
-        public StateCity selectStateCity(int code)
+        public StateCity SelectStateCity(int code)
         {
-            if (!existsStateCity(code)) return null;
+            if (!ExistsStateCity(code)) return null;
 
             string command;
             try
@@ -237,7 +238,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Atualiza o Estado e Cidade no Banco de Dados
-        public bool updateStateCity(int code_stateCity, StateCity stateCity)
+        public bool UpdateStateCity(int code_stateCity, StateCity stateCity)
         {
             if (stateCity == null || string.IsNullOrEmpty(stateCity.Cidade)
                 || string.IsNullOrEmpty(stateCity.Estado))
@@ -245,7 +246,7 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = "Estado/Cidade não Informado";
                 return false;
             }
-            else if (!existsStateCity(code_stateCity)) return false;
+            else if (!ExistsStateCity(code_stateCity)) return false;
 
             stateCity.Code_statecity = code_stateCity;
 
@@ -286,7 +287,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Obtem o Codigo a partir do Estado e Cidade
-        public int returnCodeStateCity(StateCity stateCity)
+        public int ReturnCodeStateCity(StateCity stateCity)
         {
             if (stateCity == null || stateCity.Cidade.Length < 5
                 || stateCity.Estado.Length != 2)
@@ -354,7 +355,7 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Obtem o Codigo do EstadoCidade. Caso não exista, tenta Inserir
-        public int codeStateCityValid(StateCity stateCity)
+        public int CodeStateCityValid(StateCity stateCity)
         {
             if (stateCity == null)
             {
@@ -363,7 +364,7 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             // Obtem o Codigo State_city
-            int code_state_city = returnCodeStateCity(stateCity);
+            int code_state_city = ReturnCodeStateCity(stateCity);
 
             if (code_state_city == ERROR)
             {
@@ -372,10 +373,10 @@ namespace SchoolProject.Models.Database.DAO
             else if (code_state_city == NOT_FOUND)
             {
                 // Dados não encontrados ---> Insere 
-                if (!insertStateCity(stateCity)) return ERROR;
+                if (!InsertStateCity(stateCity)) return ERROR;
 
                 // Validação = Busca no Banco de Dados os Dados Inseridos (Estado e Cidade)
-                code_state_city = returnCodeStateCity(stateCity);
+                code_state_city = ReturnCodeStateCity(stateCity);
             }
 
             // Retorna um Erro ou o Codigo Valido
@@ -383,9 +384,8 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Verifica se o Usuario é o Unico com aquela Cidade e Estado
-        public bool isOnlyStateCity(StateCity stateCity)
+        public bool IsOnlyStateCity(StateCity stateCity)
         {
-
             if (stateCity == null)
             {
                 Error_operation = "Cidade e Estado Invalido. Confira os Dados Inseridos ";
@@ -394,71 +394,81 @@ namespace SchoolProject.Models.Database.DAO
 
             StateCityDAO stateCityDAO = new StateCityDAO();
 
-
-            stateCity.Code_statecity = stateCityDAO.returnCodeStateCity(stateCity);
+            stateCity.Code_statecity = stateCityDAO.ReturnCodeStateCity(stateCity);
             if (stateCity.Code_statecity <= 0)
             {
                 Error_operation = "Codigo de Cidade e Estado não Encontrado. ";
                 return false;
             }
 
-            string command, count_formatted;
-            try
-            {
-                count_formatted = string.Format("COUNT({0})", ClientDAO.STATE_CITY);
-                command = string.Format("SELECT {0} FROM {1} WHERE {2}={2}",
-                   count_formatted, ClientDAO.TABLE_CLIENT, ClientDAO.STATE_CITY,
-                   stateCity.Code_statecity);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
+            string[] tables_search = new string[2];
+            tables_search[0] = ClientDAO.TABLE_CLIENT;
+            tables_search[1] = SellerDAO.TABLE_SELLER;
 
-            using (Database database = new Database())
+            // Variavel que controlará se é o unico registro
+            bool isOnlyStateCity = false;
+
+            // Laço de Repetição com as operações de busca de registro nas 2 tabelas
+            foreach (string table in tables_search)
             {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-
-                reader = database.ReaderTable(command);
-                if (reader == null)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-
+                string command, count_formatted;
                 try
                 {
-                    int quantity_register = NOT_FOUND;
-
-                    reader.Read();
-                    quantity_register = reader.GetInt32(reader.GetOrdinal(count_formatted));
-
-                    // Retorna True (Se for o Unico
-                    return quantity_register == 1;
+                    count_formatted = string.Format("COUNT({0})", NAME_FOREIGN_CODE);
+                    command = string.Format("SELECT {0} FROM {1} WHERE {2}={3}",
+                       count_formatted, table, NAME_FOREIGN_CODE, stateCity.Code_statecity);
                 }
-                catch (Exception ex)
+                catch (ArgumentNullException ex)
                 {
-                    Error_operation = "Não foi possivel Consultar o Estado e Cidade.";
+                    Error_operation = "Erro: Argumento Nulo na Criação da Query";
                     System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
                     return false;
                 }
-                finally
+                catch (FormatException ex)
                 {
-                    if (reader != null) reader.Close();
+                    Error_operation = "Erro: Formação da String SQL Invalida";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+
+                using (Database database = new Database())
+                {
+                    if (!database.IsAvalibleDatabase)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+
+                    reader = database.ReaderTable(command);
+                    if (reader == null)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+
+                    try
+                    {
+                        int quantity_register = NOT_FOUND;
+
+                        reader.Read();
+                        quantity_register = reader.GetInt32(reader.GetOrdinal(count_formatted));
+
+                        // Retorna True (Se for o Unico
+                        isOnlyStateCity = quantity_register == 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        Error_operation = "Não foi possivel Consultar o Estado e Cidade.";
+                        System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                        return false;
+                    }
+                    finally
+                    {
+                        if (reader != null) reader.Close();
+                    }
                 }
             }
+            return isOnlyStateCity;
         }
 
 
