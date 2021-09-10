@@ -11,14 +11,14 @@ namespace SchoolProject.Controllers
         private const string INVALID_CPF = "CPF não Informado ou Incorreto. " +
                     "CPF deve conter apenas 11 Numeros ";
 
-        // GET: Client/Index
+        // GET: Cliente/Index
         [HttpGet]
         public ActionResult Index()
         {
             return View("Login");
         }
 
-        // POST: Client/Login
+        // POST: Cliente/Login
         [HttpPost]
         public ActionResult Login(string cpf)
         {
@@ -50,7 +50,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Client/Cadastro
+        // GET: Cliente/Cadastro
         [HttpGet]
         public ActionResult Cadastro()
         {
@@ -60,7 +60,7 @@ namespace SchoolProject.Controllers
             return View("Register");
         }
 
-        // POST: Client/Cadastro
+        // POST: Cliente/Cadastro
         [HttpPost]
         public ActionResult Cadastro(Client client)
         {
@@ -90,7 +90,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Client/Detalhes?cpf={cpf}
+        // GET: Cliente/Detalhes/cpf
         [HttpGet]
         public ActionResult Detalhes(string cpf)
         {
@@ -124,7 +124,7 @@ namespace SchoolProject.Controllers
         }
 
 
-        // GET: Client/Atualizar?cpf={cpf}
+        // GET: Cliente/Atualizar/cpf
         [HttpGet]
         public ActionResult Atualizar(string cpf)
         {
@@ -162,7 +162,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // POST: Client/Atualizar
+        // POST: Cliente/Atualizar
         [HttpPost]
         public ActionResult Atualizar(Client client)
         {
@@ -192,7 +192,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Client/Excluir?cpf={cpf}
+        // GET: Cliente/Excluir/cpf
         [HttpGet]
         public ActionResult Excluir(string cpf)
         {
@@ -224,7 +224,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // POST: Client/Excluir
+        // POST: Cliente/Excluir
         [HttpPost]
         public ActionResult Excluir(Client client)
         {

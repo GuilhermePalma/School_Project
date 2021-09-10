@@ -122,7 +122,7 @@ namespace SchoolProject.Models.Database.DAO
             address.Logradouro = user.Logradouro;
 
             // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
-            int code_state_city = new StateCityDAO().codeStateCityValid(stateCity);
+            int code_state_city = new StateCityDAO().CodeStateCityValid(stateCity);
             int code_address = new AddressDAO().CodeAddressValid(address);
 
             if (code_state_city == ERROR || code_state_city == NOT_FOUND) return false;
@@ -203,11 +203,11 @@ namespace SchoolProject.Models.Database.DAO
             stateCity.Cidade = user.Cidade;
 
             // Verificar se o Usuario é o unico usando aquele endereço 
-            if (stateCityDAO.isOnlyStateCity(stateCity))
+            if (stateCityDAO.IsOnlyStateCity(stateCity))
             {
                 // É o unico com aquela Cidade e Estado ---> Exclui ambos do banco de dados
                 bool is_deleted_stateCity = stateCityDAO.
-                    deleteStateCity(stateCityDAO.returnCodeStateCity(stateCity));
+                    DeleteStateCity(stateCityDAO.ReturnCodeStateCity(stateCity));
 
                 if (!is_deleted_stateCity)
                 {
@@ -283,16 +283,16 @@ namespace SchoolProject.Models.Database.DAO
             newStateCity.Estado = user.Estado;
             newStateCity.Cidade = user.Cidade;
 
-            code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
+            code_state_city = stateCityDAO.ReturnCodeStateCity(newStateCity);
 
             if (code_state_city == NOT_FOUND)
             {
                 // Verifica se o Usuario é o Unico com aquele Estado/Cidade
-                if (stateCityDAO.isOnlyStateCity(oldStateCity))
+                if (stateCityDAO.IsOnlyStateCity(oldStateCity))
                 {
                     // Obtem o codigo da Antiga Cidade/Estado e Atualiza os Valores
-                    code_state_city = stateCityDAO.returnCodeStateCity(oldStateCity);
-                    if (!stateCityDAO.updateStateCity(code_state_city, newStateCity))
+                    code_state_city = stateCityDAO.ReturnCodeStateCity(oldStateCity);
+                    if (!stateCityDAO.UpdateStateCity(code_state_city, newStateCity))
                     {
                         Error_operation = "Não foi Possivel Atualizar o Estado e Cidade";
                         return false;
@@ -301,10 +301,10 @@ namespace SchoolProject.Models.Database.DAO
                 else
                 {
                     // Usuario não é o Unico com Cidade/Estado Antigo e o Endereço não existe no BD
-                    if (stateCityDAO.insertStateCity(newStateCity))
+                    if (stateCityDAO.InsertStateCity(newStateCity))
                     {
                         // Conseguiu Inserir a Cidade/Estado no Banco ---> Retorna o Codigo
-                        code_state_city = stateCityDAO.returnCodeStateCity(newStateCity);
+                        code_state_city = stateCityDAO.ReturnCodeStateCity(newStateCity);
                     }
                     else
                     {
@@ -499,7 +499,7 @@ namespace SchoolProject.Models.Database.DAO
 
             // Formata os Dados Normalizados do Banco de Dados
             StateCity stateCity = new StateCity();
-            stateCity = new StateCityDAO().selectStateCity(code_state_city);
+            stateCity = new StateCityDAO().SelectStateCity(code_state_city);
             Address addressClass = new Address();
             addressClass = new AddressDAO().SelectAddress(code_address);
 
