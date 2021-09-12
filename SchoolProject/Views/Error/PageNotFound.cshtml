@@ -1,11 +1,27 @@
 ﻿@{
     ViewBag.Title = "Pagina Não Encontrada";
 }
+<style type="text/css">
+    #page_error{
+        text-align: center;
+    }
+    #img_error404 {
+        height: 50%;
+        width: 50%;
+    }
+</style>
 
-<h3 style="text-align: center;">Desculpe-nos, a Pagina Solicitada não está Disponivel</h3>
-<hr />
+<div id="page_error">
 
-<br />
+    <h3>Desculpe-nos, a Pagina Solicitada não está Disponivel</h3>
+    <hr />
 
-<h4 style="text-align: center;">Por favor, não tente navegar alterando as URLs</h4>
-<p style="text-align: center;">@Html.ActionLink("Clique aqui", "Index", "Home") para Voltar ao Inicio</p>
+    <a href="@Url.Action("Index", "Home")" id="link_home">
+        <img alt="Erro na Pagina" src="~/Images/Error404.jpg" id="img_error404" />
+    </a>
+
+    <br />
+
+    <h4>Por favor, não tente navegar alterando as URLs</h4>
+    <h5>@Html.ActionLink("Clique aqui", "Index", "Home") para Voltar ao Inicio</h5>
+</div>
