@@ -45,3 +45,11 @@ Obs: SGBD = Sistema de Gerenciamento de Banco de Dados
 [Pagina de Erro](https://qastack.com.br/programming/619895/how-can-i-properly-handle-404-in-asp-net-mvc)
 
 [Pagina Inicial - Bootstrap](https://getbootstrap.com/docs/3.4/examples/carousel/#)
+
+[Icones Usados](https://tablericons.com)
+
+Icones da Pagina Inicial: [Cliente](https://www.flaticon.com/free-icon/shopper_835900), [Vendedor](https://www.flaticon.com/free-icon/business-person_1256183) e [Produtos](https://www.flaticon.com/free-icon/shopping-bag_1255280)
+
+Imagens da Pagina Inicial: [Cliente](https://br.freepik.com/vetores-gratis/ilustracao-de-suporte-ao-cliente-plano-organico_13184987.htm), [Vendedor](https://br.freepik.com/vetores-gratis/conceito-de-feedback-plano-ilustrado_13718569.htm), [Produtos](https://br.freepik.com/vetores-gratis/jovens-em-pe-perto-do-caixa-no-supermercado-contador-pagamento-ilustracao-em-vetor-plana-do-comprador-alimentos-refeicoes-e-produtos_10174096.htm)
+
+[Imagem Error404](https://br.freepik.com/vetores-gratis/opa-erro-404-com-uma-ilustracao-do-conceito-de-robo-quebrado_8030430.htm)

@@ -189,7 +189,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -206,6 +205,14 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Images\Seller.jpg" />
+    <Content Include="Images\Client.jpg" />
+    <Content Include="Images\Purchases.jpg" />
+    <Content Include="Images\Error404.jpg" />
+    <Content Include="Images\Icons\IconSeller.png" />
+    <Content Include="Images\Icons\IconBrowser.svg" />
+    <Content Include="Images\Icons\IconProducts.png" />
+    <Content Include="Images\Icons\IconClient.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />

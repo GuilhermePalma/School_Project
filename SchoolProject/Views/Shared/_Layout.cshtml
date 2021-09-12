@@ -1,9 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="utf-8" lang="pt-br" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/ico" href="~/Images/Icons/IconBrowser.svg">
     <title>@ViewBag.Title - School Project</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -17,11 +18,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+
                 @Html.ActionLink("School Project", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse " id="navbarSupportedContent">
                 <ul class="nav navbar-nav mr-auto">
+                    
                     <li>@Html.ActionLink("Início", "Index", "Home")</li>
+                    
                     <li class="nav-item dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             Cliente <span class="caret"></span>
@@ -30,9 +34,32 @@
                             <li>@Html.ActionLink("Login", "Index", "Client", new { }, new { @class = "dropdown-item" })</li>
                             <li>@Html.ActionLink("Cadastro", "Cadastro", "Client", new { area = "" }, new { @class = "dropdown-item" })</li>
                             <li role="separator" class="divider"></li>
-                            <li>@Html.ActionLink("Listar Clientes", "ListUsers", "Client", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Listar Clientes", "ListUser", "Client", new { area = "" }, new { @class = "dropdown-item" })</li>
                         </ul>
                     </li>
+
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Vendedor <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Login", "Index", "Seller", new { }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Cadastro", "Cadastro", "Seller", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li role="separator" class="divider"></li>
+                            <li>@Html.ActionLink("Listar Vendedores", "ListSeller", "Seller", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Produtos <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Ver Produtos", "Index", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Pesquisar Produtos", "Index", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             Saiba Mais <span class="caret"></span>
@@ -52,10 +79,10 @@
         @RenderBody()
         <footer>
             <hr />
-            <p class="pull-right"><a href="#content_body">Ir para Cima</a></p>
+            <p class="pull-right"><a href="#content_body">Subir</a></p>
             <p>
                 &copy; <a title="Perfil GitHub" href="https://github.com/guilhermepalma">Guilherme Peres Lins da Palma</a>, @DateTime.Now.Year
-                · <a title="GitHub" href="https://github.com/guilhermepalma/School_Project">
+                · <a title="GitHub" href="https://github.com/guilhermepalma/School_Project" style="vertical-align:central;">
                     <img alt="Repositorio GitHub" src="https://img.shields.io/badge/-School%20Project-333333?&style=flat-square&logo=github" />
                 </a>
             </p>

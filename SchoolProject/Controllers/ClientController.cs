@@ -257,10 +257,14 @@ namespace SchoolProject.Controllers
                 return View("Error" + ex);
             }
         }
-
-        public ActionResult ListUsers(List<Client> userList)
-        {
-            return View("List", userList);
+        
+        // todo: implementar
+        public ActionResult ListUser() 
+        { 
+            ViewBag.Message = "Pagina não Disponivel";
+            ViewBag.Erro = "A pagina solicitada ainda não foi desenvolvida. " +
+                "Aguarde enquanto criamos mais essa funcionalidade para você sz";
+            return View("ResultOperation");
         }
 
     }

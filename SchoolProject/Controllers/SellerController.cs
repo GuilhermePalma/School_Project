@@ -258,6 +258,15 @@ namespace SchoolProject.Controllers
             }
         }
 
+        // todo: implementar
+        public ActionResult ListSeller()
+        {
+            ViewBag.Message = "Pagina não disponivel";
+            ViewBag.Erro = "A pagina solicitada ainda não foi desenvolvida. " +
+                "Aguarde enquanto criamos mais essa funcionalidade para você sz";
+            return View("ResultOperation");
+        }
+
 
     }
 }

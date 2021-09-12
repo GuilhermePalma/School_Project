@@ -1,32 +1,104 @@
 ﻿@{ ViewBag.Title = "Inicio"; }
 
 <style type="text/css">
-    #content_index{
-        margin:80px 0px;
-        text-align:center;
+    #option_center {
+        margin-top: 3%;
+        margin-bottom: 15%;
+        text-align: center;
+    }
+
+    #text_welcome {
+        margin-bottom: 8%;
+        width: 100%;
+    }
+
+    .section_description {
+        margin-top: 5%;
+        text-align: center;
+        padding: 0% 20% 0% 20%;
+    }
+    .image_description {
+        width: 100%;
+    }
+    .text_description {
+        margin-top: 2%;
     }
 </style>
 
-<div class="row" id="content_index">
+<div id="option_center" class="row">
+
+    <h2 id="text_welcome">Olá, Seja Bem Vindo(a)</h2>
+
     <div class="col-lg-4">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-             class="img-circle" alt="Generic placeholder image" width="140" height="140" />
+        <a href="@Url.Action("Index", "Client")">
+            <img src="~/Images/Icons/IconClient.png" alt="Cliente" width="128" height="128" />
+        </a>
+
         <h2>Clientes</h2>
-        <p>Faça parte do Nossos Sistema e seja um Usuario !</p>
-        <p><a class="btn btn-default" href="#" role="button">Fazer Login »</a></p>
+        <p>Junte-se a nós e seja um Cliente !</p>
+        <p>@Html.ActionLink("Fazer Login »", "Index", "Client", new { }, new { @class = "btn btn-default" })</p>
     </div>
     <div class="col-lg-4">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-             class="img-circle" alt="Generic placeholder image" width="140" height="140" />
+        <a href="@Url.Action("Index", "Home")">
+            <img src="~/Images/Icons/IconProducts.png" alt="Produtos" width="128" height="128" />
+        </a>
+
         <h2>Produtos</h2>
-        <p>Veja diversos produtos do nosso Catalogo !</p>
-        <p><a class="btn btn-default" href="#" role="button">Ver Produtos »</a></p>
+        <p>Acesso aos diversos produtos do nosso Sistema !</p>
+        <p>@Html.ActionLink("Ver Produtos »", "Index", "Home", new { }, new { @class = "btn btn-default" })</p>
     </div>
     <div class="col-lg-4">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-             class="img-circle" alt="Generic placeholder image" width="140" height="140" />
-        <h2>Funcionarios</h2>
-        <p>Faça parte do Nosso Time e Venda seus Produtos !</p>
-        <p><a class="btn btn-default" href="#" role="button">Vender Produtos »</a></p>
+        <a href="@Url.Action("Index", "Seller")">
+            <img src="~/Images/Icons/IconSeller.png" alt="Vendedor" width="128" height="128" />
+        </a>
+
+        <h2>Funcionários</h2>
+        <p>Venda e Cresça junto com nossa Equipe !</p>
+        <p>@Html.ActionLink("Vender Produtos »", "Index", "Seller", new { }, new { @class = "btn btn-default" })</p>
     </div>
 </div>
+<hr />
+
+<br />
+<h2 class="text-center">School Project</h2>
+
+<div class="section_description">
+    <div class="row">
+        <a href="@Url.Action("Index","Client")">
+            <img src="~/Images/Client.jpg" class="image_description" />
+        </a>
+    </div>
+    <div class="row text_description">
+        <h4>Seja nosso Cliente e tenha acesso a diversos produtos de diferentes Vendedores &#128513;</h4>
+        <p>@Html.ActionLink("Vamos Lá »", "Index", "Client", new { }, new { @class = "btn btn-default" })</p>
+    </div>
+</div>
+
+<div class="text-center section_description">
+    <div class="row">
+        <a href="@Url.Action("Index","Home")">
+            <img src="~/Images/Purchases.jpg" class="image_description" />
+        </a>
+    </div>
+    <div class="row text_description">
+        <h4>Tenha acesso aos mais variados produtos. Buscamos ter produtos de todos os gostos para que conseguamos agradar todos &#128151;</h4>
+        <p>@Html.ActionLink("Veja agora Mesmo »", "Index", "Home", new { }, new { @class = "btn btn-default" })</p>
+    </div>
+</div>
+
+<div class="text-center section_description">
+    <div class="row">
+        <div class="row">
+            <a href="@Url.Action("Index","Seller")">
+                <img src="~/Images/Seller.jpg" class="image_description" />
+            </a>
+        </div>
+    </div>
+    <div class="row text_description">
+        <h4>Faça parte do nosso Time, Venda seus Produtos e cresça junto com a gente &#128516;</h4>
+        <p>@Html.ActionLink("Comece Agora »", "Index", "Seller", new { }, new { @class = "btn btn-default" })</p>
+    </div>
+</div>
+
+<br />
+<br />
