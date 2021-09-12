@@ -2,6 +2,7 @@
 using SchoolProject.Models.Database.DAO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace SchoolProject.Controllers
@@ -179,7 +180,7 @@ namespace SchoolProject.Controllers
                 ClientDAO clientDAO = new ClientDAO();
                 bool is_update_client = clientDAO.UpdateClient(client);
 
-                if (is_update_client) 
+                if (is_update_client)
                     return RedirectToAction("Detalhes", "Client", new { Cpf = client.Cpf });
 
                 ViewBag.Message = "Não foi possivel Atualizar o Usuario no Sistema";
@@ -257,14 +258,36 @@ namespace SchoolProject.Controllers
                 return View("Error" + ex);
             }
         }
-        
-        // todo: implementar
-        public ActionResult ListUser() 
-        { 
-            ViewBag.Message = "Pagina não Disponivel";
-            ViewBag.Erro = "A pagina solicitada ainda não foi desenvolvida. " +
-                "Aguarde enquanto criamos mais essa funcionalidade para você sz";
-            return View("ResultOperation");
+
+
+        [ActionName("Cadastrados")]
+        public ActionResult ListClient()
+        {
+            ClientDAO clientDAO = new ClientDAO();
+            IEnumerable<Client> listClients;
+            try
+            {
+                // Obtem uma List<Seller> com os elementos do Banco de Dados
+                listClients = clientDAO.ListClients();
+                if (listClients != null || listClients.Count() > 0)
+                {
+                    return View("ListClient", listClients);
+                }
+
+                // Caso não consiga recuperar os vendedores do banco de dados
+                ViewBag.Message = "Lista de Funcionarios não Disponivel";
+                ViewBag.Erro = clientDAO.Error_operation;
+                return View("ResultOperation");
+
+            }
+            catch (ArgumentNullException ex)
+            {
+                // Caso a Lista seja Nula
+                ViewBag.Message = "Lista de Funcionarios não Disponivel";
+                ViewBag.Erro = "Não foi possivel obter a Lista de Vendedores";
+                System.Diagnostics.Debug.WriteLine("Lista de Funcionarios Nula. Exceção: " + ex);
+                return View("ResultOperation");
+            }
         }
 
     }

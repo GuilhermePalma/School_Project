@@ -369,7 +369,7 @@ namespace SchoolProject.Models.Database.DAO
             if (code_state_city == ERROR)
             {
                 return ERROR;
-            } 
+            }
             else if (code_state_city == NOT_FOUND)
             {
                 // Dados não encontrados ---> Insere 

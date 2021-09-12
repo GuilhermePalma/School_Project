@@ -1,8 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace SchoolProject.Models.Database.DAO
 {
@@ -465,27 +463,20 @@ namespace SchoolProject.Models.Database.DAO
                 }
                 try
                 {
-                    if (reader.HasRows)
+                    reader.Read();
+
+                    sellerDatabase.Cnpj = reader.GetString(reader.GetOrdinal(CNPJ));
+                    sellerDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
+                    sellerDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
+
+                    if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
                     {
-                        reader.Read();
-
-                        sellerDatabase.Cnpj = reader.GetString(reader.GetOrdinal(CNPJ));
-                        sellerDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
-                        sellerDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
-
-                        if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
-                        {
-                            sellerDatabase.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
-                        }
-
-                        code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
-                        code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
+                        sellerDatabase.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
                     }
-                    else
-                    {
-                        Error_operation = "Erro na Leitura dos Dados do Banco de Dados";
-                        return null;
-                    }
+
+                    code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
+                    code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
+
                 }
                 catch (Exception ex)
                 {
@@ -525,6 +516,106 @@ namespace SchoolProject.Models.Database.DAO
                 sellerDatabase.Logradouro = addressClass.Logradouro;
             }
             return sellerDatabase;
+        }
+
+        public List<Seller> ListSellers()
+        {
+            string command;
+            try
+            {
+                command = string.Format("SELECT * FROM {0}", TABLE_SELLER);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+
+            // Vendedor existe no Banco de Dados
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
+                {
+                    Error_operation = database.Error_operation;
+                    return null;
+                }
+
+                reader = database.ReaderTable(command);
+                if (reader == null)
+                {
+                    Error_operation = "Não foi possivel consultar a Tabela";
+                    return null;
+                }
+
+                try
+                {
+                    int code_state_city = NOT_FOUND, code_address = NOT_FOUND;
+                    List<Seller> listSeller = new List<Seller>();
+
+                    while (reader.Read())
+                    {
+                        Seller sellerDatabase = new Seller();
+
+                        sellerDatabase.Cnpj = reader.GetString(reader.GetOrdinal(CNPJ));
+                        sellerDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
+                        sellerDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
+
+                        if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
+                        {
+                            sellerDatabase.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
+                        }
+
+                        code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
+                        code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
+
+                        // Formata os Dados Normalizados do Banco de Dados
+                        StateCity stateCity = new StateCity();
+                        stateCity = new StateCityDAO().SelectStateCity(code_state_city);
+                        Address addressClass = new Address();
+                        addressClass = new AddressDAO().SelectAddress(code_address);
+
+                        if (stateCity == null || string.IsNullOrEmpty(stateCity.Cidade)
+                            || string.IsNullOrEmpty(stateCity.Estado))
+                        {
+                            stateCity = new StateCity();
+                            stateCity.Cidade = "Cidade não Definida";
+                            stateCity.Estado = "Estado não Definido";
+                        }
+                        else if (addressClass == null
+                            || string.IsNullOrEmpty(addressClass.Logradouro))
+                        {
+                            addressClass = new Address();
+                            addressClass.Logradouro = "Endereço não Definido";
+                        }
+                        else
+                        {
+                            sellerDatabase.Cidade = stateCity.Cidade;
+                            sellerDatabase.Estado = stateCity.Estado;
+                            sellerDatabase.Logradouro = addressClass.Logradouro;
+                        }
+                        listSeller.Add(sellerDatabase);
+                    }
+
+                    return listSeller;
+                }
+                catch (Exception ex)
+                {
+                    Error_operation = "Não foi Possivel Sel ecionar o Vendedor no Banco de dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
+            }
         }
 
     }

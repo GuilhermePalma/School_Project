@@ -53,3 +53,5 @@ Icones da Pagina Inicial: [Cliente](https://www.flaticon.com/free-icon/shopper_8
 Imagens da Pagina Inicial: [Cliente](https://br.freepik.com/vetores-gratis/ilustracao-de-suporte-ao-cliente-plano-organico_13184987.htm), [Vendedor](https://br.freepik.com/vetores-gratis/conceito-de-feedback-plano-ilustrado_13718569.htm), [Produtos](https://br.freepik.com/vetores-gratis/jovens-em-pe-perto-do-caixa-no-supermercado-contador-pagamento-ilustracao-em-vetor-plana-do-comprador-alimentos-refeicoes-e-produtos_10174096.htm)
 
 [Imagem Error404](https://br.freepik.com/vetores-gratis/opa-erro-404-com-uma-ilustracao-do-conceito-de-robo-quebrado_8030430.htm)
+
+[Obtendo a Posição de um Item no IEnumerable](https://stackoverflow.com/questions/1290603/how-to-get-the-index-of-an-element-in-an-ienumerable)

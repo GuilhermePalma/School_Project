@@ -3,7 +3,6 @@ using SchoolProject.Models.Database.DAO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SchoolProject.Controllers
@@ -33,14 +32,14 @@ namespace SchoolProject.Controllers
 
             try
             {
-                // Instancia um novo Seller e Busca o Usuario no Banco de Dados
+                // Instancia um novo Seller e Busca o Vendedor no Banco de Dados
                 SellerDAO sellerDAO = new SellerDAO();
                 Seller sellerDatabase = sellerDAO.SelectSeller(cnpj);
 
-                // Usuario Encontrado no Banco de Dados
+                // Vendedor Encontrado no Banco de Dados
                 if (sellerDatabase != null) return View("Login", sellerDatabase);
 
-                ViewBag.Message = "Usuario não Cadastrado no Sistema";
+                ViewBag.Message = "Vendedor não Cadastrado no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
 
@@ -75,17 +74,17 @@ namespace SchoolProject.Controllers
 
             ViewBag.Estados = new StateCity().listStates();
 
-            // Instancia um novo Seller e Insere um Usuario no Banco de Dados
+            // Instancia um novo Seller e Insere um Vendedor no Banco de Dados
             SellerDAO sellerDAO = new SellerDAO();
 
-            // Verifica se o Usuario foi Inserido e Redireciona p/ View de Detalhes
+            // Verifica se o UsuarVendedorio foi Inserido e Redireciona p/ View de Detalhes
             if (sellerDAO.InsertSeller(seller))
             {
-                return RedirectToAction("Detalhes", "Seller", new { cnpj = seller.Cnpj});
+                return RedirectToAction("Detalhes", "Seller", new { cnpj = seller.Cnpj });
             }
             else
             {
-                ViewBag.Message = "Não foi possivel Cadastrar o Usuario no Sistema";
+                ViewBag.Message = "Não foi possivel Cadastrar o Vendedor no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
             }
@@ -105,16 +104,16 @@ namespace SchoolProject.Controllers
 
             try
             {
-                // Instancia um novo Seller e Busca o Usuario no Banco de Dados
+                // Instancia um novo Seller e Busca o Vendedor no Banco de Dados
                 SellerDAO sellerDAO = new SellerDAO();
 
                 Seller sellerDatabase = new Seller();
                 sellerDatabase = sellerDAO.SelectSeller(cnpj);
 
-                // Usuario Encontrado no Banco de Dados
+                // Vendedor Encontrado no Banco de Dados
                 if (sellerDatabase != null) return View("Details", sellerDatabase);
 
-                ViewBag.Message = "Usuario não Cadastrado no Sistema";
+                ViewBag.Message = "Vendedor não Cadastrado no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
             }
@@ -140,7 +139,7 @@ namespace SchoolProject.Controllers
             try
             {
                 SellerDAO sellerDAO = new SellerDAO();
-                // Obtem um Usuario no Banco de Dados. Se não consegue = null
+                // Obtem um Vendedor no Banco de Dados. Se não consegue = null
                 Seller sellerDatabase = sellerDAO.SelectSeller(cnpj);
 
                 if (sellerDatabase != null)
@@ -151,7 +150,7 @@ namespace SchoolProject.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Usuario não Cadastrado no Sistema";
+                    ViewBag.Message = "Vendedor não Cadastrado no Sistema";
                     ViewBag.Erro = sellerDAO.Error_operation;
                     return View("ResultOperation");
                 }
@@ -180,9 +179,9 @@ namespace SchoolProject.Controllers
                 bool is_update_seller = sellerDAO.UpdateSeller(seller);
 
                 if (is_update_seller)
-                    return RedirectToAction("Detalhes", "Seller", new { Cnpj = seller.Cnpj});
+                    return RedirectToAction("Detalhes", "Seller", new { Cnpj = seller.Cnpj });
 
-                ViewBag.Message = "Não foi possivel Atualizar o Usuario no Sistema";
+                ViewBag.Message = "Não foi possivel Atualizar o Vendedor no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
             }
@@ -208,12 +207,12 @@ namespace SchoolProject.Controllers
             {
                 SellerDAO sellerDAO = new SellerDAO();
 
-                // Obtem um Usuario no Banco de Dados. Se não consegue = null
+                // Obtem um Vendedor no Banco de Dados. Se não consegue = null
                 Seller seller = sellerDAO.SelectSeller(cnpj);
 
                 if (seller != null) return View("Delete", seller);
 
-                ViewBag.Message = "Não foi possivel Atualizar o Usuario no Sistema";
+                ViewBag.Message = "Não foi possivel Atualizar o Vendedor no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
 
@@ -243,12 +242,12 @@ namespace SchoolProject.Controllers
                 bool is_deleted_seller = sellerDAO.DeleteSeller(seller.Cnpj);
                 if (is_deleted_seller)
                 {
-                    ViewBag.Message = "Usuario Excluido com Suceso !";
+                    ViewBag.Message = "Vendedor Excluido com Suceso !";
                     return View("ResultOperation");
                 }
 
-                // Caso o Usuario não Atualize ou Não Obteve um Select do Usuario
-                ViewBag.Message = "Usuario não Excluido do Sistema";
+                // Caso o Vendedor não Atualize ou Não Obteve um Select do Vendedor
+                ViewBag.Message = "Vendedor não Excluido do Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
                 return View("ResultOperation");
             }
@@ -258,15 +257,35 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // todo: implementar
-        public ActionResult ListSeller()
+        [ActionName("Cadastrados")]
+        public ActionResult ListSellers()
         {
-            ViewBag.Message = "Pagina não disponivel";
-            ViewBag.Erro = "A pagina solicitada ainda não foi desenvolvida. " +
-                "Aguarde enquanto criamos mais essa funcionalidade para você sz";
-            return View("ResultOperation");
-        }
+            SellerDAO sellerDAO = new SellerDAO();
+            IEnumerable<Seller> listSeller;
+            try
+            {
+                // Obtem uma List<Seller> com os elementos do Banco de Dados
+                listSeller = sellerDAO.ListSellers();
+                if (listSeller != null || listSeller.Count() > 0)
+                {
+                    return View("ListSeller", listSeller);
+                }
 
+                // Caso não consiga recuperar os vendedores do banco de dados
+                ViewBag.Message = "Lista de Funcionarios não Disponivel";
+                ViewBag.Erro = sellerDAO.Error_operation;
+                return View("ResultOperation");
+
+            }
+            catch (ArgumentNullException ex)
+            {
+                // Caso a Lista seja Nula
+                ViewBag.Message = "Lista de Funcionarios não Disponivel";
+                ViewBag.Erro = "Não foi possivel obter a Lista de Vendedores";
+                System.Diagnostics.Debug.WriteLine("Lista de Funcionarios Nula. Exceção: " + ex);
+                return View("ResultOperation");
+            }
+        }
 
     }
 }

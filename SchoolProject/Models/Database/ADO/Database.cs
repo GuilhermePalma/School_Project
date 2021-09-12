@@ -22,7 +22,7 @@ namespace SchoolProject.Models.Database
                 mysqlConnection = new MySqlConnection(
                    ConfigurationManager.ConnectionStrings["connection"].ConnectionString);
 
-                if(mysqlConnection == null)
+                if (mysqlConnection == null)
                 {
                     Error_operation = "Não foi criar a Conexão com o Banco de Dados";
                     IsAvalibleDatabase = false;
@@ -37,7 +37,7 @@ namespace SchoolProject.Models.Database
                 }
                 else IsAvalibleDatabase = true;
             }
-            catch(ConfigurationErrorsException ex)
+            catch (ConfigurationErrorsException ex)
             {
                 Error_operation = "Erro ao recuperar a Conexão do Banco de Dados";
                 System.Diagnostics.Debug.WriteLine(Error_operation + " Exception: " + ex);
@@ -89,14 +89,14 @@ namespace SchoolProject.Models.Database
                 if (row_affected <= 0)
                 {
                     Error_operation = "Não foi Possivel Executar o Comando.";
-                    System.Diagnostics.Debug.WriteLine(Error_operation + 
+                    System.Diagnostics.Debug.WriteLine(Error_operation +
                         " Comando: " + command.CommandText);
                     return ERROR;
                 }
                 else return row_affected;
 
             }
-            catch(MySqlException ex)
+            catch (MySqlException ex)
             {
                 Error_operation = "Houve um Erro (Exceção SQL) ao Executar o Comando.";
                 System.Diagnostics.Debug.WriteLine(Error_operation +
@@ -106,7 +106,7 @@ namespace SchoolProject.Models.Database
             catch (Exception ex)
             {
                 Error_operation = "Houve um Erro ao Executar o Comando.";
-                System.Diagnostics.Debug.WriteLine(Error_operation + 
+                System.Diagnostics.Debug.WriteLine(Error_operation +
                     " Exception: " + ex);
                 return ERROR;
             }
@@ -129,7 +129,7 @@ namespace SchoolProject.Models.Database
                     Connection = mysqlConnection
                 };
 
-                if(command == null)
+                if (command == null)
                 {
                     System.Diagnostics.Debug.WriteLine("Erro ao Criar o Comando: "
                         + command.ToString());
@@ -146,7 +146,8 @@ namespace SchoolProject.Models.Database
                     System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: "
                         + command.CommandText);
                     return null;
-                } else return dataReader;
+                }
+                else return dataReader;
             }
             catch (MySqlException ex)
             {

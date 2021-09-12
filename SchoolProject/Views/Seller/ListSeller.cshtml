@@ -1,0 +1,116 @@
+﻿@model IEnumerable<SchoolProject.Models.Seller>
+
+@{
+    ViewBag.Title = "Lista de Vendedores";
+
+    if (Model == null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4>Não é Possivel Exibir essa Pagina</h4>
+            <p>
+                @Html.ActionLink("Clique Aqui", "Cadastrados", "Seller") para Tentar Novamente ou
+                @Html.ActionLink("Clique Aqui", "Index", "Home") para Realizar voltar ao Inicio
+            </p>
+            <p>
+                Recomendamos que Faça a navegação pelo Site usando as opções
+                disponibilizadas no @Html.ActionLink("Inicio", "Index", "Home")
+            </p>
+            <p><i>Parametros Invalidos</i></p>
+        </div>
+    }
+    else
+    {
+        <style type="text/css">
+            h3{
+                text-align:center;
+                margin: 3% 0%;
+            }
+            #table_seller th {
+                text-align: center;
+            }
+        </style>
+
+        <h3 class="text-center">Lista de Funcionarios</h3>
+
+        <div class="row">
+            <table id="table_seller" class="table table-hover">
+
+                <tr>
+                    <th>#</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Cnpj)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Cidade)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Estado)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Logradouro)
+                    </th>
+                    <th></th>
+                    <th>Detalhes</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
+                </tr>
+
+                @foreach (var sellerItem in Model)
+                {
+
+                    <tr>
+                        <th>
+                            @Model.ToList().IndexOf(sellerItem)
+                        </th>
+                        <th>
+                            @Html.DisplayFor(model => sellerItem.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayFor(model => sellerItem.Cnpj)
+                        </th>
+                        <th>
+                            @Html.DisplayFor(model => sellerItem.Cidade)
+                        </th>
+                        <th>
+                            @Html.DisplayFor(model => sellerItem.Estado)
+                        </th>
+                        <th>
+                            @Html.DisplayFor(model => sellerItem.Logradouro)
+                        </th>
+                        <th></th>
+                        <th>
+                            @using (Html.BeginForm("Login", "Seller", new { Cnpj = sellerItem.Cnpj }, FormMethod.Post))
+                            {
+                                <button class="btn-link">
+                                    <img src="~/Images/Icons/IconUser.svg" />
+                                </button>
+                            }
+                        </th>
+                        <th>
+                            @using (Html.BeginForm("Atualizar", "Seller", new { Cnpj = sellerItem.Cnpj }, FormMethod.Get))
+                            {
+                                <button class="btn-link">
+                                    <img src="~/Images/Icons/IconEdit.svg" />
+                                </button>
+                            }
+                        </th>
+                        <th>
+                            @using (Html.BeginForm("Excluir", "Seller", new { Cnpj = sellerItem.Cnpj }, FormMethod.Get))
+                            {
+                                <button class="btn-link">
+                                    <img src="~/Images/Icons/IconDelete.svg" />
+                                </button>
+                            }
+                        </th>
+                    </tr>
+                 }
+            </table>
+        </div>
+    }
+}

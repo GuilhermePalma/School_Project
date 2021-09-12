@@ -205,6 +205,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Images\Icons\IconDelete.svg" />
+    <Content Include="Images\Icons\IconEdit.svg" />
+    <Content Include="Images\Icons\IconUser.svg" />
     <Content Include="Images\Seller.jpg" />
     <Content Include="Images\Client.jpg" />
     <Content Include="Images\Purchases.jpg" />
@@ -252,6 +255,8 @@
     <Content Include="Views\Seller\Register.cshtml" />
     <Content Include="Views\Seller\Update.cshtml" />
     <Content Include="Views\Seller\ResultOperation.cshtml" />
+    <Content Include="Views\Seller\ListSeller.cshtml" />
+    <Content Include="Views\Client\ListClient.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

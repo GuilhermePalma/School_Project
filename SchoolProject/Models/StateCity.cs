@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace SchoolProject.Models
-{ 
+{
     // Classe criada na Normalização do Banco de Dados
     public class StateCity
     {

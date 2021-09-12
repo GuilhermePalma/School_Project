@@ -19,7 +19,7 @@ namespace SchoolProject.Models.Database.DAO
         // Busca se Existe um Endereço Cadastrado no Banco de Dados
         public bool ExistsAddress(int code)
         {
-            if(code <= 0)
+            if (code <= 0)
             {
                 Error_operation = "Codigo de Endereço Invalido. O codigo tem que ser" +
                     " um valor Positivo e Diferente de 0";
@@ -31,7 +31,7 @@ namespace SchoolProject.Models.Database.DAO
             {
                 count_formatted = string.Format("COUNT({0})", CODE);
                 command = string.Format("SELECT {0} FROM {1} WHERE {2}={3}",
-                    count_formatted, TABLE_ADDRESS, CODE,code);
+                    count_formatted, TABLE_ADDRESS, CODE, code);
             }
             catch (ArgumentNullException ex)
             {
@@ -55,7 +55,7 @@ namespace SchoolProject.Models.Database.DAO
                 }
 
                 reader = database.ReaderTable(command);
-                
+
                 if (reader == null)
                 {
                     Error_operation = database.Error_operation;
@@ -104,7 +104,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 Error_operation = "Usuario não Informado";
                 return false;
-            } else if (ExistsAddress(ReturnCodeAddress(address)))
+            }
+            else if (ExistsAddress(ReturnCodeAddress(address)))
             {
                 return false;
             }
@@ -178,7 +179,8 @@ namespace SchoolProject.Models.Database.DAO
                 {
                     Error_operation = database.Error_operation;
                     return false;
-                } else if (database.ExecuteCommand(command) <= 0)
+                }
+                else if (database.ExecuteCommand(command) <= 0)
                 {
                     Error_operation = database.Error_operation;
                     return false;
@@ -293,7 +295,8 @@ namespace SchoolProject.Models.Database.DAO
                 {
                     Error_operation = database.Error_operation;
                     return false;
-                } else if (database.ExecuteCommand(command) <= 0)
+                }
+                else if (database.ExecuteCommand(command) <= 0)
                 {
                     Error_operation = database.Error_operation;
                     return false;

@@ -51,7 +51,7 @@ namespace SchoolProject.Models
 
         [Required(ErrorMessage = "O Numero deve ser informado !")]
         [RegularExpression(@"^[0-9]+$", ErrorMessage = "O Numero deve ter apenas Numeros")]
-        [Range(0,1000000, ErrorMessage = "O Numero deve estar entre {1} a {2}")]
+        [Range(0, 1000000, ErrorMessage = "O Numero deve estar entre {1} a {2}")]
         [DisplayName("Numero")]
         public int Numero { get => numero; set => numero = value; }
 
