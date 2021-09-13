@@ -9,12 +9,16 @@ namespace SchoolProject.Controllers
 {
     public class ClientController : Controller
     {
-        private const string INVALID_CPF = "CPF não Informado ou Incorreto. " +
-                    "CPF deve conter apenas 11 Numeros ";
-
         // GET: Cliente/Index
         [HttpGet]
         public ActionResult Index()
+        {
+            return View("Login");
+        }
+
+        // GET: Cliente/Login
+        [HttpGet]
+        public ActionResult Login()
         {
             return View("Login");
         }
@@ -23,11 +27,22 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Login(string cpf)
         {
-            // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(cpf))
+            Client client = new Client()
+            {
+                Cpf = string.Empty
+            };
+
+            // Valida o CPF passado
+            bool cpfMask_valid = client.ValidationMaskCPF(cpf);
+            bool cpf_valid = client.ValidationCPF(cpf);
+
+            if (cpfMask_valid) client.Cpf = client.ConvertMask(cpf);
+            if (cpf_valid) client.Cpf = cpf;
+
+            if (string.IsNullOrEmpty(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -35,10 +50,10 @@ namespace SchoolProject.Controllers
             {
                 // Instancia um novo Client e Busca o Usuario no Banco de Dados
                 ClientDAO clientDAO = new ClientDAO();
-                Client clientDatabase = clientDAO.SelectClient(cpf);
+                client = clientDAO.SelectClient(client.Cpf);
 
                 // Usuario Encontrado no Banco de Dados
-                if (clientDatabase != null) return View("Login", clientDatabase);
+                if (client != null) return View("Login", client);
 
                 ViewBag.Message = "Usuario não Cadastrado no Sistema";
                 ViewBag.Erro = clientDAO.Error_operation;
@@ -65,13 +80,17 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Cadastro(Client client)
         {
+            bool valid_cpf = client.ValidationMaskCPF(client.Cpf);
+            string cpf_formmated = valid_cpf ? client.ConvertMask(client.Cpf) : string.Empty;
+
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(client.Cpf))
+            if (string.IsNullOrEmpty(cpf_formmated)) 
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
+            else client.Cpf = cpf_formmated;
 
             ViewBag.Estados = new StateCity().listStates();
 
@@ -95,11 +114,16 @@ namespace SchoolProject.Controllers
         [HttpGet]
         public ActionResult Detalhes(string cpf)
         {
+            Client client = new Client()
+            {
+                Cpf = cpf
+            };
+
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(cpf))
+            if (!client.ValidationCPF(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -107,12 +131,10 @@ namespace SchoolProject.Controllers
             {
                 // Instancia um novo Client e Busca o Usuario no Banco de Dados
                 ClientDAO clientDAO = new ClientDAO();
-
-                Client clientDatabase = new Client();
-                clientDatabase = clientDAO.SelectClient(cpf);
+                client = clientDAO.SelectClient(cpf);
 
                 // Usuario Encontrado no Banco de Dados
-                if (clientDatabase != null) return View("Details", clientDatabase);
+                if (client != null) return View("Details", client);
 
                 ViewBag.Message = "Usuario não Cadastrado no Sistema";
                 ViewBag.Erro = clientDAO.Error_operation;
@@ -129,11 +151,16 @@ namespace SchoolProject.Controllers
         [HttpGet]
         public ActionResult Atualizar(string cpf)
         {
+            Client client = new Client()
+            {
+                Cpf = cpf
+            };
+
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(cpf))
+            if (!client.ValidationCPF(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -142,7 +169,7 @@ namespace SchoolProject.Controllers
                 ClientDAO clientDAO = new ClientDAO();
 
                 // Obtem um Usuario no Banco de Dados. Se não consegue = null
-                Client client = clientDAO.SelectClient(cpf);
+                client = clientDAO.SelectClient(cpf);
 
                 if (client != null)
                 {
@@ -168,10 +195,10 @@ namespace SchoolProject.Controllers
         public ActionResult Atualizar(Client client)
         {
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(client.Cpf))
+            if (!client.ValidationCPF(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -197,11 +224,16 @@ namespace SchoolProject.Controllers
         [HttpGet]
         public ActionResult Excluir(string cpf)
         {
+            Client client = new Client()
+            {
+                Cpf = cpf
+            };
+
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(cpf))
+            if (!client.ValidationCPF(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -210,7 +242,7 @@ namespace SchoolProject.Controllers
                 ClientDAO clientDAO = new ClientDAO();
 
                 // Obtem um Usuario no Banco de Dados. Se não consegue = null
-                Client client = clientDAO.SelectClient(cpf);
+                client = clientDAO.SelectClient(cpf);
 
                 if (client != null) return View("Delete", client);
 
@@ -230,10 +262,10 @@ namespace SchoolProject.Controllers
         public ActionResult Excluir(Client client)
         {
             // Caso não seja infromado o CPF
-            if (!Client.ValidationCPF(client.Cpf))
+            if (!client.ValidationCPF(client.Cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = INVALID_CPF;
+                ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
 

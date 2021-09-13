@@ -1,31 +1,33 @@
 ﻿@model SchoolProject.Models.Client
 
-@{ 
+@{
     ViewBag.Title = "Atualizar Usuario";
 
     if (Model == null || Model.Cpf.Length != 11)
     {
-        
         <div class="alert alert-danger" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4>Não é Possivel Acessar essa Pagina</h4>
+            <h4><b>Não é Possivel Acessar essa Pagina</b></h4>
             <p>
-                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
-                 @Html.ActionLink("Clique Aqui", "Index", "Client") para Realizar o Login
-            </p>
-            <p>
-                Recomendamos que Faça a navegação pelo Site usando as opções 
-                 disponibilizadas após realizar o @Html.ActionLink("Login", "Index", "Client")
+                Recomendamos que Faça a navegação pelo Site usando as opções
+                disponibilizadas após realizar o @Html.ActionLink("Login", "Index", "Client")
             </p>
             <p><i>Parametros Invalidos</i></p>
+            <br />
+
+            @Html.ActionLink("Login", "Index", "Client", new { }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Cadastro", "Cadastro", "Client", new { }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Pagina Inicial", "Index", "Home", new { }, new { @class = "btn btn-default" })
         </div>
     }
     else
     {
         <h2>@ViewBag.Title</h2>
         <hr />
+
+        // Formatação e Censura do CPF
+        string cpf_formatted = Model.Cpf.Substring(0, 3) + ".***.**";
+        cpf_formatted += Model.Cpf.Substring(7, 1) + "-";
+        cpf_formatted += Model.Cpf.Substring(9, 2);
 
         using (Html.BeginForm())
         {
@@ -41,7 +43,7 @@
                     </dt>
 
                     <dd>
-                        @Html.DisplayFor(model => model.Cpf)
+                        @cpf_formatted
                     </dd>
                 </dl>
 
@@ -94,19 +96,21 @@
                     </div>
                 </div>
 
+                <br />
+
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <button type="reset" class="btn btn-default">Limpar</button>
+                        <button type="reset" class="btn btn-default" style="margin-left:10px">Limpar</button>
                         <button type="submit" value="Atualizar" class="btn btn-default" style="margin-left:10px">Atualizar</button>
                     </div>
                 </div>
-
             </div>
         }
 
-        using (Html.BeginForm("Login", "Client", new { Cpf = Model.Cpf }, FormMethod.Post))
+        using (Html.BeginForm("Login", "Client", new { Cpf = Model.Cpf }, FormMethod.Post, new { }))
         {
-            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+            // Responsavel por Voltar à Tela de Login ja Logado
+            <button type="submit" value="Login" class="btn btn-default" style="margin-left:20px">« Voltar</button>
         }
 
     }
@@ -114,4 +118,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/inputmask/MaskCPF.js")
 }

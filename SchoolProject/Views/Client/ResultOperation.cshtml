@@ -1,35 +1,32 @@
 ﻿@{
     ViewBag.Title = "Operação";
-
     <br />
 
     if (ViewBag.Erro != null)
     {
         // Caso houve algum erro
         <div class="alert alert-danger" role="alert">
-            <h4>@ViewBag.Message</h4>
-
-            <p>
-                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
-                @Html.ActionLink("Clique Aqui", "Index", "Client") para Consultar o Login
-            </p>
+            <h4><b>@ViewBag.Message</b></h4>
 
             <p><i>@ViewBag.Erro</i></p>
+            <br />
+
+            @Html.ActionLink("Login", "Index", "Client", new { } ,new { @class = "btn btn-primary" })
+            @Html.ActionLink("Cadastro", "Cadastro", "Client", new { } ,new { @class = "btn btn-primary" })
+            @Html.ActionLink("Pagina Inicial", "Index", "Home", new { } ,new { @class = "btn btn-default" })
         </div>
     }
     else
     {
         <div class="alert alert-success" role="alert">
-
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-
             <h4>@ViewBag.Message</h4>
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                <button type="submit" value="Index" class="btn btn-default">
+                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                    Pagina Inicial
+                </button>
+            }
         </div>
     }
-
-    <p>@Html.ActionLink("Voltar ao Inicio", "Index", "Home") |
-        @Html.ActionLink("Realizar Login", "Index", "Client")
-    </p>
 }

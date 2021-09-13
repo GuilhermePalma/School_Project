@@ -6,25 +6,28 @@
     if (Model == null || Model.Cpf.Length != 11)
     {
         <div class="alert alert-danger" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4>Não é Possivel Acessar essa Pagina</h4>
-            <p>
-                @Html.ActionLink("Clique Aqui", "Cadastro", "Client") para Realizar o Cadastro ou
-                 @Html.ActionLink("Clique Aqui", "Index", "Client") para Realizar o Login
-            </p>
+            <h4><b>Não é Possivel Acessar essa Pagina</b></h4>
             <p>
                 Recomendamos que Faça a navegação pelo Site usando as opções 
                  disponibilizadas após realizar o @Html.ActionLink("Login", "Index", "Client")
             </p>
             <p><i>Parametros Invalidos</i></p>
+            <br />
+
+            @Html.ActionLink("Login", "Index", "Client", new { } ,new { @class = "btn btn-primary" })
+            @Html.ActionLink("Cadastro", "Cadastro", "Client", new { } ,new { @class = "btn btn-primary" })
+            @Html.ActionLink("Pagina Inicial", "Index", "Home", new { } ,new { @class = "btn btn-default" })
         </div>
     }
     else
     {
         <h2>@ViewBag.Title</h2>
         <hr />
+
+        // Formatação e Censura do CPF
+        string cpf_formatted = Model.Cpf.Substring(0, 3) + ".***.**";
+        cpf_formatted += Model.Cpf.Substring(7, 1) + "-";
+        cpf_formatted += Model.Cpf.Substring(9, 2);
 
         <div>
             <dl class="dl-horizontal">
@@ -41,7 +44,7 @@
                 </dt>
 
                 <dd>
-                    @Html.DisplayFor(model => model.Cpf)
+                    @cpf_formatted
                 </dd>
 
                 <dt>
@@ -100,7 +103,7 @@
 
         using (Html.BeginForm("Login", "Client", new { Cpf = Model.Cpf }, FormMethod.Post))
         {
-            <button type="submit" value="Login" class="btn btn-warning">Voltar</button>
+            <button type="submit" value="Login" class="btn btn-default">« Voltar</button>
         }
     }
 }

@@ -21,11 +21,12 @@ namespace SchoolProject.Models.Database.DAO
         public string Error_operation { get; set; }
 
         // Verifica se um Usuario existe no Banco de Dados
-        public bool ExistsClient(string cpf_user)
+        public bool ExistsClient(string cpf)
         {
-            if (string.IsNullOrEmpty(cpf_user) || cpf_user.Length != 11)
+            Client client = new Client();
+            if (!client.ValidationCPF(cpf))
             {
-                Error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
+                Error_operation = client.Error_Validation;
                 return false;
             }
 
@@ -34,7 +35,7 @@ namespace SchoolProject.Models.Database.DAO
             {
                 count_formatted = string.Format("COUNT({0})", CPF);
                 command = string.Format("SELECT {0} FROM {1} WHERE {2}='{3}'",
-                        count_formatted, TABLE_CLIENT, CPF, cpf_user);
+                        count_formatted, TABLE_CLIENT, CPF, cpf);
             }
             catch (ArgumentNullException ex)
             {
@@ -102,7 +103,6 @@ namespace SchoolProject.Models.Database.DAO
         // Insere um Usuario (Com dados Normalizados) se for Validado e não Existir
         public bool InsertClient(Client user)
         {
-
             if (user == null)
             {
                 Error_operation = "Usuario não Informado";
@@ -173,11 +173,8 @@ namespace SchoolProject.Models.Database.DAO
         {
             Client user = new Client();
             user = SelectClient(cpf);
-            if (user == null)
-            {
-                Error_operation = "Usuario não Localizado no Banco de Dados";
-                return false;
-            }
+
+            if (user == null) return false;
 
             AddressDAO addressDAO = new AddressDAO();
             Address address = new Address();
@@ -255,22 +252,18 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Atualiza (Com dados Normalizados) um Usuario caso Exista
-        public bool UpdateClient(Client user)
+        public bool UpdateClient(Client client)
         {
-            if (user == null)
+            if (client == null)
             {
                 Error_operation = "Usuario não Informado";
                 return false;
             }
-            else if (!ExistsClient(user.Cpf))
-            {
-                Error_operation = "Usuario não Cadastrado no Sistema";
-                return false;
-            }
+            else if (!ExistsClient(client.Cpf)) return false;
 
             // Obtem a Cidade/Estado/Endereço antes de Atualizar
             Client oldUser = new Client();
-            oldUser = SelectClient(user.Cpf);
+            oldUser = SelectClient(client.Cpf);
 
             StateCityDAO stateCityDAO = new StateCityDAO();
             int code_state_city = NOT_FOUND;
@@ -281,8 +274,8 @@ namespace SchoolProject.Models.Database.DAO
             oldStateCity.Cidade = oldUser.Cidade;
 
             StateCity newStateCity = new StateCity();
-            newStateCity.Estado = user.Estado;
-            newStateCity.Cidade = user.Cidade;
+            newStateCity.Estado = client.Estado;
+            newStateCity.Cidade = client.Cidade;
 
             code_state_city = stateCityDAO.ReturnCodeStateCity(newStateCity);
 
@@ -330,7 +323,7 @@ namespace SchoolProject.Models.Database.DAO
             oldAddress.Logradouro = oldUser.Logradouro;
 
             Address newAdrress = new Address();
-            newAdrress.Logradouro = user.Logradouro;
+            newAdrress.Logradouro = client.Logradouro;
 
             // Obtem o Codigo do novo Endereço (Codigo ou NOT_FOUND ou ERROR)
             code_address = addressDAO.ReturnCodeAddress(newAdrress);
@@ -377,8 +370,8 @@ namespace SchoolProject.Models.Database.DAO
             {
                 command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
                     "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT,
-                    NAME, user.Name, STATE_CITY, code_state_city, ADDRESS, code_address,
-                    NUMBER, user.Numero, COMPLEMENT, user.Complemento, CPF, user.Cpf);
+                    NAME, client.Name, STATE_CITY, code_state_city, ADDRESS, code_address,
+                    NUMBER, client.Numero, COMPLEMENT, client.Complemento, CPF, client.Cpf);
             }
             catch (ArgumentNullException ex)
             {
@@ -415,16 +408,7 @@ namespace SchoolProject.Models.Database.DAO
         // Retorna um User se o usuario existir e obter seus Dados
         public Client SelectClient(string cpf)
         {
-            if (cpf == null || cpf.Length != 11)
-            {
-                Error_operation = "CPF Invalido. CPF deve conter 11 Caracteres";
-                return null;
-            }
-            else if (!ExistsClient(cpf))
-            {
-                Error_operation = "Usuario não Cadastrado no Sistema";
-                return null;
-            }
+            if (!ExistsClient(cpf)) return null;
 
             string command;
             try

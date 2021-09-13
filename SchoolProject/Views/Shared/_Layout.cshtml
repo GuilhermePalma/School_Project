@@ -23,9 +23,9 @@
             </div>
             <div class="navbar-collapse collapse " id="navbarSupportedContent">
                 <ul class="nav navbar-nav mr-auto">
-                    
+
                     <li>@Html.ActionLink("Início", "Index", "Home")</li>
-                    
+
                     <li class="nav-item dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             Cliente <span class="caret"></span>
@@ -81,11 +81,11 @@
             <hr />
             <div class="row">
                 <p>
-                    <p>&copy; <a title="Perfil GitHub" href="https://github.com/guilhermepalma">Guilherme Peres Lins da Palma</a>, @DateTime.Now.Year</p>
-                    <a title="GitHub" href="https://github.com/guilhermepalma/School_Project">
-                        <img alt="Repositorio GitHub" src="https://img.shields.io/badge/-School%20Project-333333?&style=flat-square&logo=github" />
-                    </a>
-                    <a class="pull-right" href="#content_body">Subir</a>
+                <p>&copy; <a title="Perfil GitHub" href="https://github.com/guilhermepalma">Guilherme Peres Lins da Palma</a>, @DateTime.Now.Year</p>
+                <a title="GitHub" href="https://github.com/guilhermepalma/School_Project">
+                    <img alt="Repositorio GitHub" src="https://img.shields.io/badge/-School%20Project-333333?&style=flat-square&logo=github" />
+                </a>
+                <a class="pull-right" href="#content_body">Subir</a>
                 </p>
             </div>
         </footer>
@@ -93,6 +93,7 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/inputmask")
     @RenderSection("scripts", required: false)
 </body>
 </html>

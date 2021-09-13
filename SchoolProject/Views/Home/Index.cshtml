@@ -6,7 +6,6 @@
         margin-bottom: 15%;
         text-align: center;
     }
-
     #text_welcome {
         margin-bottom: 8%;
         width: 100%;
@@ -64,13 +63,13 @@
 
 <div class="section_description">
     <div class="row">
-        <a href="@Url.Action("Index","Client")">
+        <a href="@Url.Action("Cadastro","Client")">
             <img src="~/Images/Client.jpg" class="image_description" />
         </a>
     </div>
     <div class="row text_description">
         <h4>Seja nosso Cliente e tenha acesso a diversos produtos de diferentes Vendedores &#128513;</h4>
-        <p>@Html.ActionLink("Vamos Lá »", "Index", "Client", new { }, new { @class = "btn btn-default" })</p>
+        <p>@Html.ActionLink("Vamos Lá »", "Cadastro", "Client", new { }, new { @class = "btn btn-default" })</p>
     </div>
 </div>
 
@@ -89,14 +88,14 @@
 <div class="text-center section_description">
     <div class="row">
         <div class="row">
-            <a href="@Url.Action("Index","Seller")">
+            <a href="@Url.Action("Cadastro","Seller")">
                 <img src="~/Images/Seller.jpg" class="image_description" />
             </a>
         </div>
     </div>
     <div class="row text_description">
         <h4>Faça parte do nosso Time, Venda seus Produtos e cresça junto com a gente &#128516;</h4>
-        <p>@Html.ActionLink("Comece Agora »", "Index", "Seller", new { }, new { @class = "btn btn-default" })</p>
+        <p>@Html.ActionLink("Comece Agora »", "Cadastro", "Seller", new { }, new { @class = "btn btn-default" })</p>
     </div>
 </div>
 
