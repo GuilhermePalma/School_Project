@@ -36,7 +36,8 @@ namespace SchoolProject.Models
         {
             if (string.IsNullOrEmpty(cpf) || cpf.Length != 14)
             {
-                Error_Validation = "CPF Invalido. CPF deve conter 11 Caracteres";
+                Error_Validation = "CPF Invalido. CPF deve conter 14 Caracteres " +
+                    "no seguinte Formato: 999.999.999-99";
                 return false;
             }
 

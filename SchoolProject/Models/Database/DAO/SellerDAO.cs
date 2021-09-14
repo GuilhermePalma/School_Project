@@ -23,9 +23,10 @@ namespace SchoolProject.Models.Database.DAO
         // Verifica se um Vendedor existe no Banco de Dados
         public bool ExistsSeller(string cnpj)
         {
-            if (string.IsNullOrEmpty(cnpj) || cnpj.Length != 14)
+            Seller seller = new Seller();
+            if (!seller.ValidationCNPJ(cnpj))
             {
-                Error_operation = "CPNJ Invalido. CNPJ deve conter 14 Caracteres";
+                Error_operation = seller.Error_Validation;
                 return false;
             }
 
@@ -58,33 +59,28 @@ namespace SchoolProject.Models.Database.DAO
                 }
 
                 reader = database.ReaderTable(command);
-                if (reader == null)
-                {
-                    Error_operation = "Não foi possivel consultar a Tabela";
-                    return false;
-                }
 
                 try
                 {
-                    int quantity = NOT_FOUND;
-                    reader.Read();
-                    quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
+                    if(reader != null)
+                    {
+                        int quantity = NOT_FOUND;
+                        reader.Read();
+                        quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
 
-                    if (quantity > 1)
-                    {
-                        Error_operation = "Houve um erro no Banco de Dados. " +
-                            "Mais de 1 Registro Encontrado";
-                        return false;
+                        if (quantity > 1)
+                        {
+                            Error_operation = "Houve um erro no Banco de Dados. " +
+                                "Mais de 1 Registro Encontrado";
+                            return false;
+                        }
+                        else if (quantity == 1) return true;
                     }
-                    else if (quantity == 1)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        Error_operation = "Registro não Encontrado no Banco de Dados";
-                        return false;
-                    }
+
+                    // Caso o reader == null ou quantity < 1
+                    Error_operation = "Registro não Encontrado no Banco de Dados";
+                    return false;
+                    
                 }
                 catch (Exception ex)
                 {
@@ -172,11 +168,8 @@ namespace SchoolProject.Models.Database.DAO
         {
             Seller seller = new Seller();
             seller = SelectSeller(cnpj);
-            if (seller == null)
-            {
-                Error_operation = "Vendedor não Localizado no Banco de Dados";
-                return false;
-            }
+
+            if (seller == null) return false;
 
             AddressDAO addressDAO = new AddressDAO();
             Address address = new Address();
@@ -261,15 +254,13 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = "Vendedor não Informado";
                 return false;
             }
-            else if (!ExistsSeller(seller.Cnpj))
-            {
-                Error_operation = "Vendedor não Cadastrado no Sistema";
-                return false;
-            }
+            else if (!ExistsSeller(seller.Cnpj)) return false; 
 
             // Obtem a Cidade/Estado/Endereço antes de Atualizar
             Seller oldSeller = new Seller();
             oldSeller = SelectSeller(seller.Cnpj);
+
+            if (oldSeller == null) return false;
 
             StateCityDAO stateCityDAO = new StateCityDAO();
             int code_state_city = NOT_FOUND;
@@ -413,16 +404,7 @@ namespace SchoolProject.Models.Database.DAO
         // Retorna um User se o Vendedor existir e obter seus Dados
         public Seller SelectSeller(string cnpj)
         {
-            if (cnpj == null || cnpj.Length != 14)
-            {
-                Error_operation = "CNPJ Invalido. CNPJ deve conter 14 Caracteres";
-                return null;
-            }
-            else if (!ExistsSeller(cnpj))
-            {
-                Error_operation = "Vendedor não Cadastrado no Sistema";
-                return null;
-            }
+            if (!ExistsSeller(cnpj)) return null;
 
             string command;
             try

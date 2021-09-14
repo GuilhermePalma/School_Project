@@ -90,7 +90,6 @@ namespace SchoolProject.Controllers
                 ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
-            else client.Cpf = cpf_formmated;
 
             ViewBag.Estados = new StateCity().listStates();
 

@@ -9,24 +9,40 @@ namespace SchoolProject.Controllers
 {
     public class SellerController : Controller
     {
-        private const string INVALID_CNPJ = "CNPJ não Informado ou Incorreto. " +
-            "CNPJ deve conter apenas 14 Numeros ";
-
-        // GET: Seller
+        // GET: Vendedor
+        [HttpGet]
         public ActionResult Index()
         {
             return View("Login");
         }
 
-        // POST: Seller/Login
+        // GET: Vendedor/Login
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View("Login");
+        }
+
+        // POST: Vendedor/Login
         [HttpPost]
         public ActionResult Login(string cnpj)
-        {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(cnpj))
+        { 
+            Seller seller = new Seller()
+            {
+                Cnpj= string.Empty
+            };
+
+            // Valida o CNPJ passado
+            bool cnpjMask_valid = seller.ValidationMaskCNPJ(cnpj);
+            bool cnpj_valid = seller.ValidationCNPJ(cnpj);
+
+            if (cnpjMask_valid) seller.Cnpj = seller.ConvertMask(cnpj);
+            if (cnpj_valid) seller.Cnpj = cnpj;
+
+            if (string.IsNullOrEmpty(seller.Cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -34,10 +50,10 @@ namespace SchoolProject.Controllers
             {
                 // Instancia um novo Seller e Busca o Vendedor no Banco de Dados
                 SellerDAO sellerDAO = new SellerDAO();
-                Seller sellerDatabase = sellerDAO.SelectSeller(cnpj);
+                seller = sellerDAO.SelectSeller(seller.Cnpj);
 
                 // Vendedor Encontrado no Banco de Dados
-                if (sellerDatabase != null) return View("Login", sellerDatabase);
+                if (seller != null) return View("Login", seller);
 
                 ViewBag.Message = "Vendedor não Cadastrado no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
@@ -50,7 +66,7 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Seller/Cadastro
+        // GET: Vendedor/Cadastro
         [HttpGet]
         public ActionResult Cadastro()
         {
@@ -60,17 +76,22 @@ namespace SchoolProject.Controllers
             return View("Register");
         }
 
-        // POST: Seller/Cadastro
+        // POST: Vendedor/Cadastro
         [HttpPost]
         public ActionResult Cadastro(Seller seller)
         {
+            // Valida o CNPJ passado
+            bool valid_cnpj = seller.ValidationMaskCNPJ(seller.Cnpj);
+            string cnpj_converted = valid_cnpj ? seller.ConvertMask(seller.Cnpj) : string.Empty;
+
             // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(seller.Cnpj))
+            if (string.IsNullOrEmpty(cnpj_converted))
             {
-                ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Message = "Informe um CPF Valido";
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else seller.Cnpj= cnpj_converted;
 
             ViewBag.Estados = new StateCity().listStates();
 
@@ -90,28 +111,28 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Seller/Detalhes/{cnpj}
+        // GET: Vendedor/Detalhes/{cnpj}
         [HttpGet]
         public ActionResult Detalhes(string cnpj)
         {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(cnpj))
+            // Valida CNPJ Passado
+            Seller seller = new Seller();
+            if (!seller.ValidationCNPJ(cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else seller.Cnpj = cnpj;
 
             try
             {
                 // Instancia um novo Seller e Busca o Vendedor no Banco de Dados
                 SellerDAO sellerDAO = new SellerDAO();
-
-                Seller sellerDatabase = new Seller();
-                sellerDatabase = sellerDAO.SelectSeller(cnpj);
+                seller = sellerDAO.SelectSeller(seller.Cnpj);
 
                 // Vendedor Encontrado no Banco de Dados
-                if (sellerDatabase != null) return View("Details", sellerDatabase);
+                if (seller != null) return View("Details", seller);
 
                 ViewBag.Message = "Vendedor não Cadastrado no Sistema";
                 ViewBag.Erro = sellerDAO.Error_operation;
@@ -124,29 +145,31 @@ namespace SchoolProject.Controllers
         }
 
 
-        // GET: Seller/Atualizar/{cnpj}
+        // GET: Vendedor/Atualizar/{cnpj}
         [HttpGet]
         public ActionResult Atualizar(string cnpj)
         {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(cnpj))
+            // Valida CNPJ Passado
+            Seller seller = new Seller();
+            if (!seller.ValidationCNPJ(cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else seller.Cnpj = cnpj;
 
             try
             {
                 SellerDAO sellerDAO = new SellerDAO();
                 // Obtem um Vendedor no Banco de Dados. Se não consegue = null
-                Seller sellerDatabase = sellerDAO.SelectSeller(cnpj);
+                seller = sellerDAO.SelectSeller(seller.Cnpj);
 
-                if (sellerDatabase != null)
+                if (seller != null)
                 {
                     // Disponibiliza uma Lista com os Estados
                     ViewBag.Estados = new StateCity().listStates();
-                    return View("Update", sellerDatabase);
+                    return View("Update", seller);
                 }
                 else
                 {
@@ -161,15 +184,15 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // POST: Seller/Atualizar
+        // POST: Vendedor/Atualizar
         [HttpPost]
         public ActionResult Atualizar(Seller seller)
         {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(seller.Cnpj))
+            // Valida CNPJ Passado
+            if (!seller.ValidationCNPJ(seller.Cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -191,24 +214,26 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // GET: Seller/Excluir/{cnpj}
+        // GET: Vendedor/Excluir/{cnpj}
         [HttpGet]
         public ActionResult Excluir(string cnpj)
         {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(cnpj))
+            // Valida CNPJ Passado
+            Seller seller = new Seller();
+            if (!seller.ValidationCNPJ(cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else seller.Cnpj = cnpj;
 
             try
             {
                 SellerDAO sellerDAO = new SellerDAO();
 
                 // Obtem um Vendedor no Banco de Dados. Se não consegue = null
-                Seller seller = sellerDAO.SelectSeller(cnpj);
+                seller = sellerDAO.SelectSeller(seller.Cnpj);
 
                 if (seller != null) return View("Delete", seller);
 
@@ -223,15 +248,15 @@ namespace SchoolProject.Controllers
             }
         }
 
-        // POST: Seller/Excluir
+        // POST: Vendedor/Excluir
         [HttpPost]
         public ActionResult Excluir(Seller seller)
         {
-            // Caso não seja infromado o CNPJ
-            if (!Seller.ValidationCNPJ(seller.Cnpj))
+            // Valida CNPJ Passado
+            if (!seller.ValidationCNPJ(seller.Cnpj))
             {
                 ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = INVALID_CNPJ;
+                ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
 
@@ -257,6 +282,7 @@ namespace SchoolProject.Controllers
             }
         }
 
+        // GET: Vendedor/Cadastrados
         [ActionName("Cadastrados")]
         public ActionResult ListSellers()
         {

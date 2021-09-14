@@ -38,6 +38,13 @@
             </div>
         }
 
+        using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+            <button type="submit" value="Index" class="btn btn-default">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                Inicio
+            </button>
+        }
     }
     else
     {
@@ -51,11 +58,15 @@
         </ul>
 
         <br />
-
-        Html.ActionLink("Sair", "Index", "Client", new { }, new { @class = "badge badge-warning" });
+        
+        using (Html.BeginForm("Index", "Home"))
+        {
+            <button type="submit" value="Index" class="btn btn-default">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                Sair
+            </button>
+        }
     }
-
-    Html.ActionLink("Voltar ao Incio", "Index", "Home", new { }, new { @class = "badge badge-warning" });
 }
 
 @section Scripts {

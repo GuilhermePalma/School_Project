@@ -7,17 +7,6 @@
     <h2>@ViewBag.Title</h2>
     <hr />
 
-    if (ViewBag.Message != null)
-    {
-        <div class="alert alert-danger" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4>@ViewBag.Message</h4>
-            <p>@Html.ActionLink("Clique Aqui", "Index", controller) para Realizar o Login</p>
-        </div>
-    }
-
     using (Html.BeginForm("Cadastro", controller, FormMethod.Post))
     {
         Html.AntiForgeryToken();
@@ -36,7 +25,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Cnpj, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Cnpj, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Cnpj, new { htmlAttributes = new { @class = "form-control maskCNPJ" } })
                     @Html.ValidationMessageFor(model => model.Cnpj, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -96,4 +85,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/inputmask/MaskCNPJ.js")
 }

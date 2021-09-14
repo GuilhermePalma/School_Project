@@ -23,7 +23,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Cnpj, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.Cnpj, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.Cnpj, new { htmlAttributes = new { @class = "form-control maskCNPJ" } })
                         @Html.ValidationMessageFor(model => model.Cnpj, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -39,6 +39,13 @@
             </div>
         }
 
+        using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+            <button type="submit" value="Index" class="btn btn-default">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                Inicio
+            </button>
+        }
     }
     else
     {
@@ -50,16 +57,21 @@
             <li>@Html.ActionLink("Atualizar Vendedor", "Atualizar", controller, new { Cnpj = Model.Cnpj }, new { @class = "" })</li>
             <li>@Html.ActionLink("Excluir Vendedor", "Excluir", controller, new { Cnpj = Model.Cnpj }, new { @class = "" })</li>
         </ul>
-
         <br />
 
-        Html.ActionLink("Sair", "Index", controller, new { }, new { @class = "badge badge-warning" });
+        using (Html.BeginForm("Index", "Home"))
+        {
+            <button type="submit" value="Index" class="btn btn-default">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                Sair
+            </button>
+        }
     }
 
-    Html.ActionLink("Voltar ao Incio", "Index", "Home", new { }, new { @class = "badge badge-warning" });
 }
 
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/inputmask/MaskCNPJ.js")
 }

@@ -24,10 +24,11 @@
     else
     {
         <style type="text/css">
-            h3{
-                text-align:center;
+            h3 {
+                text-align: center;
                 margin: 3% 0%;
             }
+
             #table_seller th {
                 text-align: center;
             }
@@ -109,8 +110,16 @@
                             }
                         </th>
                     </tr>
-                 }
+                }
             </table>
         </div>
+
+        using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+            <button type="submit" value="Index" class="btn btn-default">
+                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                Pagina Inicial
+            </button>
+        }
     }
 }

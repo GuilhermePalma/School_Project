@@ -1,15 +1,73 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace SchoolProject.Models
 {
     public class Seller
     {
+
+        // Strings de Erro no CPF
+        public string Error_Validation { get; set; }
+
         public Seller() { }
 
-        public static bool ValidationCNPJ(string cnpj)
+        public bool ValidationCNPJ(string cnpj)
         {
-            return !string.IsNullOrEmpty(cnpj) && cnpj.Length == 14;
+            if (string.IsNullOrEmpty(cnpj) && cnpj.Length != 14)
+            {
+                Error_Validation = "CNPJ Invalido. CNPJ Deve conter 14 Caracteres";
+                return false;
+            }
+
+            Regex regex = new Regex(@"^[0-9]+$");
+            if (!regex.IsMatch(cnpj))
+            {
+                Error_Validation = "CNPJ deve estar no Seguinte Formato: 99999999000099";
+                return false;
+            }
+            return true;
+        }
+
+        // Valida o CNPJ e se está na mascara do CNPJ
+        public bool ValidationMaskCNPJ(string cnpj)
+        {
+            if (string.IsNullOrEmpty(cnpj) || cnpj.Length != 18)
+            {
+                Error_Validation = "CNPJ Invalido. CNPJ Deve conter 18 Caracteres " +
+                    "no seguinte Formato: 99.999.999/0000-99";
+                return false;
+            }
+
+            Regex regex = new Regex(@"[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}-[0-9]{2}");
+            if (!regex.IsMatch(cnpj))
+            {
+                Error_Validation = "CNPJ deve estar no Seguinte Formato: 99.999.999/0000-99";
+                return false;
+            }
+            return true;
+        }
+
+        // Valida e Converte o CNPJ com Mascara
+        public string ConvertMask(string cnpj)
+        {
+            if (!ValidationMaskCNPJ(cnpj)) return string.Empty;
+
+            try
+            {
+                string formatted_cpnj = "";
+                formatted_cpnj = cnpj.Replace(".", string.Empty)
+                    .Replace("-", string.Empty).Replace("/", string.Empty);
+
+                return ValidationCNPJ(formatted_cpnj) ? formatted_cpnj : string.Empty;
+            }
+            catch (ArgumentException ex)
+            {
+                Error_Validation = "Não foi possivel Converter o CNPJ";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
+                return string.Empty;
+            }
         }
 
         [DisplayName("Nome")]
@@ -19,9 +77,11 @@ namespace SchoolProject.Models
         public string Name { get; set; }
 
         [DisplayName("CNPJ")]
-        [RegularExpression(@"^[0-9]+$", ErrorMessage = "O CNPJ deve ter apenas Numeros")]
+        [RegularExpression(@"[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}-[0-9]{2}", 
+            ErrorMessage = "CPF deve estar no Seguinte Formato: 99.999.999/0000-99")]
         [Required(ErrorMessage = "O CNPJ deve ser informado !")]
-        [StringLength(14, MinimumLength = 14, ErrorMessage = "O CNPJ deve Ter {1} Digitos")]
+        [StringLength(18, MinimumLength = 18, 
+            ErrorMessage = "O CNPJ deve Ter {1} Digitos, no seguinte Formato: 99.999.999/0000-99")]
         public string Cnpj { get; set; }
 
         [DisplayName("Logradouro")]
