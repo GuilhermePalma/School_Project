@@ -71,7 +71,7 @@ namespace SchoolProject.Controllers
         public ActionResult Cadastro()
         {
             // Disponibiliza uma Lista com os Estados
-            ViewBag.Estados = new StateCity().listStates();
+            ViewBag.Estados = new StateCity().ListStates();
 
             return View("Register");
         }
@@ -93,7 +93,7 @@ namespace SchoolProject.Controllers
             }
             else seller.Cnpj= cnpj_converted;
 
-            ViewBag.Estados = new StateCity().listStates();
+            ViewBag.Estados = new StateCity().ListStates();
 
             // Instancia um novo Seller e Insere um Vendedor no Banco de Dados
             SellerDAO sellerDAO = new SellerDAO();
@@ -168,7 +168,7 @@ namespace SchoolProject.Controllers
                 if (seller != null)
                 {
                     // Disponibiliza uma Lista com os Estados
-                    ViewBag.Estados = new StateCity().listStates();
+                    ViewBag.Estados = new StateCity().ListStates();
                     return View("Update", seller);
                 }
                 else

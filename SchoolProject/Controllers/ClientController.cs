@@ -71,7 +71,7 @@ namespace SchoolProject.Controllers
         public ActionResult Cadastro()
         {
             // Disponibiliza uma Lista com os Estados
-            ViewBag.Estados = new StateCity().listStates();
+            ViewBag.Estados = new StateCity().ListStates();
 
             return View("Register");
         }
@@ -91,7 +91,7 @@ namespace SchoolProject.Controllers
                 return View("ResultOperation");
             }
 
-            ViewBag.Estados = new StateCity().listStates();
+            ViewBag.Estados = new StateCity().ListStates();
 
             // Instancia um novo Client e Insere um Usuario no Banco de Dados
             ClientDAO clientDAO = new ClientDAO();
@@ -173,7 +173,7 @@ namespace SchoolProject.Controllers
                 if (client != null)
                 {
                     // Disponibiliza uma Lista com os Estados
-                    ViewBag.Estados = new StateCity().listStates();
+                    ViewBag.Estados = new StateCity().ListStates();
                     return View("Update", client);
                 }
                 else

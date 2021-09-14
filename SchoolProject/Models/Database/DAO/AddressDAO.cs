@@ -84,6 +84,12 @@ namespace SchoolProject.Models.Database.DAO
                         return false;
                     }
                 }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
                 catch (Exception ex)
                 {
                     Error_operation = "Não foi possivel obter o Verificar o Endereço.";
@@ -97,221 +103,17 @@ namespace SchoolProject.Models.Database.DAO
             }
         }
 
-        // Caso o Endereço não exista = Cadastra
-        public bool InsertAddress(Address address)
-        {
-            if (address == null)
-            {
-                Error_operation = "Usuario não Informado";
-                return false;
-            }
-            else if (ExistsAddress(ReturnCodeAddress(address)))
-            {
-                return false;
-            }
-
-            string command;
-            try
-            {
-                command = string.Format("INSERT INTO {0}({1}) VALUE('{2}')",
-                    TABLE_ADDRESS, ADDRESS, address.Logradouro);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-
-            using (Database database = new Database())
-            {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else if (database.ExecuteCommand(command) <= 0)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else return true;
-            }
-        }
-
-        // Caso um Endereço exista = Exclui
-        public bool DeleteAddress(int code)
-        {
-            if (!ExistsAddress(code))
-            {
-                Error_operation += " Endereço não Cadastrado no Sistema";
-                return false;
-            }
-
-            string command;
-            try
-            {
-                command = string.Format("DELETE FROM {0} WHERE {1}={2}",
-                        TABLE_ADDRESS, CODE, code);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-
-            using (Database database = new Database())
-            {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else if (database.ExecuteCommand(command) <= 0)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else return true;
-            }
-        }
-
-        // Caso o Endereço Exista, Retorna a Classe uma instanciada
-        public Address SelectAddress(int code)
-        {
-            if (!ExistsAddress(code))
-            {
-                Error_operation += " Endereço não Cadastrado no Sistema";
-                return null;
-            }
-
-            string command;
-            try
-            {
-                command = string.Format("SELECT * FROM address WHERE {0}={1}", CODE, code);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return null;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return null;
-            }
-
-            using (Database database = new Database())
-            {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return null;
-                }
-
-                reader = database.ReaderTable(command);
-                if (reader == null)
-                {
-                    Error_operation = database.Error_operation;
-                    return null;
-                }
-
-                try
-                {
-                    reader.Read();
-                    Address address = new Address();
-                    address.Code_address = reader.GetInt32(reader.GetOrdinal(CODE));
-                    address.Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS));
-
-                    return address;
-                }
-                catch (Exception ex)
-                {
-                    Error_operation = "Não foi possivel Excluir o Endereço.";
-                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                    return null;
-                }
-                finally
-                {
-                    if (reader != null) reader.Close();
-                }
-            }
-        }
-
-        // Atualiza o Endereço no Banco de Dados
-        public bool UpdateAddress(int old_codeAddress, Address address)
-        {
-            if (address == null || address.Logradouro.Length < 5)
-            {
-                Error_operation = "Logradouro não Informado";
-                return false;
-            }
-
-            address.Code_address = old_codeAddress;
-
-            if (!ExistsAddress(address.Code_address))
-            {
-                Error_operation = "Estado/Cidade não Cadastrado no Sistema";
-                return false;
-            }
-
-            string command;
-            try
-            {
-                command = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}={4}",
-                    TABLE_ADDRESS, ADDRESS, address.Logradouro, CODE, address.Code_address);
-            }
-            catch (ArgumentNullException ex)
-            {
-                Error_operation = "Erro: Argumento Nulo na Criação da Query";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-            catch (FormatException ex)
-            {
-                Error_operation = "Erro: Formação da String SQL Invalida";
-                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
-                return false;
-            }
-
-            using (Database database = new Database())
-            {
-                if (!database.IsAvalibleDatabase)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else if (database.ExecuteCommand(command) <= 0)
-                {
-                    Error_operation = database.Error_operation;
-                    return false;
-                }
-                else return true;
-            }
-        }
-
         // Busca o Codigo de um Endereço se for Valido
         public int ReturnCodeAddress(Address address)
         {
-            if (address == null || address.Logradouro.Length < 5)
+            if (address == null)
             {
                 Error_operation = "Endereço Invalido. O Preenchimento do Logradouro" +
                     " é Obrigatorio";
+                return ERROR;
+            } else if (address.ValidationLogradouro(address.Logradouro))
+            {
+                Error_operation = address.Error_Validation;
                 return ERROR;
             }
 
@@ -358,6 +160,12 @@ namespace SchoolProject.Models.Database.DAO
                     // Retorna o Codigo ou 0 (não encontrado)
                     return code;
                 }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return ERROR;
+                }
                 catch (Exception ex)
                 {
                     Error_operation = "Não foi possivel obter o Codigo do Endereço.";
@@ -371,17 +179,128 @@ namespace SchoolProject.Models.Database.DAO
             }
         }
 
+
+        // Caso o Endereço não exista = Cadastra
+        public bool InsertAddress(Address address)
+        {
+            if (ExistsAddress(ReturnCodeAddress(address))) return false;
+
+            string command;
+            try
+            {
+                command = string.Format("INSERT INTO {0}({1}) VALUE('{2}')",
+                    TABLE_ADDRESS, ADDRESS, address.Logradouro);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return false;
+            }
+
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+                else if (database.ExecuteCommand(command) <= 0)
+                {
+                    Error_operation = database.Error_operation;
+                    return false;
+                }
+                else return true;
+            }
+        }
+
+        // Caso o Endereço Exista, Retorna a Classe uma instanciada
+        public Address SelectAddress(int code)
+        {
+            if (!ExistsAddress(code)) return null;
+
+            string command;
+            try
+            {
+                command = string.Format("SELECT * FROM address WHERE {0}={1}", CODE, code);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+            catch (FormatException ex)
+            {
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return null;
+            }
+
+            using (Database database = new Database())
+            {
+                if (!database.IsAvalibleDatabase)
+                {
+                    Error_operation = database.Error_operation;
+                    return null;
+                }
+
+                reader = database.ReaderTable(command);
+                if (reader == null)
+                {
+                    Error_operation = database.Error_operation;
+                    return null;
+                }
+
+                try
+                {
+                    reader.Read();
+
+                    Address address = new Address()
+                    {
+                        Code_address = reader.GetInt32(reader.GetOrdinal(CODE)),
+                        Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS))
+                    };
+
+                    return address;
+                }
+                catch(IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    Error_operation = "Não foi possivel Excluir o Endereço.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
+                }
+                finally
+                {
+                    if (reader != null) reader.Close();
+                }
+            }
+        }
+
         // Obtem o Codigo do Endereço. Caso não exista, tenta Inserir
         public int CodeAddressValid(Address address)
         {
             if (address == null)
             {
-                Error_operation += " Logradouro não Informado";
+                Error_operation = "Logradouro não Informado";
                 return ERROR;
             }
 
             // Obtem o Codigo Address
             int code_address = ReturnCodeAddress(address);
+
             if (code_address == ERROR)
             {
                 return ERROR;
@@ -400,23 +319,28 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Verifica se o Usuario excluido é o Unico com aquele Endereço
-        // TODO: refatorar --> Alterar o metodo p/ buscar nas 2 tabelas se é unico
         public bool IsOnlyAddress(Address address)
         {
 
-            if (address == null || address.Logradouro.Length < 5)
+            if (address == null)
             {
                 Error_operation = "Logradouro Invalido.";
                 return false;
             }
-            else if (ReturnCodeAddress(address) <= 0) return false;
+
+            address.Code_address = ReturnCodeAddress(address);
+            if (address.Code_address <= 0)
+            {
+                Error_operation = "Codigo do Logradouro não Encontrado. ";
+                return false;
+            }
 
             string[] tables_search = new string[2];
             tables_search[0] = ClientDAO.TABLE_CLIENT;
             tables_search[1] = SellerDAO.TABLE_SELLER;
 
             // Variavel que controlará se é o unico registro
-            bool isOnlyStateCity = false;
+            int isOnlyStateCity = 0;
 
             // Laço de Repetição com as operações de busca de registro nas 2 tabelas
             foreach (string table in tables_search)
@@ -464,8 +388,23 @@ namespace SchoolProject.Models.Database.DAO
                         reader.Read();
                         quantity_register = reader.GetInt32(reader.GetOrdinal(count_formmated));
 
-                        // Se for o Unico ---> Retorna True. Se não, retorna False
-                        isOnlyStateCity = quantity_register == 1;
+                        // Retorna True (Se for o Unico)
+                        if (quantity_register <= 1)
+                        {
+                            // 1 ou nenhum usuario com aquele codigo
+                            isOnlyStateCity++;
+                        }
+                        else if (isOnlyStateCity > 0)
+                        {
+                            // +1 usuario com aquele codigo em uma tabela, mas na outra não
+                            isOnlyStateCity--;
+                        }
+                    }
+                    catch (IndexOutOfRangeException ex)
+                    {
+                        Error_operation = "Não foi possivel Obter os Dados.";
+                        System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                        return false;
                     }
                     catch (Exception ex)
                     {
@@ -480,9 +419,141 @@ namespace SchoolProject.Models.Database.DAO
                 }
             }
 
-            return isOnlyStateCity;
+            return isOnlyStateCity == 2;
         }
 
+        // Exclui o Logradouro se o Usuario for o Unico usando
+        public bool DeleteOnlyAddress(Address address)
+        {
+            if (address == null)
+            {
+                Error_operation = "Dados Invalidos. Insira o Logradouro Corretamente.";
+                return false;
+            }
+
+            // Verificar se o Usuario é o unico usando aquele endereço 
+            if (IsOnlyAddress(address))
+            {
+                address.Code_address = ReturnCodeAddress(address);
+
+                if (address.Code_address < 1)
+                {
+                    Error_operation = "Logradouro não Encontrados no Banco de Dados";
+                    return false;
+                }
+
+                string command;
+                try
+                {
+                    command = string.Format("DELETE FROM {0} WHERE {1}={2}",
+                    TABLE_ADDRESS, CODE, address.Code_address);
+                }
+                catch (ArgumentNullException ex)
+                {
+                    Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+                catch (FormatException ex)
+                {
+                    Error_operation = "Erro: Formação da String SQL Invalida";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+
+                using (Database database = new Database())
+                {
+                    if (!database.IsAvalibleDatabase)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+                    else if (database.ExecuteCommand(command) <= 0)
+                    {
+                        Error_operation = "Não Foi Possivel Excluir o Logradouro. "
+                            + database.Error_operation;
+                        return false;
+                    }
+                    else return true;
+                }
+            }
+            else
+            {
+                // Não Exlcui o usuario pois não é o unico usando o Registro
+                Error_operation = string.Empty;
+                return false;
+            }
+        }
+
+        // Atualiza o Logradouro se o Usuario for o Unico usando
+        public bool UpdateOnlyStateCity(Address oldAddress, Address newAddress)
+        {
+            if (oldAddress == null || newAddress == null)
+            {
+                Error_operation = "Logradouro não Informados.";
+                return false;
+            }
+            else if (oldAddress.Equals(newAddress)) return true;
+
+            int code_newAddress = ReturnCodeAddress(newAddress);
+
+            if (code_newAddress == ERROR)
+            {
+                return false;
+            }
+            else if (code_newAddress > 0)
+            {
+                // Registro novo já existe no Banco de Dados e vê se o Velho somente ele usava
+                DeleteOnlyAddress(oldAddress);
+                return true;
+            }
+            else if (IsOnlyAddress(oldAddress))
+            {
+                // Novo Logradouro não Existe no Banco de Dados
+                // Caso Seja o Unico com Aquele Registro ---> Atualiza
+
+                string command;
+                try
+                {
+                    command = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}={4}",
+                        TABLE_ADDRESS, ADDRESS, newAddress.Logradouro, CODE, oldAddress.Code_address);
+                }
+                catch (ArgumentNullException ex)
+                {
+                    Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+                catch (FormatException ex)
+                {
+                    Error_operation = "Erro: Formação da String SQL Invalida";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
+
+                using (Database database = new Database())
+                {
+                    if (!database.IsAvalibleDatabase)
+                    {
+                        Error_operation = database.Error_operation;
+                        return false;
+                    }
+                    else if (database.ExecuteCommand(command) <= 0)
+                    {
+                        Error_operation = "Não Foi Possivel Atualizar o Logradouro. "
+                            + database.Error_operation;
+                        return false;
+                    }
+                    else return true;
+                }
+            }
+            else
+            {
+                // Novo registro não Existe no Banco de Dados e o Registro Velho
+                // é Usado por +1 Usuario ---> Insere novo Registro
+                return InsertAddress(newAddress);
+            }
+        }
 
     }
 }

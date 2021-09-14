@@ -87,6 +87,12 @@ namespace SchoolProject.Models.Database.DAO
                         return false;
                     }
                 }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return false;
+                }
                 catch (Exception ex)
                 {
                     Error_operation = "Não foi possivel obter o Verificar o Cliente.";
@@ -115,12 +121,17 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             // Intancia das Classes de Endereço
-            StateCity stateCity = new StateCity();
-            stateCity.Estado = user.Estado;
-            stateCity.Cidade = user.Cidade;
+            StateCity stateCity = new StateCity()
+            {
+                Estado = user.Estado,
+                Cidade = user.Cidade
+            };
 
-            Address address = new Address();
-            address.Logradouro = user.Logradouro;
+            Address address = new Address()
+            {
+                Logradouro = user.Logradouro
+            };
+            
 
             // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
             int code_state_city = new StateCityDAO().CodeStateCityValid(stateCity);
@@ -171,48 +182,35 @@ namespace SchoolProject.Models.Database.DAO
         // Exlcui o Usuario e se Existir
         public bool DeleteClient(string cpf)
         {
-            Client user = new Client();
-            user = SelectClient(cpf);
+            Client client = SelectClient(cpf);
 
-            if (user == null) return false;
+            if (client == null) return false;
 
+            // Verificar se o Usuario é o unico usando aquele endereço ---> Exclui
             AddressDAO addressDAO = new AddressDAO();
-            Address address = new Address();
-            address.Logradouro = user.Logradouro;
-
-            // Verificar se o Usuario é o unico usando aquele endereço 
-            if (addressDAO.IsOnlyAddress(address))
-            {
-                // É o unico com aquele Endereço ---> Exclui o Endereço
-                bool is_deleted_address = addressDAO.
-                    DeleteAddress(addressDAO.ReturnCodeAddress(address));
-
-                if (!is_deleted_address)
-                {
-                    Error_operation = "Não foi Possivel excluir o Endereço " +
-                        "do Banco de Dados. ";
-                    return false;
-                }
-            }
-
             StateCityDAO stateCityDAO = new StateCityDAO();
-            StateCity stateCity = new StateCity();
-            stateCity.Estado = user.Estado;
-            stateCity.Cidade = user.Cidade;
-
-            // Verificar se o Usuario é o unico usando aquele endereço 
-            if (stateCityDAO.IsOnlyStateCity(stateCity))
+            Address address = new Address()
             {
-                // É o unico com aquela Cidade e Estado ---> Exclui ambos do banco de dados
-                bool is_deleted_stateCity = stateCityDAO.
-                    DeleteStateCity(stateCityDAO.ReturnCodeStateCity(stateCity));
+                Logradouro = client.Logradouro
+            };
 
-                if (!is_deleted_stateCity)
-                {
-                    Error_operation = "Não foi Possivel excluir o Estado e Ciade" +
-                        " do Banco de Dados. ";
-                    return false;
-                }
+            StateCity stateCity = new StateCity()
+            {
+                Estado = client.Estado,
+                Cidade = client.Cidade,
+            };
+
+            if (!addressDAO.DeleteOnlyAddress(address)
+                && !string.IsNullOrEmpty(addressDAO.Error_operation))
+            {
+                Error_operation = addressDAO.Error_operation;
+                return false;
+            }
+            else if (!stateCityDAO.DeleteOnlyStateCity(stateCity)
+                && !string.IsNullOrEmpty(stateCityDAO.Error_operation))
+            {
+                Error_operation = stateCityDAO.Error_operation;
+                return false;
             }
 
             string command;
@@ -262,116 +260,77 @@ namespace SchoolProject.Models.Database.DAO
             else if (!ExistsClient(client.Cpf)) return false;
 
             // Obtem a Cidade/Estado/Endereço antes de Atualizar
-            Client oldUser = new Client();
-            oldUser = SelectClient(client.Cpf);
+            Client oldClient = SelectClient(client.Cpf);
+
+            if (oldClient == null) return false;
 
             StateCityDAO stateCityDAO = new StateCityDAO();
-            int code_state_city = NOT_FOUND;
+            AddressDAO addressDAO = new AddressDAO();
+
 
             // Usado para obter o Antigo Codigo do Estado/Cidade
-            StateCity oldStateCity = new StateCity();
-            oldStateCity.Estado = oldUser.Estado;
-            oldStateCity.Cidade = oldUser.Cidade;
-
-            StateCity newStateCity = new StateCity();
-            newStateCity.Estado = client.Estado;
-            newStateCity.Cidade = client.Cidade;
-
-            code_state_city = stateCityDAO.ReturnCodeStateCity(newStateCity);
-
-            if (code_state_city == NOT_FOUND)
+            StateCity oldStateCity = new StateCity()
             {
-                // Verifica se o Usuario é o Unico com aquele Estado/Cidade
-                if (stateCityDAO.IsOnlyStateCity(oldStateCity))
+                Estado = oldClient.Estado,
+                Cidade = oldClient.Cidade
+            };
+            StateCity newStateCity = new StateCity()
+            {
+                Estado = client.Estado,
+                Cidade = client.Cidade
+            };
+            Address oldAddress = new Address()
+            {
+                Logradouro = oldClient.Estado
+            };
+            Address newAddress = new Address()
+            {
+                Logradouro = client.Estado
+            };
+
+            // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro
+            if (!stateCityDAO.UpdateOnlyStateCity(oldStateCity, newStateCity))
+            {
+                Error_operation = stateCityDAO.Error_operation;
+                return false;
+            }
+            else if (!addressDAO.UpdateOnlyStateCity(oldAddress, newAddress))
+            {
+                Error_operation = addressDAO.Error_operation;
+                return false;
+            }
+            else
+            {
+                int code_stateCity = NOT_FOUND;
+                int code_address = NOT_FOUND;
+                code_stateCity = stateCityDAO.ReturnCodeStateCity(newStateCity);
+                code_address = addressDAO.ReturnCodeAddress(newAddress);
+
+                if (code_stateCity < 1)
                 {
-                    // Obtem o codigo da Antiga Cidade/Estado e Atualiza os Valores
-                    code_state_city = stateCityDAO.ReturnCodeStateCity(oldStateCity);
-                    if (!stateCityDAO.UpdateStateCity(code_state_city, newStateCity))
-                    {
-                        Error_operation = "Não foi Possivel Atualizar o Estado e Cidade";
-                        return false;
-                    }
+                    Error_operation = stateCityDAO.Error_operation;
+                    return false;
+                }
+                else if (code_address < 1)
+                {
+                    Error_operation = addressDAO.Error_operation;
+                    return false;
                 }
                 else
                 {
-                    // Usuario não é o Unico com Cidade/Estado Antigo e o Endereço não existe no BD
-                    if (stateCityDAO.InsertStateCity(newStateCity))
-                    {
-                        // Conseguiu Inserir a Cidade/Estado no Banco ---> Retorna o Codigo
-                        code_state_city = stateCityDAO.ReturnCodeStateCity(newStateCity);
-                    }
-                    else
-                    {
-                        Error_operation = "Não foi Possivel Cadastrar o novo Estado e Cidade";
-                        return false;
-                    }
+                    newStateCity.Code_stateCity = code_stateCity;
+                    newAddress.Code_address = code_address;
                 }
-            }
-
-            // Erro ao obter o Codigo do Estado/Cidade ou ao Inserir o novo no Banco de Dados  
-            if (code_state_city == ERROR)
-            {
-                Error_operation = "Houve um erro na Atualização do Estado e Cidade";
-                return false;
-            }
-
-            AddressDAO addressDAO = new AddressDAO();
-            int code_address = NOT_FOUND;
-
-            // Usado para obter o antigo Codigo do Endereço
-            Address oldAddress = new Address();
-            oldAddress.Logradouro = oldUser.Logradouro;
-
-            Address newAdrress = new Address();
-            newAdrress.Logradouro = client.Logradouro;
-
-            // Obtem o Codigo do novo Endereço (Codigo ou NOT_FOUND ou ERROR)
-            code_address = addressDAO.ReturnCodeAddress(newAdrress);
-
-            // Verifica se o Novo endereço já existe
-            if (code_address == NOT_FOUND)
-            {
-                // Verifica se o Usuario é o Unico com aquele Endereço Antigo
-                if (addressDAO.IsOnlyAddress(oldAddress))
-                {
-                    // Obtem o Codigo dos Antigos valores do Endereço e Atualiza
-                    code_address = addressDAO.ReturnCodeAddress(oldAddress);
-                    if (!addressDAO.UpdateAddress(code_address, newAdrress))
-                    {
-                        Error_operation = "Não foi Possivel Atualizar o Logradouro";
-                        return false;
-                    }
-                }
-                else
-                {
-                    // Usuario não é o unico com endereço antigo e o Endereço não existe no Banco de Dados
-                    if (addressDAO.InsertAddress(newAdrress))
-                    {
-                        // Conseguiu inserir no banco de dados ---> Obtem o Codigo
-                        code_address = addressDAO.ReturnCodeAddress(newAdrress);
-                    }
-                    else
-                    {
-                        Error_operation = "Não foi Possivel Cadastrar o novo Logradouro";
-                        return false;
-                    }
-                }
-            }
-
-            // Erro ao obter o Codigo do Endereço ou ao Inserir o novo no banco
-            if (code_address == ERROR)
-            {
-                Error_operation = "Houve um erro na Atualização do Logradouro";
-                return false;
             }
 
             string command;
             try
             {
                 command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
-                    "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT,
-                    NAME, client.Name, STATE_CITY, code_state_city, ADDRESS, code_address,
-                    NUMBER, client.Numero, COMPLEMENT, client.Complemento, CPF, client.Cpf);
+                    "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT, NAME,
+                    client.Name, STATE_CITY, newStateCity.Code_stateCity, ADDRESS, 
+                    newAddress.Code_address, NUMBER, client.Numero, COMPLEMENT, 
+                    client.Complemento, CPF, client.Cpf);
             }
             catch (ArgumentNullException ex)
             {
@@ -462,6 +421,12 @@ namespace SchoolProject.Models.Database.DAO
                     code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
                     code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
                 }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
+                }
                 catch (Exception ex)
                 {
                     Error_operation = "Não foi Possivel Selecionar o Cliente no Banco de dados.";
@@ -475,23 +440,20 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             // Formata os Dados Normalizados do Banco de Dados
-            StateCity stateCity = new StateCity();
-            stateCity = new StateCityDAO().SelectStateCity(code_state_city);
-            Address addressClass = new Address();
-            addressClass = new AddressDAO().SelectAddress(code_address);
+            StateCityDAO stateCityDAO = new StateCityDAO();
+            AddressDAO addressDAO = new AddressDAO();
+            StateCity stateCity = stateCityDAO.SelectStateCity(code_state_city);
+            Address addressClass = addressDAO.SelectAddress(code_address);
 
-            if (stateCity == null || string.IsNullOrEmpty(stateCity.Cidade)
-                || string.IsNullOrEmpty(stateCity.Estado))
+            if (stateCity == null)
             {
-                stateCity = new StateCity();
-                stateCity.Cidade = "Cidade não Definida";
-                stateCity.Estado = "Estado não Definido";
+                Error_operation = stateCityDAO.Error_operation;
+                return null;
             }
-            else if (addressClass == null
-                || string.IsNullOrEmpty(addressClass.Logradouro))
+            else if (addressClass == null)
             {
-                addressClass = new Address();
-                addressClass.Logradouro = "Endereço não Definido";
+                Error_operation = addressDAO.Error_operation;
+                return null;
             }
             else
             {
@@ -546,11 +508,12 @@ namespace SchoolProject.Models.Database.DAO
 
                     while (reader.Read())
                     {
-                        Client clientDatabase = new Client();
-
-                        clientDatabase.Cpf = reader.GetString(reader.GetOrdinal(CPF));
-                        clientDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
-                        clientDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
+                        Client clientDatabase = new Client()
+                        {
+                            Cpf = reader.GetString(reader.GetOrdinal(CPF)),
+                            Name = reader.GetString(reader.GetOrdinal(NAME)),
+                            Numero = reader.GetInt32(reader.GetOrdinal(NUMBER))
+                        };
 
                         if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
                         {
@@ -561,23 +524,20 @@ namespace SchoolProject.Models.Database.DAO
                         code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
 
                         // Formata os Dados Normalizados do Banco de Dados
-                        StateCity stateCity = new StateCity();
-                        stateCity = new StateCityDAO().SelectStateCity(code_state_city);
-                        Address addressClass = new Address();
-                        addressClass = new AddressDAO().SelectAddress(code_address);
+                        StateCityDAO stateCityDAO = new StateCityDAO();
+                        AddressDAO addressDAO = new AddressDAO();
+                        StateCity stateCity = stateCityDAO.SelectStateCity(code_state_city);
+                        Address addressClass = addressDAO.SelectAddress(code_address);
 
-                        if (stateCity == null || string.IsNullOrEmpty(stateCity.Cidade)
-                            || string.IsNullOrEmpty(stateCity.Estado))
+                        if (stateCity == null)
                         {
-                            stateCity = new StateCity();
-                            stateCity.Cidade = "Cidade não Definida";
-                            stateCity.Estado = "Estado não Definido";
+                            Error_operation = stateCityDAO.Error_operation;
+                            return null;
                         }
-                        else if (addressClass == null
-                            || string.IsNullOrEmpty(addressClass.Logradouro))
+                        else if (addressClass == null)
                         {
-                            addressClass = new Address();
-                            addressClass.Logradouro = "Endereço não Definido";
+                            Error_operation = addressDAO.Error_operation;
+                            return null;   
                         }
                         else
                         {
@@ -589,6 +549,12 @@ namespace SchoolProject.Models.Database.DAO
                     }
 
                     return listClients;
+                }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Error_operation = "Não foi possivel Obter os Dados.";
+                    System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                    return null;
                 }
                 catch (Exception ex)
                 {

@@ -6,20 +6,50 @@ namespace SchoolProject.Models
     // Classe criada na Normalização do Banco de Dados
     public class StateCity
     {
-        private int code_statecity;
-        private string estado;
-        private string cidade;
+        public StateCity() { }
 
-        public StateCity()
+        public string Estado { get; set; }
+        public string Cidade { get; set; }
+        public int Code_stateCity { get; set; }
+
+        public string Error_Validation { get; set; }
+
+        // Valida os dados do Estado
+        public bool ValidationState(string state)
         {
+            if (string.IsNullOrEmpty(state))
+            {
+                Error_Validation = "Estado não Informado";
+                return false;
+            }
+            else if (state.Length != 2)
+            {
+                Error_Validation = string.Format("Estado Invalido. Somente é aceito " +
+                    "as Siglas dos Estados");
+                return false;
+            }
+            else return true;
         }
 
-        public string Estado { get => estado; set => estado = value; }
-        public string Cidade { get => cidade; set => cidade = value; }
-        public int Code_statecity { get => code_statecity; set => code_statecity = value; }
+        // Valida os Dados da Cidade
+        public bool ValidationCity(string city)
+        {
+            if (string.IsNullOrEmpty(city))
+            {
+                Error_Validation = "Cidade não Informada";
+                return false;
+            }
+            else if (city.Length < 5 || city.Length > 80)
+            {
+                Error_Validation = string.Format("Cidade Invalida. Somente é aceito " +
+                    "Cidades entre {0} a {1} Caracteres",5,80);
+                return false;
+            }
+            else return true;
+        }
 
         // Lista com o Nome e Valores dos Estados
-        public List<SelectListItem> listStates()
+        public List<SelectListItem> ListStates()
         {
             return new List<SelectListItem>
             {
