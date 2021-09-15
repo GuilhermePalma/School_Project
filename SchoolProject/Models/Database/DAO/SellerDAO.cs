@@ -274,11 +274,11 @@ namespace SchoolProject.Models.Database.DAO
             };
             Address oldAddress = new Address()
             {
-                Logradouro = oldSeller.Estado
+                Logradouro = oldSeller.Logradouro
             };
             Address newAddress = new Address()
             {
-                Logradouro = seller.Estado
+                Logradouro = seller.Logradouro
             };
 
             // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro

@@ -36,7 +36,7 @@ namespace SchoolProject.Controllers
             bool cpfMask_valid = client.ValidationMaskCPF(cpf);
             bool cpf_valid = client.ValidationCPF(cpf);
 
-            if (cpfMask_valid) client.Cpf = client.ConvertMask(cpf);
+            if (cpfMask_valid) client.Cpf = client.ConvertMaskCPF(cpf);
             if (cpf_valid) client.Cpf = cpf;
 
             if (string.IsNullOrEmpty(client.Cpf))
@@ -81,15 +81,28 @@ namespace SchoolProject.Controllers
         public ActionResult Cadastro(Client client)
         {
             bool valid_cpf = client.ValidationMaskCPF(client.Cpf);
-            string cpf_formmated = valid_cpf ? client.ConvertMask(client.Cpf) : string.Empty;
+            bool valid_phone = client.ValidationMaskPhone(client.Telefone);
 
-            // Caso não seja infromado o CPF
-            if (string.IsNullOrEmpty(cpf_formmated)) 
+
+            string cpf_formmated = valid_cpf ? 
+                client.ConvertMaskCPF(client.Cpf) : string.Empty;
+            string phone_formatted = valid_phone ?
+                client.ConvertMaskPhone(client.Telefone) : string.Empty;
+            string ddd_formatted = valid_phone ? 
+                client.ConvertMaskDdd(client.Telefone) : string.Empty;
+
+            // Caso algum dado não foi Validado Corretamente
+            if (string.IsNullOrEmpty(cpf_formmated) || string.IsNullOrEmpty(phone_formatted) || 
+                string.IsNullOrEmpty(ddd_formatted)) 
             {
-                ViewBag.Message = "Informe um CPF Valido";
+                ViewBag.Message = "Dados Invalidos";
                 ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
+
+            client.Ddd = ddd_formatted;
+            client.Telefone = phone_formatted;
+            client.Cpf = cpf_formmated;
 
             ViewBag.Estados = new StateCity().ListStates();
 
@@ -193,13 +206,25 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Atualizar(Client client)
         {
-            // Caso não seja infromado o CPF
-            if (!client.ValidationCPF(client.Cpf))
+            bool valid_cpf = client.ValidationCPF(client.Cpf);
+            bool valid_phone = client.ValidationMaskPhone(client.Telefone);
+
+            string phone_formatted = valid_phone ?
+                client.ConvertMaskPhone(client.Telefone) : string.Empty;
+            string ddd_formatted = valid_phone ?
+                client.ConvertMaskDdd(client.Telefone) : string.Empty;
+
+            // Caso algum dado não foi Validado Corretamente
+            if (!valid_cpf || string.IsNullOrEmpty(phone_formatted) ||
+                string.IsNullOrEmpty(ddd_formatted))
             {
-                ViewBag.Message = "Informe um CPF Valido";
+                ViewBag.Message = "Dados Invalidos";
                 ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
+
+            client.Ddd = ddd_formatted;
+            client.Telefone = phone_formatted;
 
             try
             {

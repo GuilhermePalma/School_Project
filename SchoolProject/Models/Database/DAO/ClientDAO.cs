@@ -13,6 +13,8 @@ namespace SchoolProject.Models.Database.DAO
         public const string ADDRESS = "code_address";
         public const string NUMBER = "residential_number";
         public const string COMPLEMENT = "complement";
+        public const string PHONE = "phone";
+        public const string DDD = "ddd";
 
         private MySqlDataReader reader;
         private const int ERROR = -1;
@@ -131,22 +133,33 @@ namespace SchoolProject.Models.Database.DAO
             {
                 Logradouro = user.Logradouro
             };
-            
+
+            StateCityDAO stateCityDAO = new StateCityDAO();
+            AddressDAO addressDAO = new AddressDAO();
 
             // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
-            int code_state_city = new StateCityDAO().CodeStateCityValid(stateCity);
-            int code_address = new AddressDAO().CodeAddressValid(address);
+            int code_state_city = stateCityDAO.CodeStateCityValid(stateCity);
+            int code_address = addressDAO.CodeAddressValid(address);
 
-            if (code_state_city == ERROR || code_state_city == NOT_FOUND) return false;
-            if (code_address == ERROR || code_address == NOT_FOUND) return false;
+            if (code_state_city < 1)
+            {
+                Error_operation = stateCityDAO.Error_operation;
+                return false;
+            }
+            if (code_address < 1)
+            {
+                Error_operation = addressDAO.Error_operation;
+                return false;
+            }
 
             string command;
             try
             {
-                command = string.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) " +
-                    "VALUE('{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_CLIENT, CPF,
-                    NAME, STATE_CITY, ADDRESS, NUMBER, COMPLEMENT, user.Cpf, user.Name,
-                    code_state_city, code_address, user.Numero, user.Complemento);
+                command = string.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6},{7},{8}) " +
+                    "VALUE('{9}', '{10}', {11}, {12}, {13}, '{14}', '{15}', '{16}')", 
+                    TABLE_CLIENT, CPF, NAME, STATE_CITY, ADDRESS, NUMBER, COMPLEMENT, PHONE,
+                    DDD, user.Cpf, user.Name, code_state_city, code_address, user.Numero, 
+                    user.Complemento, user.Telefone, user.Ddd);
             }
             catch (ArgumentNullException ex)
             {
@@ -267,7 +280,6 @@ namespace SchoolProject.Models.Database.DAO
             StateCityDAO stateCityDAO = new StateCityDAO();
             AddressDAO addressDAO = new AddressDAO();
 
-
             // Usado para obter o Antigo Codigo do Estado/Cidade
             StateCity oldStateCity = new StateCity()
             {
@@ -281,11 +293,11 @@ namespace SchoolProject.Models.Database.DAO
             };
             Address oldAddress = new Address()
             {
-                Logradouro = oldClient.Estado
+                Logradouro = oldClient.Logradouro
             };
             Address newAddress = new Address()
             {
-                Logradouro = client.Estado
+                Logradouro = client.Logradouro
             };
 
             // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro
@@ -326,11 +338,11 @@ namespace SchoolProject.Models.Database.DAO
             string command;
             try
             {
-                command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
-                    "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_CLIENT, NAME,
-                    client.Name, STATE_CITY, newStateCity.Code_stateCity, ADDRESS, 
-                    newAddress.Code_address, NUMBER, client.Numero, COMPLEMENT, 
-                    client.Complemento, CPF, client.Cpf);
+                command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, {5}={6}, " +
+                    "{7}={8}, {9}='{10}', {11}='{12}', {13}='{14}' WHERE {15}='{16}'", 
+                    TABLE_CLIENT, NAME, client.Name, STATE_CITY, newStateCity.Code_stateCity, 
+                    ADDRESS, newAddress.Code_address, NUMBER, client.Numero, COMPLEMENT,
+                    client.Complemento, DDD, client.Ddd, PHONE, client.Telefone, CPF, client.Cpf);
             }
             catch (ArgumentNullException ex)
             {
@@ -389,7 +401,7 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             int code_state_city = 0, code_address = 0;
-            Client userDatabase = new Client();
+            Client userDatabase;
             // Usuario existe no Banco de Dados
             using (Database database = new Database())
             {
@@ -408,10 +420,14 @@ namespace SchoolProject.Models.Database.DAO
                 try
                 {
                     reader.Read();
-
-                    userDatabase.Cpf = reader.GetString(reader.GetOrdinal(CPF));
-                    userDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
-                    userDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
+                    userDatabase = new Client()
+                    {
+                        Cpf = reader.GetString(reader.GetOrdinal(CPF)),
+                        Name = reader.GetString(reader.GetOrdinal(NAME)),
+                        Numero = reader.GetInt32(reader.GetOrdinal(NUMBER)),
+                        Ddd = reader.GetString(reader.GetOrdinal(DDD)),
+                        Telefone = reader.GetString(reader.GetOrdinal(PHONE))
+                    };
 
                     if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
                     {
@@ -461,6 +477,7 @@ namespace SchoolProject.Models.Database.DAO
                 userDatabase.Estado = stateCity.Estado;
                 userDatabase.Logradouro = addressClass.Logradouro;
             }
+
             return userDatabase;
         }
 
@@ -512,7 +529,9 @@ namespace SchoolProject.Models.Database.DAO
                         {
                             Cpf = reader.GetString(reader.GetOrdinal(CPF)),
                             Name = reader.GetString(reader.GetOrdinal(NAME)),
-                            Numero = reader.GetInt32(reader.GetOrdinal(NUMBER))
+                            Numero = reader.GetInt32(reader.GetOrdinal(NUMBER)),
+                            Telefone = reader.GetString(reader.GetOrdinal(PHONE)),
+                            Ddd = reader.GetString(reader.GetOrdinal(DDD))
                         };
 
                         if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))

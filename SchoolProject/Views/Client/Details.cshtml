@@ -24,10 +24,9 @@
         <h2>@ViewBag.Title</h2>
         <hr />
 
-        // Formatação e Censura do CPF
-        string cpf_formatted = Model.Cpf.Substring(0, 3) + ".***.**";
-        cpf_formatted += Model.Cpf.Substring(7, 1) + "-";
-        cpf_formatted += Model.Cpf.Substring(9, 2);
+        // Formatação e Censura do CPF/DDD/telefone
+        string cpf_formatted = Model.Formatted_Cpf(Model.Cpf);
+        string phone_formatted = Model.Formatted_Phone(Model.Ddd, Model.Telefone);
 
         <div>
             <dl class="dl-horizontal">
@@ -48,6 +47,14 @@
                 </dd>
 
                 <dt>
+                    @Html.DisplayNameFor(model => model.Telefone)
+                </dt>
+
+                <dd>
+                    @phone_formatted
+                </dd>
+
+                <dt>
                     @Html.DisplayNameFor(model => model.Logradouro)
                 </dt>
 
@@ -60,15 +67,7 @@
                 </dt>
 
                 <dd>
-                    @Html.DisplayFor(model => model.Cidade)
-                </dd>
-
-                <dt>
-                    @Html.DisplayNameFor(model => model.Estado)
-                </dt>
-
-                <dd>
-                    @Html.DisplayFor(model => model.Estado)
+                    @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
                 </dd>
 
                 <dt>
@@ -79,7 +78,7 @@
                     @Html.DisplayFor(model => model.Numero)
                 </dd>
 
-                @if (Model.Complemento != null)
+                @if (!string.IsNullOrEmpty(Model.Complemento))
                 {
                     <dt>
                         @Html.DisplayNameFor(model => model.Complemento)
@@ -88,7 +87,7 @@
                     <dd>
                         @Html.DisplayFor(model => model.Complemento)
                     </dd>
-                }                
+                }
 
             </dl>
         </div>

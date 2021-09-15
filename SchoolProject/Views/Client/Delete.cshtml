@@ -21,13 +21,11 @@
     }
     else
     {
+        string cpf_formmated = Model.Formatted_Cpf(Model.Cpf);
+        string phone_formmated = Model.Formatted_Phone(Model.Ddd, Model.Telefone);
+
         <h2>@ViewBag.Title: @Model.Name</h2>
         <hr />
-
-        // Formatação e Censura do CPF
-        string cpf_formatted = Model.Cpf.Substring(0, 3) + ".***.**";
-        cpf_formatted += Model.Cpf.Substring(7, 1) + "-";
-        cpf_formatted += Model.Cpf.Substring(9, 2);
 
         <h3>Você tem certeza que deseja Excluir ?</h3>
         <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
@@ -47,7 +45,15 @@
             </dt>
 
             <dd>
-                @cpf_formatted
+                @cpf_formmated
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Telefone)
+            </dt>
+
+            <dd>
+                @phone_formmated
             </dd>
 
             <dt>
@@ -63,15 +69,7 @@
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Cidade)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Estado)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Estado)
+                @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
             </dd>
 
             <dt>
@@ -82,13 +80,16 @@
                 @Html.DisplayFor(model => model.Numero)
             </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.Complemento)
-            </dt>
+            @if (!string.IsNullOrEmpty(Model.Complemento))
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Complemento)
+                </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Complemento)
-            </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Complemento)
+                </dd>
+            }
 
         </dl>
             

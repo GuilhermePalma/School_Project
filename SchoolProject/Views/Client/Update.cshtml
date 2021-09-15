@@ -24,10 +24,9 @@
         <h2>@ViewBag.Title</h2>
         <hr />
 
-        // Formatação e Censura do CPF
-        string cpf_formatted = Model.Cpf.Substring(0, 3) + ".***.**";
-        cpf_formatted += Model.Cpf.Substring(7, 1) + "-";
-        cpf_formatted += Model.Cpf.Substring(9, 2);
+        // Formatação e Censura do CPF/DDD/telefone
+        string cpf_formatted = Model.Formatted_Cpf(Model.Cpf);
+        Model.Telefone = Model.Formatted_Phone(Model.Ddd, Model.Telefone);
 
         using (Html.BeginForm())
         {
@@ -54,6 +53,27 @@
                         @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
                     </div>
                 </div>
+                
+                @if (Model.ValidationMaskPhone(Model.Telefone))
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefone, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Telefone, new { htmlAttributes = new { @class = "form-control maskPhone" } })
+                            @Html.ValidationMessageFor(model => model.Telefone, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Telefone, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <input class="form-control" id="disabledInput" type="text" placeholder="Campo não Disponivel" disabled>
+                        </div>
+                    </div>
+                }
 
                 <div class="form-group" style="margin-top:35px">
                     @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -100,7 +120,6 @@
 
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <button type="reset" class="btn btn-default" style="margin-left:10px">Limpar</button>
                         <button type="submit" value="Atualizar" class="btn btn-default" style="margin-left:10px">Atualizar</button>
                     </div>
                 </div>
@@ -118,5 +137,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/Scripts/inputmask/MaskCPF.js")
+    @Scripts.Render("~/Scripts/inputmask/MaskPhone.js")
 }

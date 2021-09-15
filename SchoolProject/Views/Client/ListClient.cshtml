@@ -51,10 +51,10 @@
                         @Html.DisplayNameFor(model => model.Cidade)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Estado)
+                        @Html.DisplayNameFor(model => model.Logradouro)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Logradouro)
+                        @Html.DisplayNameFor(model => model.Telefone)
                     </th>
                     <th></th>
                     <th>Detalhes</th>
@@ -62,10 +62,8 @@
                     <th>Excluir</th>
                 </tr>
 
-
                 @foreach (var clientItem in Model)
                 {
-
                     <tr>
                         <th>
                             @Model.ToList().IndexOf(clientItem)
@@ -74,18 +72,20 @@
                             @Html.DisplayFor(model => clientItem.Name)
                         </th>
                         <th>
-                            @Html.DisplayFor(model => clientItem.Cpf)
+                            @using (Html.BeginForm("Login", "Client", new { Cpf = clientItem.Cpf }, FormMethod.Post))
+                            {
+                                Html.DisplayFor(model => clientItem.Formatted_Cpf(clientItem.Cpf));
+                            }
                         </th>
                         <th>
-                            @Html.DisplayFor(model => clientItem.Cidade)
-                        </th>
-                        <th>
-                            @Html.DisplayFor(model => clientItem.Estado)
+                            @Html.DisplayFor(model => clientItem.Cidade) - @Html.DisplayFor(model => clientItem.Estado)
                         </th>
                         <th>
                             @Html.DisplayFor(model => clientItem.Logradouro)
                         </th>
-                        <th></th>
+                        <th>
+                            @Html.DisplayFor(model => clientItem.Formatted_Phone(clientItem.Telefone))
+                        </th>
                         <th>
                             @using (Html.BeginForm("Login", "Client", new { Cpf = clientItem.Cpf }, FormMethod.Post))
                             {

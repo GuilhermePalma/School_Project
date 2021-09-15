@@ -22,6 +22,8 @@ CREATE TABLE if not exists client(
   code_address INT NOT NULL,
   residential_number INT NOT NULL,
   complement VARCHAR(40) DEFAULT NULL,
+  phone VARCHAR(9) NOT NULL,
+  ddd VARCHAR(3) NOT NULL,
   PRIMARY KEY(cpf)
 );
 
@@ -32,6 +34,8 @@ CREATE TABLE if not exists seller(
   code_address INT NOT NULL,
   residential_number INT NOT NULL,
   complement VARCHAR(40) DEFAULT NULL,
+  phone VARCHAR(9) NOT NULL,
+  ddd VARCHAR(3) NOT NULL,
   PRIMARY KEY(cnpj)
 );
 
@@ -81,17 +85,17 @@ INSERT INTO address(code_address,logradouro) VALUES
 (5, "Rua Kinu Luo");
 SELECT * FROM address;
 
-INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,complement)VALUES
-("12345678901", "Roberta", 3,1,1202,"Apto 12, Bl 9"),
-("15963452810", "Julian Lopa", 2, 3, 652,"Bl 8, Apto 62"),
-("32084613252", "Ian", 1, 4, 156,"Bl 1 Apto365"),
-("24932085105", "Juan Mius", 4,5,56, "Bl 5 Apto203"),
-("12048631065", "Olis", 5,2,995,"Apto 103, Bl 1");
-INSERT INTO client(cpf,name,code_state_city,code_address,residential_number)VALUES
-("65894632386", "Roberto", 4,5,369),
-("10541320834", "Marcia Nupi", 4,5,278),
-("15386305564", "Liana Kilas", 1,4,399),
-("46108634186", "Polar", 5,2,106);
+INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,complement,phone,ddd)VALUES
+("12345678901", "Roberta", 3,1,1202,"Apto 12, Bl 9","996315236","011"),
+("15963452810", "Julian Lopa", 2, 3, 652,"Bl 8, Apto 62","98351315625","016"),
+("32084613252", "Ian", 1, 4, 156,"Bl 1 Apto365","9975863245","021"),
+("24932085105", "Juan Mius", 4,5,56, "Bl 5 Apto203","168735495","091"),
+("12048631065", "Olis", 5,2,995,"Apto 103, Bl 1","27863142258","073");
+INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,phone,ddd)VALUES
+("65894632386", "Roberto", 4,5,369,"6058624752","044"),
+("10541320834", "Marcia Nupi", 4,5,278,"120267895","037"),
+("15386305564", "Liana Kilas", 1,4,399,"284103862","054"),
+("46108634186", "Polar", 5,2,106,"856324318","064");
 SELECT * FROM client;
 
 INSERT INTO seller(cnpj,name,code_state_city,code_address,residential_number,complement)VALUES

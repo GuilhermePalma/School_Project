@@ -111,7 +111,7 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = "Endereço Invalido. O Preenchimento do Logradouro" +
                     " é Obrigatorio";
                 return ERROR;
-            } else if (address.ValidationLogradouro(address.Logradouro))
+            } else if (!address.ValidationLogradouro(address.Logradouro))
             {
                 Error_operation = address.Error_Validation;
                 return ERROR;
@@ -494,6 +494,9 @@ namespace SchoolProject.Models.Database.DAO
                 return false;
             }
             else if (oldAddress.Equals(newAddress)) return true;
+
+            // todo remover
+            System.Diagnostics.Debug.WriteLine("Teste: " + oldAddress.Logradouro + "|" + newAddress.Logradouro);
 
             int code_newAddress = ReturnCodeAddress(newAddress);
 

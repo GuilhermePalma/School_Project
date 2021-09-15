@@ -68,7 +68,6 @@ namespace SchoolProject.Models.Database.DAO
 
                     reader.Read();
                     quantity = reader.GetInt32(reader.GetOrdinal(count_formatted));
-
                     if (quantity > 1)
                     {
                         Error_operation = "Houve um erro no Banco de Dados. " +
@@ -305,12 +304,9 @@ namespace SchoolProject.Models.Database.DAO
 
             // Obtem o Codigo State_city
             int code_state_city = ReturnCodeStateCity(stateCity);
+            if (code_state_city == ERROR) return ERROR;
 
-            if (code_state_city == ERROR)
-            {
-                return ERROR;
-            }
-            else if (code_state_city == NOT_FOUND)
+            if (code_state_city == NOT_FOUND)
             {
                 // Dados não encontrados ---> Insere 
                 if (!InsertStateCity(stateCity)) return ERROR;

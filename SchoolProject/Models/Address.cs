@@ -14,7 +14,7 @@
             }
             else if (logradouro.Length < 5 || logradouro.Length > 80)
             {
-                Error_Validation = string.Format("Cidade Invalida. Somente é aceito " +
+                Error_Validation = string.Format("Logradouro Invalido. Somente é aceito " +
                     "Logradouros entre {0} a {1} Caracteres", 5, 80);
                 return false;
             }
