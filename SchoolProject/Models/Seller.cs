@@ -7,15 +7,14 @@ namespace SchoolProject.Models
 {
     public class Seller
     {
+        public Seller() { }
 
         // Strings de Erro no CPF
         public string Error_Validation { get; set; }
 
-        public Seller() { }
-
         public bool ValidationCNPJ(string cnpj)
         {
-            if (string.IsNullOrEmpty(cnpj) && cnpj.Length != 14)
+            if (string.IsNullOrEmpty(cnpj) || cnpj.Length != 14)
             {
                 Error_Validation = "CNPJ Invalido. CNPJ Deve conter 14 Caracteres";
                 return false;
@@ -50,7 +49,7 @@ namespace SchoolProject.Models
         }
 
         // Valida e Converte o CNPJ com Mascara
-        public string ConvertMask(string cnpj)
+        public string RemoveMaskCNPJ(string cnpj)
         {
             if (!ValidationMaskCNPJ(cnpj)) return string.Empty;
 
@@ -68,6 +67,32 @@ namespace SchoolProject.Models
                 System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
                 return string.Empty;
             }
+        }
+
+        // Coloca o CNPJ em uma Mascara
+        public string Formatted_Cnpj(string cnpj)
+        {
+            if (string.IsNullOrEmpty(cnpj) || !ValidationCNPJ(cnpj))
+            {
+                return "CNPJ Invalido";
+            }
+
+            string cpf_formatted = "";
+            try
+            {
+                // Formatação e Censura do CNPJ
+                cpf_formatted = string.Format("{0}.{1}.{2}/{3}-{4}",
+                    cnpj.Substring(0, 2), "XXX", "XX" + cnpj.Substring(7, 1),
+                    cnpj.Substring(8, 4), cnpj.Substring(12, 2));
+            }
+            catch (Exception ex)
+            {
+                Error_Validation = "Houve um Erro ao Formatar o CNPJ.";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
+                return string.Empty;
+            }
+
+            return cpf_formatted.Length == 18 ? cpf_formatted : "Formatação do CPF Invalida";
         }
 
         [DisplayName("Nome")]
@@ -111,5 +136,15 @@ namespace SchoolProject.Models
         [StringLength(40, ErrorMessage = "O Complemento deve ter no Maximo {1} Letas")]
         public string Complemento { get; set; }
 
+        // Uso da Lista de DDD ---> Armazenará somente a 3 Digitos
+        [DisplayName("DDD")]
+        [Required(ErrorMessage = "O DDD deve ser informado !")]
+        public string Ddd { get; set; }
+
+        [DisplayName("Telefone")]
+        [Required(ErrorMessage = "O Telefone deve ser informado !")]
+        [RegularExpression(@"\([0-9]{2}\)[\s]{1}[0-9]{5}-[0-9]{4}",
+            ErrorMessage = "O Telefone deve estar no Seguinte Formato: (00) 99999-9999")]
+        public string Telefone { get; set; }
     }
 }

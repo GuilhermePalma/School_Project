@@ -5,6 +5,7 @@
     {
         public Address() { }
 
+        // Validação do Logradouro
         public bool ValidationLogradouro(string logradouro)
         {
             if (string.IsNullOrEmpty(logradouro))
@@ -19,6 +20,17 @@
                 return false;
             }
             else return true;
+        }
+
+        // Faz uma comparação entre objetos da Classe Address
+        public override bool Equals(object o)
+        {
+            if (o is Address)
+            {
+                Address address = (Address)o;
+                return this.Logradouro == address.Logradouro;
+            }
+            else return false;
         }
 
         public int Code_address { get; set; }

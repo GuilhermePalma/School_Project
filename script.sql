@@ -98,17 +98,17 @@ INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,phon
 ("46108634186", "Polar", 5,2,106,"856324318","064");
 SELECT * FROM client;
 
-INSERT INTO seller(cnpj,name,code_state_city,code_address,residential_number,complement)VALUES
-("18984552000147", "Loac", 2,3,4125,"Apto 12, Bl 9"),
-("00224212000152", "Mulis Loia", 2, 3, 156,"Bl 8, Apto 62"),
-("12345679000123", "Polu", 2, 3, 564,"Bl 1 Apto365"),
-("52307798000112", "Mise Pliune", 4,5,135, "Bl 5 Apto203"),
-("24290772000173", "Noput", 4,5,795,"Apto 103, Bl 1");
-INSERT INTO seller(cnpj,name,code_state_city,code_address,residential_number)VALUES
-("90896136000114", "Birse", 4,5,456),
-("11111111000111", "Macke", 3,1,345),
-("59317469000100", "Loas Maru", 3,1,454),
-("41727260000140", "Pleint Loa", 3,1,385);
+INSERT INTO seller(cnpj,name,code_state_city,code_address,residential_number,complement,phone,ddd)VALUES
+("18984552000147", "Loac", 2,3,4125,"Apto 12, Bl 9","997064352","081"),
+("00224212000152", "Mulis Loia", 2, 3, 156,"Bl 8, Apto 62","986413056","077"),
+("12345679000123", "Polu", 2, 3, 564,"Bl 1 Apto365","970632631","048"),
+("52307798000112", "Mise Pliune", 4,5,135, "Bl 5 Apto203","963044582","054"),
+("24290772000173", "Noput", 4,5,795,"Apto 103, Bl 1","963100256","088");
+INSERT INTO seller(cnpj,name,code_state_city,code_address,residential_number,phone,ddd)VALUES
+("90896136000114", "Birse", 4,5,456,"903642015","032"),
+("11111111000111", "Macke", 3,1,345,"930411011","042"),
+("59317469000100", "Loas Maru", 3,1,454,"963320225","071"),
+("41727260000140", "Pleint Loa", 3,1,385,"998088631","037");
 SELECT * FROM seller;
 
 /*Verificar se Os Codigos da Cidade foram colocados corretamente com os Codigos de Endereço*/

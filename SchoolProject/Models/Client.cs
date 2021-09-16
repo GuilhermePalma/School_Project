@@ -19,11 +19,6 @@ namespace SchoolProject.Models
         {
             if (string.IsNullOrEmpty(cpf) || cpf.Length != 11)
             {
-                Error_Validation = "CPF Invalido. CPF é Obrigatorio";
-                return false;
-            }
-            else if (cpf.Length != 11)
-            {
                 Error_Validation = "CPF Invalido. CPF deve conter 11 Caracteres";
                 return false;
             }
@@ -111,7 +106,7 @@ namespace SchoolProject.Models
         }
         
         // Valida e Converte o CPF com Mascara
-        public string ConvertMaskCPF(string cpf)
+        public string RemoveMaskCPF(string cpf)
         {
             // Verifica o CPF com Mascara
             if (!ValidationMaskCPF(cpf)) return string.Empty; 
@@ -125,15 +120,14 @@ namespace SchoolProject.Models
             }
             catch (ArgumentException ex)
             {
-                System.Diagnostics.Debug.WriteLine("Não foi possivel Retirar a " +
-                    "Mascara do CPF. Exeção: " + ex);
-                Error_Validation = "Não foi possivel Converter o CPF";
+                Error_Validation = "Não foi possivel Retirar a Mascara do CPF";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exeção: " + ex);
                 return string.Empty;
             }
         }
 
         // Retira o Telefone da Mascara
-        public string ConvertMaskPhone(string phone)
+        public string RemoveMaskPhone(string phone)
         {
             // Verifica o CPF com Mascara
             if (!ValidationMaskPhone(phone)) return string.Empty;
@@ -146,80 +140,98 @@ namespace SchoolProject.Models
 
                 return ValidationPhone(formatted_phone) ? formatted_phone : string.Empty;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Não foi possivel Retirar a " +
-                    "Mascara do CPF. Exeção: " + ex);
-                Error_Validation = "Não foi possivel Converter o CPF";
+                Error_Validation = "Não foi possivel Retirar a Mascara do Telefone";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exeção: " + ex);
                 return string.Empty;
             }
         }
 
         // Retira o DDD da Mascara
-        public string ConvertMaskDdd(string phone)
+        public string RemoveMaskDDD(string phone)
         {
             // Verifica o CPF com Mascara
             if (!ValidationMaskPhone(phone)) return string.Empty;
 
+            string formmated_ddd = "";
             try
             {
-                // Substitui a Formatação do CPF e Valida
-                string formatted_phone = "";
-                formatted_phone = string.Format("0{0}", phone.Substring(0, 4)
+                // Formatação do Telefone
+                formmated_ddd = string.Format("0{0}", phone.Substring(0, 4)
                     .Replace("(", string.Empty).Replace(")", string.Empty));
-
-                string[] ddd_valid = DddValid();
-
-                for (int i = 0; i < ddd_valid.Length; i++)
-                {
-                    if (ddd_valid[i] == formatted_phone) return formatted_phone;
-                }
-
-                Error_Validation = "DDD Invalido. Tente Novamente";
-                return string.Empty;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Não foi possivel Retirar a " +
-                    "Mascara do CPF. Exeção: " + ex);
-                Error_Validation = "Não foi possivel Converter o CPF";
+                Error_Validation = "Houve um Erro ao Formatar o DDD.";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
                 return string.Empty;
             }
+
+            string[] ddd_valid = DddValid();
+
+            for (int i = 0; i < ddd_valid.Length; i++)
+            {
+                if (ddd_valid[i] == formmated_ddd) return formmated_ddd;
+            }
+
+            Error_Validation = "DDD Invalido. Tente Novamente";
+            return string.Empty;
         }
 
         // Coloca o Telefone em uma Mascara
-        public string Formatted_Phone(string ddd, string phone)
+        public string FormattedPhone(string ddd, string phone)
         {
             if (string.IsNullOrEmpty(phone) || !ValidationPhone(phone))
             {
                 return "Telefone Invalido";
             }
 
-            // Formatação do Telefone
-            string phone_formatted = string.Format("({0}) {1}-{2}",
-                ddd.Substring(1,2), phone.Substring(0, 5), phone.Substring(5, 4));
+            string phone_formatted = "";
+            try
+            {
+                // Formatação do Telefone
+                phone_formatted = string.Format("({0}) {1}-{2}",
+                ddd.Substring(1, 2), phone.Substring(0, 5), phone.Substring(5, 4));
+            }
+            catch (Exception ex)
+            {
+                Error_Validation = "Houve um Erro ao Formatar o Telefone.";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
+                return string.Empty;
+            }
 
             return phone_formatted.Length == 15 ? 
                 phone_formatted : "Formatação do Telefone Invalida";
         }
 
         // Coloca o CPF em uma Mascara
-        public string Formatted_Cpf(string cpf)
+        public string FormattedCPF(string cpf)
         {
             if (string.IsNullOrEmpty(cpf) || !ValidationCPF(cpf))
             {
                 return "CPF Invalido";
             }
 
-            // Formatação e Censura do CPF
-            string cpf_formatted = string.Format("{0}.{1}.{2}-{3}",
-                cpf.Substring(0, 3), "XXX", "XX" + cpf.Substring(8, 1),
-                cpf.Substring(9, 2));
+            string cpf_formatted = "";
+            try
+            {
+                // Formatação e Censura do CPF
+                cpf_formatted = string.Format("{0}.{1}.{2}-{3}",
+                    cpf.Substring(0, 3), "XXX", "XX" + cpf.Substring(8, 1),
+                    cpf.Substring(9, 2));
+            }
+            catch(Exception ex)
+            {
+                Error_Validation = "Houve um Erro ao Formatar o CPF.";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
+                return string.Empty;
+            }
 
-            return cpf_formatted.Length == 14 ?
-                cpf_formatted : "Formatação do CPF Invalida";
+            return cpf_formatted.Length == 14 ? cpf_formatted : "Formatação do CPF Invalida";
         }
 
+        // Lista com os DDD brasileiros Validos
         private string[] DddValid()
         {
             return new string[]
@@ -275,7 +287,6 @@ namespace SchoolProject.Models
         [StringLength(40, ErrorMessage = "O Complemento deve ter no Maximo {1} Letas")]
         public string Complemento { get; set; }
 
-        // Uso da Lista de DDD ---> Armazenará somente a 3 Digitos
         [DisplayName("DDD")]
         [Required(ErrorMessage = "O DDD deve ser informado !")]
         public string Ddd { get; set; }

@@ -13,6 +13,8 @@ namespace SchoolProject.Models.Database.DAO
         public const string ADDRESS = "code_address";
         public const string NUMBER = "residential_number";
         public const string COMPLEMENT = "complement";
+        public const string PHONE = "phone";
+        public const string DDD = "ddd";
 
         private MySqlDataReader reader;
         private const int ERROR = -1;
@@ -127,20 +129,43 @@ namespace SchoolProject.Models.Database.DAO
                 Logradouro = seller.Logradouro
             };
 
-            // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
-            int code_state_city = new StateCityDAO().CodeStateCityValid(stateCity);
-            int code_address = new AddressDAO().CodeAddressValid(address);
+            Phone phone = new Phone()
+            {
+                Telefone = seller.Telefone,
+                Ddd = seller.Ddd
+            };
 
-            if (code_state_city == ERROR || code_state_city == NOT_FOUND) return false;
-            if (code_address == ERROR || code_address == NOT_FOUND) return false;
+            StateCityDAO stateCityDAO = new StateCityDAO();
+            AddressDAO addressDAO = new AddressDAO();
+
+            // Metodos responsaveis por Buscar/Inserir (Se não Existir) o Estado/Cidade/Endereço
+            int code_state_city = stateCityDAO.CodeStateCityValid(stateCity);
+            int code_address = addressDAO.CodeAddressValid(address);
+
+            if (code_state_city == ERROR || code_state_city == NOT_FOUND) 
+            {
+                Error_operation = stateCityDAO.Error_operation;
+                return false; 
+            }
+            else if (code_address == ERROR || code_address == NOT_FOUND) 
+            {
+                Error_operation = addressDAO.Error_operation;
+                return false;
+            }
+            else if (!phone.ValidationPhone(phone.Telefone))
+            {
+                Error_operation = phone.Error_Validation;
+                return false;
+            }
 
             string command;
             try
             {
-                command = string.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6}) " +
-                    "VALUE('{7}', '{8}', {9}, {10}, {11}, '{12}')", TABLE_SELLER, CNPJ,
-                    NAME, STATE_CITY, ADDRESS, NUMBER, COMPLEMENT, seller.Cnpj, seller.Name,
-                    code_state_city, code_address, seller.Numero, seller.Complemento);
+                command = string.Format("INSERT INTO {0}({1},{2},{3},{4},{5},{6},{7},{8}) " +
+                    "VALUE('{9}', '{10}', {11}, {12}, {13}, '{14}', '{15}', '{16}')",
+                    TABLE_SELLER, CNPJ, NAME, STATE_CITY, ADDRESS, NUMBER, COMPLEMENT, 
+                    PHONE, DDD, seller.Cnpj, seller.Name, code_state_city, code_address, 
+                    seller.Numero, seller.Complemento, phone.Telefone, phone.Ddd);
             }
             catch (ArgumentNullException ex)
             {
@@ -281,6 +306,12 @@ namespace SchoolProject.Models.Database.DAO
                 Logradouro = seller.Logradouro
             };
 
+            Phone phone = new Phone()
+            {
+                Telefone = seller.Telefone,
+                Ddd = seller.Ddd
+            };
+
             // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro
             if (!stateCityDAO.UpdateOnlyStateCity(oldStateCity, newStateCity))
             {
@@ -318,11 +349,11 @@ namespace SchoolProject.Models.Database.DAO
             string command;
             try
             {
-                command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, " +
-                    "{5}={6}, {7}={8}, {9}='{10}' WHERE {11}='{12}'", TABLE_SELLER, NAME,
-                    seller.Name, STATE_CITY, newStateCity.Code_stateCity, ADDRESS, 
-                    newAddress.Code_address, NUMBER, seller.Numero, COMPLEMENT, 
-                    seller.Complemento, CNPJ, seller.Cnpj);
+                command = string.Format("UPDATE {0} SET {1}='{2}',{3}={4}, {5}={6}, " +
+                    "{7}={8}, {9}='{10}', {11}='{12}', {13}='{14}' WHERE {15}='{16}'", 
+                    TABLE_SELLER, NAME, seller.Name, STATE_CITY, newStateCity.Code_stateCity, 
+                    ADDRESS, newAddress.Code_address, NUMBER, seller.Numero, COMPLEMENT,
+                    seller.Complemento, PHONE, phone.Telefone, DDD, phone.Ddd, CNPJ, seller.Cnpj);
             }
             catch (ArgumentNullException ex)
             {
@@ -380,7 +411,8 @@ namespace SchoolProject.Models.Database.DAO
             }
 
             int code_state_city = 0, code_address = 0;
-            Seller sellerDatabase = new Seller();
+            Seller sellerDatabase;
+            Phone phone;
 
             // Vendedor existe no Banco de Dados
             using (Database database = new Database())
@@ -401,14 +433,23 @@ namespace SchoolProject.Models.Database.DAO
                 {
                     reader.Read();
 
-                    sellerDatabase.Cnpj = reader.GetString(reader.GetOrdinal(CNPJ));
-                    sellerDatabase.Name = reader.GetString(reader.GetOrdinal(NAME));
-                    sellerDatabase.Numero = reader.GetInt32(reader.GetOrdinal(NUMBER));
+                    sellerDatabase = new Seller()
+                    {
+                        Cnpj = reader.GetString(reader.GetOrdinal(CNPJ)),
+                        Name = reader.GetString(reader.GetOrdinal(NAME)),
+                        Numero = reader.GetInt32(reader.GetOrdinal(NUMBER)),
+                    };
 
                     if (!reader.IsDBNull(reader.GetOrdinal(COMPLEMENT)))
                     {
                         sellerDatabase.Complemento = reader.GetString(reader.GetOrdinal(COMPLEMENT));
                     }
+
+                    phone = new Phone()
+                    {
+                        Telefone = reader.GetString(reader.GetOrdinal(PHONE)),
+                        Ddd = reader.GetString(reader.GetOrdinal(DDD))
+                    };
 
                     code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
                     code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
@@ -448,11 +489,17 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = addressDAO.Error_operation;
                 return null;
             }
+            else if(phone == null)
+            {
+                Error_operation = "Não foi Possivel obter o Telefone";
+            }
             else
             {
                 sellerDatabase.Cidade = stateCity.Cidade;
                 sellerDatabase.Estado = stateCity.Estado;
                 sellerDatabase.Logradouro = addressClass.Logradouro;
+                sellerDatabase.Telefone = phone.Telefone;
+                sellerDatabase.Ddd= phone.Ddd;
             }
             return sellerDatabase;
         }
@@ -515,6 +562,12 @@ namespace SchoolProject.Models.Database.DAO
                         code_state_city = reader.GetInt32(reader.GetOrdinal(STATE_CITY));
                         code_address = reader.GetInt32(reader.GetOrdinal(ADDRESS));
 
+                        Phone phone = new Phone()
+                        {
+                            Telefone = reader.GetString(reader.GetOrdinal(PHONE)),
+                            Ddd = reader.GetString(reader.GetOrdinal(DDD))
+                        };
+
                         // Formata os Dados Normalizados do Banco de Dados
                         StateCityDAO stateCityDAO = new StateCityDAO();
                         AddressDAO addressDAO = new AddressDAO();
@@ -531,11 +584,17 @@ namespace SchoolProject.Models.Database.DAO
                             Error_operation = addressDAO.Error_operation;
                             return null;
                         }
+                        else if (phone == null)
+                        {
+                            Error_operation = "Não foi Possivel obter o Telefone";
+                        }
                         else
                         {
                             sellerDatabase.Cidade = stateCity.Cidade;
                             sellerDatabase.Estado = stateCity.Estado;
                             sellerDatabase.Logradouro = addressClass.Logradouro;
+                            sellerDatabase.Telefone = phone.Telefone;
+                            sellerDatabase.Ddd = phone.Ddd;
                         }
                         listSeller.Add(sellerDatabase);
                     }

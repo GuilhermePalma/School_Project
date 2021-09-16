@@ -497,6 +497,9 @@ namespace SchoolProject.Models.Database.DAO
 
             int code_newStateCity = ReturnCodeStateCity(newStateCity);
 
+            //todo: remover
+            System.Diagnostics.Debug.WriteLine("Codigo StateCity: " + code_newStateCity);
+
             if (code_newStateCity == ERROR)
             {
                 return false;

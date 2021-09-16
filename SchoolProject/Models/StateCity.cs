@@ -84,5 +84,16 @@ namespace SchoolProject.Models
                 new SelectListItem { Text = "Estrangeiro", Value = "EX" }
             };
         }
+
+        // Faz uma comparação entre objetos da Classe StateCity
+        public override bool Equals(object o)
+        {
+            if (o is StateCity)
+            {
+                StateCity address = (StateCity)o;
+                return this.Estado == address.Estado && this.Cidade == address.Cidade;
+            } else return false;
+        }
+
     }
 }

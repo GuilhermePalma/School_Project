@@ -48,15 +48,15 @@
                         @Html.DisplayNameFor(model => model.Cpf)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.Telefone)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.Cidade)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Logradouro)
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Telefone)
-                    </th>
-                    <th></th>
+                    <th> </th>
                     <th>Detalhes</th>
                     <th>Editar</th>
                     <th>Excluir</th>
@@ -74,8 +74,12 @@
                         <th>
                             @using (Html.BeginForm("Login", "Client", new { Cpf = clientItem.Cpf }, FormMethod.Post))
                             {
-                                Html.DisplayFor(model => clientItem.Formatted_Cpf(clientItem.Cpf));
+                                string cpf_formatted = clientItem.FormattedCPF(clientItem.Cpf);
+                                <button class="btn-link">@cpf_formatted</button>
                             }
+                        </th>
+                        <th>
+                            @clientItem.FormattedPhone(clientItem.Ddd, clientItem.Telefone)
                         </th>
                         <th>
                             @Html.DisplayFor(model => clientItem.Cidade) - @Html.DisplayFor(model => clientItem.Estado)
@@ -83,9 +87,8 @@
                         <th>
                             @Html.DisplayFor(model => clientItem.Logradouro)
                         </th>
-                        <th>
-                            @Html.DisplayFor(model => clientItem.Formatted_Phone(clientItem.Telefone))
-                        </th>
+                        
+                    <th> </th>
                         <th>
                             @using (Html.BeginForm("Login", "Client", new { Cpf = clientItem.Cpf }, FormMethod.Post))
                             {

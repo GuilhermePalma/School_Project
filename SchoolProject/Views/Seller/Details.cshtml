@@ -28,12 +28,10 @@
     {
         <h2>@ViewBag.Title</h2>
         <hr />
-
-        // Formatação e Censura do CPF
-        string cnpj_formatted = Model.Cnpj.Substring(0, 2) + ".";
-        cnpj_formatted += Model.Cnpj.Substring(2, 1) + "**.**";
-        cnpj_formatted += Model.Cnpj.Substring(7, 1) + "/";
-        cnpj_formatted += Model.Cnpj.Substring(8, 4) + "-" + Model.Cnpj.Substring(12, 2);
+        
+        // Formatação e Censura do CPF/DDD/telefone
+        string cnpj_formatted = Model.Formatted_Cnpj(Model.Cnpj);
+        string phone_formatted = new SchoolProject.Models.Phone().FormattedPhone(Model.Ddd, Model.Telefone);
 
         <div>
             <dl class="dl-horizontal">
@@ -54,6 +52,14 @@
                 </dd>
 
                 <dt>
+                    @Html.DisplayNameFor(model => model.Telefone)
+                </dt>
+
+                <dd>
+                    @phone_formatted
+                </dd>
+
+                <dt>
                     @Html.DisplayNameFor(model => model.Logradouro)
                 </dt>
 
@@ -66,15 +72,7 @@
                 </dt>
 
                 <dd>
-                    @Html.DisplayFor(model => model.Cidade)
-                </dd>
-
-                <dt>
-                    @Html.DisplayNameFor(model => model.Estado)
-                </dt>
-
-                <dd>
-                    @Html.DisplayFor(model => model.Estado)
+                    @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
                 </dd>
 
                 <dt>
@@ -85,7 +83,7 @@
                     @Html.DisplayFor(model => model.Numero)
                 </dd>
 
-                @if (Model.Complemento != null)
+                @if (!string.IsNullOrEmpty(Model.Complemento))
                 {
                     <dt>
                         @Html.DisplayNameFor(model => model.Complemento)
@@ -94,7 +92,7 @@
                     <dd>
                         @Html.DisplayFor(model => model.Complemento)
                     </dd>
-                }                
+                }
 
             </dl>
         </div>

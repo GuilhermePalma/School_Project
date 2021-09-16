@@ -36,7 +36,7 @@ namespace SchoolProject.Controllers
             bool cpfMask_valid = client.ValidationMaskCPF(cpf);
             bool cpf_valid = client.ValidationCPF(cpf);
 
-            if (cpfMask_valid) client.Cpf = client.ConvertMaskCPF(cpf);
+            if (cpfMask_valid) client.Cpf = client.RemoveMaskCPF(cpf);
             if (cpf_valid) client.Cpf = cpf;
 
             if (string.IsNullOrEmpty(client.Cpf))
@@ -83,13 +83,12 @@ namespace SchoolProject.Controllers
             bool valid_cpf = client.ValidationMaskCPF(client.Cpf);
             bool valid_phone = client.ValidationMaskPhone(client.Telefone);
 
-
             string cpf_formmated = valid_cpf ? 
-                client.ConvertMaskCPF(client.Cpf) : string.Empty;
+                client.RemoveMaskCPF(client.Cpf) : string.Empty;
             string phone_formatted = valid_phone ?
-                client.ConvertMaskPhone(client.Telefone) : string.Empty;
+                client.RemoveMaskPhone(client.Telefone) : string.Empty;
             string ddd_formatted = valid_phone ? 
-                client.ConvertMaskDdd(client.Telefone) : string.Empty;
+                client.RemoveMaskDDD(client.Telefone) : string.Empty;
 
             // Caso algum dado não foi Validado Corretamente
             if (string.IsNullOrEmpty(cpf_formmated) || string.IsNullOrEmpty(phone_formatted) || 
@@ -163,18 +162,15 @@ namespace SchoolProject.Controllers
         [HttpGet]
         public ActionResult Atualizar(string cpf)
         {
-            Client client = new Client()
-            {
-                Cpf = cpf
-            };
-
+            Client client = new Client();
             // Caso não seja infromado o CPF
-            if (!client.ValidationCPF(client.Cpf))
+            if (!client.ValidationCPF(cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
                 ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
+            else client.Cpf = cpf;
 
             try
             {
@@ -210,9 +206,9 @@ namespace SchoolProject.Controllers
             bool valid_phone = client.ValidationMaskPhone(client.Telefone);
 
             string phone_formatted = valid_phone ?
-                client.ConvertMaskPhone(client.Telefone) : string.Empty;
+                client.RemoveMaskPhone(client.Telefone) : string.Empty;
             string ddd_formatted = valid_phone ?
-                client.ConvertMaskDdd(client.Telefone) : string.Empty;
+                client.RemoveMaskDDD(client.Telefone) : string.Empty;
 
             // Caso algum dado não foi Validado Corretamente
             if (!valid_cpf || string.IsNullOrEmpty(phone_formatted) ||
@@ -248,18 +244,15 @@ namespace SchoolProject.Controllers
         [HttpGet]
         public ActionResult Excluir(string cpf)
         {
-            Client client = new Client()
-            {
-                Cpf = cpf
-            };
-
+            Client client = new Client();
             // Caso não seja infromado o CPF
-            if (!client.ValidationCPF(client.Cpf))
+            if (!client.ValidationCPF(cpf))
             {
                 ViewBag.Message = "Informe um CPF Valido";
                 ViewBag.Erro = client.Error_Validation;
                 return View("ResultOperation");
             }
+            else client.Cpf = cpf;
 
             try
             {

@@ -17,7 +17,6 @@ namespace SchoolProject.Models.Database.DAO
         public const string DDD = "ddd";
 
         private MySqlDataReader reader;
-        private const int ERROR = -1;
         private const int NOT_FOUND = 0;
 
         public string Error_operation { get; set; }

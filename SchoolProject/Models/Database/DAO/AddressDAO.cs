@@ -495,8 +495,6 @@ namespace SchoolProject.Models.Database.DAO
             }
             else if (oldAddress.Equals(newAddress)) return true;
 
-            // todo remover
-            System.Diagnostics.Debug.WriteLine("Teste: " + oldAddress.Logradouro + "|" + newAddress.Logradouro);
 
             int code_newAddress = ReturnCodeAddress(newAddress);
 

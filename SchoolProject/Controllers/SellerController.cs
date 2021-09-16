@@ -36,7 +36,7 @@ namespace SchoolProject.Controllers
             bool cnpjMask_valid = seller.ValidationMaskCNPJ(cnpj);
             bool cnpj_valid = seller.ValidationCNPJ(cnpj);
 
-            if (cnpjMask_valid) seller.Cnpj = seller.ConvertMask(cnpj);
+            if (cnpjMask_valid) seller.Cnpj = seller.RemoveMaskCNPJ(cnpj);
             if (cnpj_valid) seller.Cnpj = cnpj;
 
             if (string.IsNullOrEmpty(seller.Cnpj))
@@ -80,18 +80,30 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Cadastro(Seller seller)
         {
-            // Valida o CNPJ passado
-            bool valid_cnpj = seller.ValidationMaskCNPJ(seller.Cnpj);
-            string cnpj_converted = valid_cnpj ? seller.ConvertMask(seller.Cnpj) : string.Empty;
+            Phone phone = new Phone();
+            bool valid_cpf = seller.ValidationMaskCNPJ(seller.Cnpj);
+            bool valid_phone = phone.ValidationMaskPhone(seller.Telefone);
 
-            // Caso não seja infromado o CNPJ
-            if (string.IsNullOrEmpty(cnpj_converted))
+            string cnpj_formmated = valid_cpf ?
+                seller.RemoveMaskCNPJ(seller.Cnpj) : string.Empty;
+            string phone_formatted = valid_phone ?
+                phone.RemoveMaskPhone(seller.Telefone) : string.Empty;
+            string ddd_formatted = valid_phone ?
+                phone.RemoveMaskDDD(seller.Telefone) : string.Empty;
+
+            // Caso algum dado não foi Validado Corretamente
+            if (string.IsNullOrEmpty(cnpj_formmated) || string.IsNullOrEmpty(phone_formatted) ||
+                string.IsNullOrEmpty(ddd_formatted))
             {
-                ViewBag.Message = "Informe um CPF Valido";
-                ViewBag.Erro = seller.Error_Validation;
+                ViewBag.Message = "Dados Invalidos";
+                ViewBag.Erro = valid_cpf ? phone.Error_Validation :
+                    seller.Error_Validation;
                 return View("ResultOperation");
             }
-            else seller.Cnpj= cnpj_converted;
+
+            seller.Ddd = ddd_formatted;
+            seller.Telefone = phone_formatted;
+            seller.Cnpj = cnpj_formmated;
 
             ViewBag.Estados = new StateCity().ListStates();
 
@@ -188,13 +200,27 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Atualizar(Seller seller)
         {
-            // Valida CNPJ Passado
-            if (!seller.ValidationCNPJ(seller.Cnpj))
+            Phone phone = new Phone();
+            bool valid_cpf = seller.ValidationCNPJ(seller.Cnpj);
+            bool valid_phone = phone.ValidationMaskPhone(seller.Telefone);
+
+            string phone_formatted = valid_phone ?
+                phone.RemoveMaskPhone(seller.Telefone) : string.Empty;
+            string ddd_formatted = valid_phone ?
+                phone.RemoveMaskDDD(seller.Telefone) : string.Empty;
+
+            // Caso algum dado não foi Validado Corretamente
+            if (string.IsNullOrEmpty(phone_formatted) || 
+                string.IsNullOrEmpty(ddd_formatted))
             {
-                ViewBag.Message = "Informe um CNPJ Valido";
-                ViewBag.Erro = seller.Error_Validation;
+                ViewBag.Message = "Dados Invalidos";
+                ViewBag.Erro = valid_cpf ? phone.Error_Validation :
+                    seller.Error_Validation;
                 return View("ResultOperation");
             }
+
+            seller.Ddd = ddd_formatted;
+            seller.Telefone = phone_formatted;
 
             try
             {

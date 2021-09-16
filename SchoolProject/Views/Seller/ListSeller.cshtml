@@ -48,15 +48,15 @@
                         @Html.DisplayNameFor(model => model.Cnpj)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Cidade)
+                        @Html.DisplayNameFor(model => model.Telefone)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Estado)
+                        @Html.DisplayNameFor(model => model.Cidade)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Logradouro)
                     </th>
-                    <th></th>
+                    <th> </th>
                     <th>Detalhes</th>
                     <th>Editar</th>
                     <th>Excluir</th>
@@ -73,18 +73,26 @@
                             @Html.DisplayFor(model => sellerItem.Name)
                         </th>
                         <th>
-                            @Html.DisplayFor(model => sellerItem.Cnpj)
+                            @using (Html.BeginForm("Login", "Seller", new { Cnpj = sellerItem.Cnpj },FormMethod.Post))
+                            {
+                                string cnpj = sellerItem.Formatted_Cnpj(sellerItem.Cnpj);
+                                <button class="btn-link">@cnpj</button>
+                            }
                         </th>
                         <th>
-                            @Html.DisplayFor(model => sellerItem.Cidade)
+                            @{
+                                SchoolProject.Models.Phone phone = new SchoolProject.Models.Phone();
+                                string phoneFormmated = phone.FormattedPhone(sellerItem.Ddd, sellerItem.Telefone);
+                                @phoneFormmated
+                            }
                         </th>
                         <th>
-                            @Html.DisplayFor(model => sellerItem.Estado)
+                            @Html.DisplayFor(model => sellerItem.Cidade) - @Html.DisplayFor(model => sellerItem.Estado)
                         </th>
                         <th>
                             @Html.DisplayFor(model => sellerItem.Logradouro)
                         </th>
-                        <th></th>
+                        <th> </th>
                         <th>
                             @using (Html.BeginForm("Login", "Seller", new { Cnpj = sellerItem.Cnpj }, FormMethod.Post))
                             {

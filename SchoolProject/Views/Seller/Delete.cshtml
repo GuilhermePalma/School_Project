@@ -28,11 +28,9 @@
         <h2>@ViewBag.Title: @Model.Name</h2>
         <hr />
 
-        // Formatação e Censura do CPF
-        string cnpj_formatted = Model.Cnpj.Substring(0, 2) + ".";
-        cnpj_formatted += Model.Cnpj.Substring(2, 1) + "**.**";
-        cnpj_formatted += Model.Cnpj.Substring(7, 1) + "/";
-        cnpj_formatted += Model.Cnpj.Substring(8, 4) + "-" + Model.Cnpj.Substring(12, 2);
+        // Formatação e Censura do CNPJ
+        string cnpj_formatted = Model.Formatted_Cnpj(Model.Cnpj);
+        string phone_formmated = new SchoolProject.Models.Phone().FormattedPhone(Model.Ddd, Model.Telefone);
 
         <h3>Você tem certeza que deseja Excluir ?</h3>
         <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
@@ -53,6 +51,14 @@
 
             <dd>
                 @cnpj_formatted
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Telefone)
+            </dt>
+
+            <dd>
+                @phone_formmated
             </dd>
 
             <dt>
