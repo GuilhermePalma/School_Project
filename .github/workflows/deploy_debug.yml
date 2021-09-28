@@ -1,0 +1,44 @@
+
+name: 🚀 Deploy Site With FTP - Test
+
+on:
+  # Executa quando ha Push ou Pull Request na Branch Main
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+  # Permite que execute manualmente
+  workflow_dispatch:
+
+# Tarefas à serem realizadas
+jobs:
+  web-deploy:
+    # Configuração do Ambiente 
+    # Referencia: https://github.com/gabrielfroes/github-actions-ftp
+    name: 🎉 Deploy Site
+    runs-on: [windows-latest]
+    steps:
+    
+      # Obtem o Ultimo Commit
+      - name: 🚚 Get Latest Code
+        uses: actions/checkout@v2
+      
+      # Mudança na String Connection
+      # XPath https://qastack.com.br/programming/4531995/getting-attribute-using-xpath
+      - name: Set logback env values
+        uses: rvolo/xml-replace-action@v0.2
+        with:
+          filepath: "SchoolProject/Web.config"
+          xpath: "/*/configuration/connectionStrings/add/@connectionString()"
+          replace: ${{secrets.CONNECTION_DATABASE}}
+      
+      # Deploy com FTP
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{secrets.FTP_HOST}}
+          username: ${{secrets.FTP_USER}}
+          password: ${{secrets.FTP_KEY}}
+          server-dir: public_html/schoolproject_debug
+          
