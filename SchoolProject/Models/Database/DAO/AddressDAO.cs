@@ -9,6 +9,7 @@ namespace SchoolProject.Models.Database.DAO
         public const string TABLE_ADDRESS = "address";
         public const string CODE = "code_address";
         public const string ADDRESS = "logradouro";
+        public const string CEP = "cep";
 
         MySqlDataReader reader;
         private const int ERROR = -1;
@@ -179,7 +180,6 @@ namespace SchoolProject.Models.Database.DAO
             }
         }
 
-
         // Caso o Endereço não exista = Cadastra
         public bool InsertAddress(Address address)
         {
@@ -188,8 +188,8 @@ namespace SchoolProject.Models.Database.DAO
             string command;
             try
             {
-                command = string.Format("INSERT INTO {0}({1}) VALUE('{2}')",
-                    TABLE_ADDRESS, ADDRESS, address.Logradouro);
+                command = string.Format("INSERT INTO {0}({1},{2}) VALUE('{3}', '{4}')",
+                    TABLE_ADDRESS, ADDRESS, CEP, address.Logradouro, address.Cep);
             }
             catch (ArgumentNullException ex)
             {
@@ -265,7 +265,8 @@ namespace SchoolProject.Models.Database.DAO
                     Address address = new Address()
                     {
                         Code_address = reader.GetInt32(reader.GetOrdinal(CODE)),
-                        Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS))
+                        Logradouro = reader.GetString(reader.GetOrdinal(ADDRESS)),
+                        Cep = reader.GetString(reader.GetOrdinal(CEP))
                     };
 
                     return address;
@@ -486,15 +487,23 @@ namespace SchoolProject.Models.Database.DAO
         }
 
         // Atualiza o Logradouro se o Usuario for o Unico usando
-        public bool UpdateOnlyStateCity(Address oldAddress, Address newAddress)
+        public bool UpdateOnlyAddress(Address oldAddress, Address newAddress)
         {
             if (oldAddress == null || newAddress == null)
             {
                 Error_operation = "Logradouro não Informados.";
                 return false;
             }
-            else if (oldAddress.Equals(newAddress)) return true;
 
+            bool equalsAddress = oldAddress.Equals(newAddress);
+            if (equalsAddress)
+            {
+                return true;
+            } else if(!equalsAddress && !string.IsNullOrEmpty(oldAddress.Error_Validation))
+            {
+                Error_operation = oldAddress.Error_Validation;
+                return false;
+            }
 
             int code_newAddress = ReturnCodeAddress(newAddress);
 
@@ -516,8 +525,9 @@ namespace SchoolProject.Models.Database.DAO
                 string command;
                 try
                 {
-                    command = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}={4}",
-                        TABLE_ADDRESS, ADDRESS, newAddress.Logradouro, CODE, oldAddress.Code_address);
+                    command = string.Format("UPDATE {0} SET {1}='{2}', {3}='{4}' WHERE {5}={6}",
+                        TABLE_ADDRESS, ADDRESS, newAddress.Logradouro, CEP, newAddress.Cep,
+                        CODE, oldAddress.Code_address);
                 }
                 catch (ArgumentNullException ex)
                 {

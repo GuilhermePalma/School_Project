@@ -31,6 +31,7 @@
         // Formatação e Censura do CNPJ
         string cnpj_formatted = Model.Formatted_Cnpj(Model.Cnpj);
         string phone_formmated = new SchoolProject.Models.Phone().FormattedPhone(Model.Ddd, Model.Telefone);
+        string cep_formatted = new SchoolProject.Models.Address().FormattedCepMask(Model.Cep);
 
         <h3>Você tem certeza que deseja Excluir ?</h3>
         <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
@@ -62,14 +63,6 @@
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.Logradouro)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Logradouro)
-            </dd>
-
-            <dt>
                 @Html.DisplayNameFor(model => model.Cidade)
             </dt>
 
@@ -83,6 +76,22 @@
 
             <dd>
                 @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Logradouro)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Logradouro)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cep)
+            </dt>
+
+            <dd>
+                @cep_formatted
             </dd>
 
             <dt>

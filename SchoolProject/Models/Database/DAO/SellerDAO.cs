@@ -126,7 +126,8 @@ namespace SchoolProject.Models.Database.DAO
 
             Address address = new Address()
             {
-                Logradouro = seller.Logradouro
+                Logradouro = seller.Logradouro,
+                Cep = seller.Cep
             };
 
             Phone phone = new Phone()
@@ -209,7 +210,8 @@ namespace SchoolProject.Models.Database.DAO
             StateCityDAO stateCityDAO = new StateCityDAO();
             Address address = new Address()
             {
-                Logradouro = seller.Logradouro
+                Logradouro = seller.Logradouro, 
+                Cep = seller.Cep
             };
 
             StateCity stateCity = new StateCity()
@@ -299,11 +301,13 @@ namespace SchoolProject.Models.Database.DAO
             };
             Address oldAddress = new Address()
             {
-                Logradouro = oldSeller.Logradouro
+                Logradouro = oldSeller.Logradouro,
+                Cep = oldSeller.Cep
             };
             Address newAddress = new Address()
             {
-                Logradouro = seller.Logradouro
+                Logradouro = seller.Logradouro,
+                Cep = seller.Cep
             };
 
             Phone phone = new Phone()
@@ -318,7 +322,7 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = stateCityDAO.Error_operation;
                 return false;
             }
-            else if(!addressDAO.UpdateOnlyStateCity(oldAddress, newAddress))
+            else if(!addressDAO.UpdateOnlyAddress(oldAddress, newAddress))
             {
                 Error_operation = addressDAO.Error_operation;
                 return false;
@@ -498,6 +502,7 @@ namespace SchoolProject.Models.Database.DAO
                 sellerDatabase.Cidade = stateCity.Cidade;
                 sellerDatabase.Estado = stateCity.Estado;
                 sellerDatabase.Logradouro = addressClass.Logradouro;
+                sellerDatabase.Cep = addressClass.Cep;
                 sellerDatabase.Telefone = phone.Telefone;
                 sellerDatabase.Ddd= phone.Ddd;
             }
@@ -593,6 +598,7 @@ namespace SchoolProject.Models.Database.DAO
                             sellerDatabase.Cidade = stateCity.Cidade;
                             sellerDatabase.Estado = stateCity.Estado;
                             sellerDatabase.Logradouro = addressClass.Logradouro;
+                            sellerDatabase.Cep = addressClass.Cep;
                             sellerDatabase.Telefone = phone.Telefone;
                             sellerDatabase.Ddd = phone.Ddd;
                         }

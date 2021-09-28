@@ -80,6 +80,7 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Cadastro(Seller seller)
         {
+            Address address = new Address();
             Phone phone = new Phone();
             bool valid_cpf = seller.ValidationMaskCNPJ(seller.Cnpj);
             bool valid_phone = phone.ValidationMaskPhone(seller.Telefone);
@@ -90,6 +91,7 @@ namespace SchoolProject.Controllers
                 phone.RemoveMaskPhone(seller.Telefone) : string.Empty;
             string ddd_formatted = valid_phone ?
                 phone.RemoveMaskDDD(seller.Telefone) : string.Empty;
+            string cep_formatted = address.RemoveMaskCEP(seller.Cep);
 
             // Caso algum dado não foi Validado Corretamente
             if (string.IsNullOrEmpty(cnpj_formmated) || string.IsNullOrEmpty(phone_formatted) ||
@@ -100,10 +102,17 @@ namespace SchoolProject.Controllers
                     seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else if (string.IsNullOrEmpty(cep_formatted))
+            {
+                ViewBag.Message = "CEP Invalido";
+                ViewBag.Erro = address.Error_Validation;
+                return View("ResultOperation");
+            }
 
             seller.Ddd = ddd_formatted;
             seller.Telefone = phone_formatted;
             seller.Cnpj = cnpj_formmated;
+            seller.Cep = cep_formatted;
 
             ViewBag.Estados = new StateCity().ListStates();
 
@@ -200,6 +209,7 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Atualizar(Seller seller)
         {
+            Address address = new Address();
             Phone phone = new Phone();
             bool valid_cpf = seller.ValidationCNPJ(seller.Cnpj);
             bool valid_phone = phone.ValidationMaskPhone(seller.Telefone);
@@ -208,6 +218,7 @@ namespace SchoolProject.Controllers
                 phone.RemoveMaskPhone(seller.Telefone) : string.Empty;
             string ddd_formatted = valid_phone ?
                 phone.RemoveMaskDDD(seller.Telefone) : string.Empty;
+            string cep_formatted = address.RemoveMaskCEP(seller.Cep);
 
             // Caso algum dado não foi Validado Corretamente
             if (string.IsNullOrEmpty(phone_formatted) || 
@@ -218,9 +229,16 @@ namespace SchoolProject.Controllers
                     seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else if (string.IsNullOrEmpty(cep_formatted))
+            {
+                ViewBag.Message = "CEP Invalido";
+                ViewBag.Erro = address.Error_Validation;
+                return View("ResultOperation");
+            }
 
             seller.Ddd = ddd_formatted;
             seller.Telefone = phone_formatted;
+            seller.Cep = cep_formatted;
 
             try
             {

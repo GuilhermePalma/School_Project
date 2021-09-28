@@ -85,6 +85,14 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                @Html.LabelFor(model => model.Cep, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Cep, new { htmlAttributes = new { @class = "form-control maskCEP" } })
+                    @Html.ValidationMessageFor(model => model.Cep, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
             <div class="form-group" style="margin-top:30px">
                 <div class="col-md-offset-2 col-md-10">
                     <button type="reset" class="btn btn-default">Limpar</button>
@@ -99,4 +107,5 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/Scripts/inputmask/MaskPrice.js")
+    @Scripts.Render("~/Scripts/inputmask/MaskCEP.js")
 }

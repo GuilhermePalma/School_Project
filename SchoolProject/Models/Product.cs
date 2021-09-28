@@ -133,6 +133,12 @@ namespace SchoolProject.Models
             ErrorMessage = "O Preço do Produto deve conter apenas Numeros, Virgula e Ponto")]
         public string Price { get; set; }
 
+        [DisplayName("CEP")]
+        [RegularExpression(@"^[0-9\S]*", ErrorMessage = "O CEP deve ter apenas Numeros")]
+        [Required(ErrorMessage = "O CEP deve ser informado !")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "O CEP deve Ter {1} Numeros")]
+        public string Cep { get; set; }
+
         [DisplayName("Logradouro")]
         [RegularExpression(@"^[A-Za-zà-úÀ-Ú\s]*", ErrorMessage = "O Logradouro deve ter apenas Letras")]
         [Required(ErrorMessage = "O Logradouro deve ser informado !")]

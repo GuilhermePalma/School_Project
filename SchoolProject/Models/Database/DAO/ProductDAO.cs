@@ -131,7 +131,8 @@ namespace SchoolProject.Models.Database.DAO
 
             Address address = new Address()
             {
-                Logradouro = product.Logradouro
+                Logradouro = product.Logradouro,
+                Cep = product.Cep
             };
 
             StateCityDAO stateCityDAO = new StateCityDAO();
@@ -205,7 +206,8 @@ namespace SchoolProject.Models.Database.DAO
             StateCityDAO stateCityDAO = new StateCityDAO();
             Address address = new Address()
             {
-                Logradouro = product.Logradouro
+                Logradouro = product.Logradouro,
+                Cep = product.Cep
             };
 
             StateCity stateCity = new StateCity()
@@ -262,7 +264,6 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = "Produto não Informado";
                 return false;
             }
-            else if (!ExistsProduct(product.Name, seller_cnpj)) return false;
 
             // Obtem a Cidade/Estado/Endereço antes de Atualizar
             Product oldProduct = SelectProduct(product.Id_product);
@@ -284,11 +285,13 @@ namespace SchoolProject.Models.Database.DAO
             };
             Address oldAddress = new Address()
             {
-                Logradouro = oldProduct.Logradouro
+                Logradouro = oldProduct.Logradouro,
+                Cep = oldProduct.Cep
             };
             Address newAddress = new Address()
             {
-                Logradouro = product.Logradouro
+                Logradouro = product.Logradouro,
+                Cep = product.Cep
             };
 
             // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro
@@ -297,7 +300,7 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = stateCityDAO.Error_operation;
                 return false;
             }
-            else if (!addressDAO.UpdateOnlyStateCity(oldAddress, newAddress))
+            else if (!addressDAO.UpdateOnlyAddress(oldAddress, newAddress))
             {
                 Error_operation = addressDAO.Error_operation;
                 return false;
@@ -335,19 +338,14 @@ namespace SchoolProject.Models.Database.DAO
                     return false;
                 }
 
-                string format = "UPDATE {0} SET {1}='{2}',{3}={4}, {5}={6}, " +
+                string format = "UPDATE {0} SET {1}='{2}', {3}={4}, {5}={6}, " +
                     "{7}={8}, {9}='{10}', {11}={12} WHERE {13}={14}";
                 string[] parameters = new string[]
                 {
-                    // todo arrumar organização dos parametros
-                    TABLE_PRODUCTS,
-                    NAME_PRODUCT, product.Name,
-                    STATE_CITY_PRODUCT, newStateCity.Code_stateCity.ToString(),
-                    ADDRESS_PRODUCT, newAddress.Code_address.ToString(),
-                    QUANTITY, product.Quantity.ToString(),
-                    DESCRIPTION, product.Description,
-                    PRICE, product.Price.ToString(),
-
+                    TABLE_PRODUCTS, NAME_PRODUCT, product.Name, STATE_CITY_PRODUCT,
+                    newStateCity.Code_stateCity.ToString(), ADDRESS_PRODUCT,
+                    newAddress.Code_address.ToString(), QUANTITY, product.Quantity.ToString(),
+                    DESCRIPTION, product.Description, PRICE, product.Price.ToString(),
                     ID_PRODUCT, product.Id_product.ToString()
                 };
 
@@ -459,6 +457,7 @@ namespace SchoolProject.Models.Database.DAO
                 productDatabase.Cidade = stateCity.Cidade;
                 productDatabase.Estado = stateCity.Estado;
                 productDatabase.Logradouro = addressClass.Logradouro;
+                productDatabase.Cep = addressClass.Cep;
             }
 
             return productDatabase;
@@ -598,6 +597,7 @@ namespace SchoolProject.Models.Database.DAO
                             productDatabase.Cidade = stateCity.Cidade;
                             productDatabase.Estado = stateCity.Estado;
                             productDatabase.Logradouro = addressClass.Logradouro;
+                            productDatabase.Cep = addressClass.Cep;
                         }
 
                         listClients.Add(productDatabase);
@@ -699,6 +699,7 @@ namespace SchoolProject.Models.Database.DAO
                             productDatabase.Cidade = stateCity.Cidade;
                             productDatabase.Estado = stateCity.Estado;
                             productDatabase.Logradouro = addressClass.Logradouro;
+                            productDatabase.Cep = addressClass.Cep;
                         }
 
                         listClients.Add(productDatabase);

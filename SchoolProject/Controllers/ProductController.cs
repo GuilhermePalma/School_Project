@@ -10,7 +10,6 @@ namespace SchoolProject.Controllers
 {
     public class ProductController : Controller
     {
-
         public const string ControllerProduct = "Product";
 
         // GET: Produtos
@@ -56,9 +55,11 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Cadastro(Product product)
         {
+            Address address = new Address();
             Seller seller = new Seller();
             string price = product.RemoveAllMaskPrice(product.Price);
             string priceFormatted = product.FormattedPriceDatabase(price);
+            string cep_formatted = address.RemoveMaskCEP(product.Cep);
 
             if (!seller.ValidationCNPJ(product.Cnpj_Seller))
             {
@@ -72,7 +73,17 @@ namespace SchoolProject.Controllers
                 ViewBag.Erro = product.Error_Validation;
                 return View("ResultOperation");
             }
-            else product.Price = priceFormatted;
+            else if (string.IsNullOrEmpty(cep_formatted))
+            {
+                ViewBag.Message = "CEP Invalido.";
+                ViewBag.Erro = address.Error_Validation;
+                return View("ResultOperation");
+            }
+            else
+            {
+                product.Price = priceFormatted;
+                product.Cep = cep_formatted;
+            }
 
             ViewBag.Estados = new StateCity().ListStates();
 
@@ -136,15 +147,34 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Atualizar(Product product)
         {
+            Address address = new Address();
             string price = product.RemoveAllMaskPrice(product.Price);
             string priceFormatted = product.FormattedPriceDatabase(price);
+            string cep_formatted = address.RemoveMaskCEP(product.Cep);
+
             if (string.IsNullOrEmpty(priceFormatted))
             {
                 ViewBag.Message = "Preço Invalido.";
                 ViewBag.Erro = product.Error_Validation;
                 return View("ResultOperation");
             }
-            else product.Price = priceFormatted;
+            else if (string.IsNullOrEmpty(priceFormatted))
+            {
+                ViewBag.Message = "Preço Invalido.";
+                ViewBag.Erro = product.Error_Validation;
+                return View("ResultOperation");
+            }
+            else if (string.IsNullOrEmpty(cep_formatted))
+            {
+                ViewBag.Message = "CEP Invalido.";
+                ViewBag.Erro = address.Error_Validation;
+                return View("ResultOperation");
+            }
+            else
+            {
+                product.Price = priceFormatted;
+                product.Cep= cep_formatted;
+            }
 
             ProductDAO productDAO = new ProductDAO();
             bool is_update_seller = productDAO.UpdateProduct(product, product.Cnpj_Seller);

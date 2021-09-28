@@ -115,6 +115,12 @@ namespace SchoolProject.Models
         [StringLength(80, MinimumLength = 5, ErrorMessage = "o Logradouro deve Ter entre {2} a {1} Letras")]
         public string Logradouro { get; set; }
 
+        [DisplayName("CEP")]
+        [RegularExpression(@"^[0-9\S]*", ErrorMessage = "O CEP deve ter apenas Numeros")]
+        [Required(ErrorMessage = "O CEP deve ser informado !")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "O CEP deve Ter {1} Numeros")]
+        public string Cep { get; set; }
+
         [DisplayName("Cidade")]
         [Required(ErrorMessage = "A Cidade deve ser informado !")]
         [RegularExpression(@"^[A-Za-zà-úÀ-Ú\s]*", ErrorMessage = "A Cidade deve ter apenas Letras")]

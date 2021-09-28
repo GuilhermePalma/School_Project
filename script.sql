@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS state_city(
 
 CREATE TABLE IF NOT EXISTS address(
   code_address INT NOT NULL AUTO_INCREMENT,
+  cep VARCHAR(8) NOT NULL UNIQUE,
   logradouro VARCHAR(80) NOT NULL UNIQUE,
   PRIMARY KEY(code_address)
 );
@@ -65,6 +66,7 @@ ADD FOREIGN KEY (code_address) REFERENCES address(code_address);
 ALTER TABLE products
 ADD FOREIGN KEY (cnpj_seller) REFERENCES seller(cnpj);
 
+/* Inserção de Dados */
 INSERT INTO state_city(code_state_city, city, state) VALUES
 (1, "São Paulo", "SP"),
 (2, "Ribeirão Preto", "SP"),
@@ -73,13 +75,13 @@ INSERT INTO state_city(code_state_city, city, state) VALUES
 (5, "Belo Horizonte", "MG");
 SELECT * FROM state_city;
 
-INSERT INTO address(logradouro) VALUE
-("Rua Rei de Luis");
-INSERT INTO address(code_address,logradouro) VALUES
-(2, "Avenida Pautris"),
-(3, "Avenida Jauna Ruiz"),
-(4, "Rua de Laberal"),
-(5, "Rua Kinu Luo");
+INSERT INTO address(logradouro, cep) VALUE
+("Rua Rei de Luis","46253152");
+INSERT INTO address(code_address,logradouro, cep) VALUES
+(2, "Avenida Pautris","24625111"),
+(3, "Avenida Jauna Ruiz","13665478"),
+(4, "Rua de Laberal","01531562"),
+(5, "Rua Kinu Luo","02654753");
 SELECT * FROM address;
 
 INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,complement,phone,ddd)VALUES
@@ -118,10 +120,3 @@ INSERT INTO products(id_product,cnpj_seller,name,code_state_city,code_address,qu
 (2, "12345679000123", "Mesa de Jantar - 6 Lugares", 2, 3,20,"Esta mesa pode atender 6 Pessoas com conforto. Mesa de Madeira Bruta, feita a partir de arvores reflorestavel e com baixa emissão de Carbono na sua produção", 8010.80),
 (3, "90896136000114", "Arte Digital - Desenho por Encomenda", 4, 5,40,"Encomende um desenho a partir de uma foto do objeto, pessoa ou animal desejado", 5);
 SELECT * FROM products;
-
-
-/* 
-- CEP (Normalização e PK)
-- Mascara (CEP)
-- Verificar Script Database
- */

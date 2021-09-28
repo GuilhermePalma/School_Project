@@ -12,6 +12,7 @@
     // Formatação e Censura do CNPJ
     string cnpj_formatted = new SchoolProject.Models.Seller().Formatted_Cnpj(Model.Cnpj_Seller);
     string price_formatted = "R$ " + Model.FormattedMaskPrice(Model.Price);
+    string cep_formatted = new SchoolProject.Models.Address().FormattedCepMask(Model.Cep);
 
     <div>
         <dl class="dl-horizontal">
@@ -78,6 +79,14 @@
 
             <dd>
                 @Html.DisplayFor(model => model.Logradouro)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cep)
+            </dt>
+
+            <dd>
+                @cep_formatted
             </dd>
 
         </dl>

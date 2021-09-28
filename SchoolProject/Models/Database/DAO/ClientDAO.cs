@@ -130,7 +130,8 @@ namespace SchoolProject.Models.Database.DAO
 
             Address address = new Address()
             {
-                Logradouro = user.Logradouro
+                Logradouro = user.Logradouro,
+                Cep = user.Cep
             };
 
             StateCityDAO stateCityDAO = new StateCityDAO();
@@ -203,7 +204,8 @@ namespace SchoolProject.Models.Database.DAO
             StateCityDAO stateCityDAO = new StateCityDAO();
             Address address = new Address()
             {
-                Logradouro = client.Logradouro
+                Logradouro = client.Logradouro,
+                Cep = client.Cep
             };
 
             StateCity stateCity = new StateCity()
@@ -292,11 +294,13 @@ namespace SchoolProject.Models.Database.DAO
             };
             Address oldAddress = new Address()
             {
-                Logradouro = oldClient.Logradouro
+                Logradouro = oldClient.Logradouro,
+                Cep = oldClient.Cep
             };
             Address newAddress = new Address()
             {
-                Logradouro = client.Logradouro
+                Logradouro = client.Logradouro,
+                Cep = client.Cep
             };
 
             // Verificar se o Usuario é o unico usando aquele Estado/Cidade/Logradouro
@@ -305,7 +309,7 @@ namespace SchoolProject.Models.Database.DAO
                 Error_operation = stateCityDAO.Error_operation;
                 return false;
             }
-            else if (!addressDAO.UpdateOnlyStateCity(oldAddress, newAddress))
+            else if (!addressDAO.UpdateOnlyAddress(oldAddress, newAddress))
             {
                 Error_operation = addressDAO.Error_operation;
                 return false;
@@ -475,6 +479,7 @@ namespace SchoolProject.Models.Database.DAO
                 userDatabase.Cidade = stateCity.Cidade;
                 userDatabase.Estado = stateCity.Estado;
                 userDatabase.Logradouro = addressClass.Logradouro;
+                userDatabase.Cep = addressClass.Cep;
             }
 
             return userDatabase;
@@ -562,6 +567,7 @@ namespace SchoolProject.Models.Database.DAO
                             clientDatabase.Cidade = stateCity.Cidade;
                             clientDatabase.Estado = stateCity.Estado;
                             clientDatabase.Logradouro = addressClass.Logradouro;
+                            clientDatabase.Cep = addressClass.Cep;
                         }
                         listClients.Add(clientDatabase);
                     }

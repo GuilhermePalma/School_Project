@@ -23,6 +23,7 @@
     {
         string cpf_formmated = Model.FormattedCPF(Model.Cpf);
         string phone_formmated = Model.FormattedPhone(Model.Ddd, Model.Telefone);
+        string cep_formatted = new SchoolProject.Models.Address().FormattedCepMask(Model.Cep);
 
         <h2>@ViewBag.Title: @Model.Name</h2>
         <hr />
@@ -57,6 +58,14 @@
             </dd>
 
             <dt>
+                @Html.DisplayNameFor(model => model.Cidade)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
                 @Html.DisplayNameFor(model => model.Logradouro)
             </dt>
 
@@ -65,11 +74,11 @@
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.Cidade)
+                @Html.DisplayNameFor(model => model.Cep)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+                @cep_formatted
             </dd>
 
             <dt>

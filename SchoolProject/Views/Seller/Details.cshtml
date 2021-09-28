@@ -28,10 +28,11 @@
     {
         <h2>@ViewBag.Title</h2>
         <hr />
-        
+
         // Formatação e Censura do CPF/DDD/telefone
         string cnpj_formatted = Model.Formatted_Cnpj(Model.Cnpj);
         string phone_formatted = new SchoolProject.Models.Phone().FormattedPhone(Model.Ddd, Model.Telefone);
+        string cep_formatted = new SchoolProject.Models.Address().FormattedCepMask(Model.Cep);
 
         <div>
             <dl class="dl-horizontal">
@@ -60,6 +61,14 @@
                 </dd>
 
                 <dt>
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+                </dd>
+
+                <dt>
                     @Html.DisplayNameFor(model => model.Logradouro)
                 </dt>
 
@@ -68,11 +77,11 @@
                 </dd>
 
                 <dt>
-                    @Html.DisplayNameFor(model => model.Cidade)
+                    @Html.DisplayNameFor(model => model.Cep)
                 </dt>
 
                 <dd>
-                    @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+                    @cep_formatted
                 </dd>
 
                 <dt>

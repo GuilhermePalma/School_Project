@@ -85,7 +85,6 @@ namespace SchoolProject.Models.Database
                 }
 
                 int row_affected = command.ExecuteNonQuery();
-
                 if (row_affected <= 0)
                 {
                     Error_operation = "Não foi Possivel Executar o Comando.";
