@@ -312,13 +312,13 @@ namespace SchoolProject.Controllers
         [ActionName("Cadastrados")]
         public ActionResult ListSellers()
         {
-            SellerDAO sellerDAO = new SellerDAO();
-            IEnumerable<Seller> listSeller;
             try
             {
+                SellerDAO sellerDAO = new SellerDAO();
+
                 // Obtem uma List<Seller> com os elementos do Banco de Dados
-                listSeller = sellerDAO.ListSellers();
-                if (listSeller != null || listSeller.Count() > 0)
+                IEnumerable<Seller>  listSeller = sellerDAO.ListSellers();
+                if (listSeller != null && listSeller.Any())
                 {
                     return View("ListSeller", listSeller);
                 }

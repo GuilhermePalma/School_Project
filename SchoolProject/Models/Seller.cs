@@ -74,16 +74,18 @@ namespace SchoolProject.Models
         {
             if (string.IsNullOrEmpty(cnpj) || !ValidationCNPJ(cnpj))
             {
-                return "CNPJ Invalido";
+                Error_Validation = "CNPJ Invalido";
+                return string.Empty;
             }
 
-            string cpf_formatted = "";
             try
             {
                 // Formatação e Censura do CNPJ
-                cpf_formatted = string.Format("{0}.{1}.{2}/{3}-{4}",
+                string cpf_formatted = string.Format("{0}.{1}.{2}/{3}-{4}",
                     cnpj.Substring(0, 2), "XXX", "XX" + cnpj.Substring(7, 1),
                     cnpj.Substring(8, 4), cnpj.Substring(12, 2));
+                
+                return cpf_formatted;
             }
             catch (Exception ex)
             {
@@ -91,8 +93,6 @@ namespace SchoolProject.Models
                 System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
                 return string.Empty;
             }
-
-            return cpf_formatted.Length == 18 ? cpf_formatted : "Formatação do CPF Invalida";
         }
 
         [DisplayName("Nome")]
