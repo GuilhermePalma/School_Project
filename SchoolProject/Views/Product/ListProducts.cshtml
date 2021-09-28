@@ -47,6 +47,7 @@
             @foreach (var productItem in Model)
             {
                 string cnpj = new SchoolProject.Models.Seller().Formatted_Cnpj(productItem.Cnpj_Seller);
+                string price_formatted = "R$ " + productItem.FormattedMaskPrice(productItem.Price);
 
                 <tr>
                     <th>
@@ -60,7 +61,7 @@
                         @Html.ActionLink(cnpj, "Detalhes", controllerSeller, new { Cnpj = productItem.Cnpj_Seller }, new { })
                     </th>
                     <th>
-                        @Html.DisplayFor(model => productItem.Price)
+                        @price_formatted
                     </th>
                     <th>
                         @Html.DisplayFor(model => productItem.Quantity)

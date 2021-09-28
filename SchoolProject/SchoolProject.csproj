@@ -228,9 +228,11 @@
     <Content Include="Scripts\inputmask\inputmask.min.js" />
     <Content Include="Scripts\inputmask\jquery.inputmask.js" />
     <Content Include="Scripts\inputmask\jquery.inputmask.min.js" />
+    <Content Include="Scripts\inputmask\MaskCEP.js" />
     <Content Include="Scripts\inputmask\MaskCNPJ.js" />
     <Content Include="Scripts\inputmask\MaskCPF.js" />
     <Content Include="Scripts\inputmask\MaskPhone.js" />
+    <Content Include="Scripts\inputmask\MaskPrice.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />

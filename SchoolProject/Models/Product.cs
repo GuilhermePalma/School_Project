@@ -1,10 +1,100 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolProject.Models
 {
     public class Product
     {
+        public string Error_Validation { get; set; }
+
+        public bool ValdiationMaskPrice(string price)
+        {
+            if (string.IsNullOrEmpty(price) || price.Length <= 2)
+            {
+                Error_Validation = "Preço Invalido. Preço deve ser maior que RS 1,00";
+                return false;
+            }
+
+            try
+            {
+                string valueNormalized = price.Replace(".", string.Empty).Replace(",", string.Empty).
+                    Replace("_", string.Empty);
+
+                if (valueNormalized.Replace("0", string.Empty).Length == 0)
+                {
+                    Error_Validation = "Preço Invalido. Preço deve ser maior que RS 1,00";
+                    return false;
+                }
+                else if (valueNormalized.Length == 3 && valueNormalized.Substring(0, 1) == "0")
+                {
+                    Error_Validation = "Preço Invalido. Preço deve ser maior que RS 1,00";
+                    return false;
+                }
+                else return true;
+            }
+            catch(Exception ex)
+            {
+                Error_Validation = "Não Foi possivel Validar o Preço";
+                return false;
+            }
+        }
+
+        public string RemoveAllMaskPrice(string price)
+        {
+            try
+            {
+                if (!ValdiationMaskPrice(price)) return string.Empty;
+
+                string valueConverted = price.Replace(".", string.Empty).Replace(",", string.Empty).
+                    Replace("_", string.Empty);
+
+                if (!ValdiationMaskPrice(valueConverted)) return string.Empty;
+                return valueConverted;
+            }
+            catch(Exception ex)
+            {
+                Error_Validation = "Não foi possivel Converter o Preço";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exception: " + ex);
+                return string.Empty;
+            }
+        }
+
+        public string FormattedPriceDatabase(string price)
+        {
+            try
+            {
+                if (!ValdiationMaskPrice(price)) return string.Empty;
+
+                int length = price.Length;
+                string valueConverted = price.Substring(0, length -2) + "." + price.Substring(length-2,2);
+                return valueConverted;
+            }
+            catch (Exception ex)
+            {
+                Error_Validation = "Não foi possivel Converter o Preço";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exception: " + ex);
+                return string.Empty;
+            }
+        }
+
+        public string FormattedMaskPrice(string price)
+        {
+            try
+            {
+                if (!ValdiationMaskPrice(price)) return string.Empty;
+
+                string valueConverted = price.Replace(".", ",");
+                return valueConverted;
+            }
+            catch (Exception ex)
+            {
+                Error_Validation = "Não foi possivel Formatar o Preço";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exception: " + ex);
+                return string.Empty;
+            }
+        }
+
         [DisplayName("Codigo do Produto")]
         public int Id_product { get; set; }
 
@@ -37,10 +127,11 @@ namespace SchoolProject.Models
 
         [DisplayName("Preço")]
         [Required(ErrorMessage = "O Preço do Produto deve ser informado !")]
-        [Range(0.5, 1000000000, ErrorMessage = "O Preço do Produto deve estar entre R$0,50 até R$1.000.000.000,00 ")]
-        [RegularExpression(@"^[0-9\S]*",
-            ErrorMessage = "O Preço do Produto deve conter apenas Numeros")]
-        public int Price { get; set; }
+        [StringLength(14, MinimumLength=3, 
+            ErrorMessage = "O Preço do Produto deve estar entre R$0,50 até R$1.000.000.000,00 ")]
+        [RegularExpression(@"^[0-9\S\.\,]*", 
+            ErrorMessage = "O Preço do Produto deve conter apenas Numeros, Virgula e Ponto")]
+        public string Price { get; set; }
 
         [DisplayName("Logradouro")]
         [RegularExpression(@"^[A-Za-zà-úÀ-Ú\s]*", ErrorMessage = "O Logradouro deve ter apenas Letras")]

@@ -11,6 +11,7 @@
 
     // Formatação e Censura do CNPJ
     string cnpj_formatted = new SchoolProject.Models.Seller().Formatted_Cnpj(Model.Cnpj_Seller);
+    string price_formatted = "R$ " + Model.FormattedMaskPrice(Model.Price);
 
     <div>
         <dl class="dl-horizontal">
@@ -59,7 +60,8 @@
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Price)
+                @Html.HiddenFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @price_formatted
             </dd>
 
             <dt style="margin-top:35px">

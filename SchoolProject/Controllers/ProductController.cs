@@ -57,12 +57,22 @@ namespace SchoolProject.Controllers
         public ActionResult Cadastro(Product product)
         {
             Seller seller = new Seller();
+            string price = product.RemoveAllMaskPrice(product.Price);
+            string priceFormatted = product.FormattedPriceDatabase(price);
+
             if (!seller.ValidationCNPJ(product.Cnpj_Seller))
             {
                 ViewBag.Message = "CNPJ Invalido.";
                 ViewBag.Erro = seller.Error_Validation;
                 return View("ResultOperation");
             }
+            else if (string.IsNullOrEmpty(priceFormatted))
+            {
+                ViewBag.Message = "Preço Invalido.";
+                ViewBag.Erro = product.Error_Validation;
+                return View("ResultOperation");
+            }
+            else product.Price = priceFormatted;
 
             ViewBag.Estados = new StateCity().ListStates();
 
@@ -126,8 +136,17 @@ namespace SchoolProject.Controllers
         [HttpPost]
         public ActionResult Atualizar(Product product)
         {
-            ProductDAO productDAO = new ProductDAO();
+            string price = product.RemoveAllMaskPrice(product.Price);
+            string priceFormatted = product.FormattedPriceDatabase(price);
+            if (string.IsNullOrEmpty(priceFormatted))
+            {
+                ViewBag.Message = "Preço Invalido.";
+                ViewBag.Erro = product.Error_Validation;
+                return View("ResultOperation");
+            }
+            else product.Price = priceFormatted;
 
+            ProductDAO productDAO = new ProductDAO();
             bool is_update_seller = productDAO.UpdateProduct(product, product.Cnpj_Seller);
 
             if (is_update_seller)

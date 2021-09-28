@@ -39,7 +39,7 @@
             <div class="form-group" style="margin-top:35px">
                 @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-4">
-                    @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control maskPrice" } })
                     @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -98,4 +98,5 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/inputmask/MaskPrice.js")
 }

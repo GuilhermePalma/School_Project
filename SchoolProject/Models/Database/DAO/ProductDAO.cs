@@ -412,7 +412,7 @@ namespace SchoolProject.Models.Database.DAO
                     {
                         Name = dataReader.GetString(dataReader.GetOrdinal(NAME_PRODUCT)),
                         Quantity = dataReader.GetInt32(dataReader.GetOrdinal(QUANTITY)),
-                        Price = dataReader.GetInt32(dataReader.GetOrdinal(PRICE)),
+                        Price = dataReader.GetString(dataReader.GetOrdinal(PRICE)),
                         Description = dataReader.GetString(dataReader.GetOrdinal(DESCRIPTION)),
                         Id_product = dataReader.GetInt32(dataReader.GetOrdinal(ID_PRODUCT)),
                         Cnpj_Seller = dataReader.GetString(dataReader.GetOrdinal(CNPJ_SELLER))
@@ -438,7 +438,6 @@ namespace SchoolProject.Models.Database.DAO
                     if (dataReader != null) dataReader.Close();
                 }
             }
-
             // Formata os Dados Normalizados do Banco de Dados
             StateCityDAO stateCityDAO = new StateCityDAO();
             AddressDAO addressDAO = new AddressDAO();
@@ -569,7 +568,7 @@ namespace SchoolProject.Models.Database.DAO
                         {
                             Name = dataReader.GetString(dataReader.GetOrdinal(NAME_PRODUCT)),
                             Quantity = dataReader.GetInt32(dataReader.GetOrdinal(QUANTITY)),
-                            Price = dataReader.GetInt32(dataReader.GetOrdinal(PRICE)),
+                            Price = dataReader.GetString(dataReader.GetOrdinal(PRICE)),
                             Description = dataReader.GetString(dataReader.GetOrdinal(DESCRIPTION)),
                             Id_product = dataReader.GetInt32(dataReader.GetOrdinal(ID_PRODUCT)),
                             Cnpj_Seller = dataReader.GetString(dataReader.GetOrdinal(CNPJ_SELLER))
@@ -669,7 +668,7 @@ namespace SchoolProject.Models.Database.DAO
                         {
                             Name = dataReader.GetString(dataReader.GetOrdinal(NAME_PRODUCT)),
                             Quantity = dataReader.GetInt32(dataReader.GetOrdinal(QUANTITY)),
-                            Price = dataReader.GetInt32(dataReader.GetOrdinal(PRICE)),
+                            Price = dataReader.GetString(dataReader.GetOrdinal(PRICE)),
                             Description = dataReader.GetString(dataReader.GetOrdinal(DESCRIPTION)),
                             Id_product = dataReader.GetInt32(dataReader.GetOrdinal(ID_PRODUCT)),
                             Cnpj_Seller = dataReader.GetString(dataReader.GetOrdinal(CNPJ_SELLER))
@@ -701,6 +700,7 @@ namespace SchoolProject.Models.Database.DAO
                             productDatabase.Estado = stateCity.Estado;
                             productDatabase.Logradouro = addressClass.Logradouro;
                         }
+
                         listClients.Add(productDatabase);
                     }
 

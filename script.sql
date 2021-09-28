@@ -47,7 +47,7 @@ CREATE TABLE if not exists products(
   code_address INT NOT NULL,
   quantity INT NOT NULL,
   description TEXT NOT NULL,
-  price DECIMAL(8,2) NOT NULL,
+  price DECIMAL(12,2) NOT NULL,
   PRIMARY KEY(id_product)
 );
 
@@ -114,7 +114,7 @@ SELECT * FROM seller ORDER BY code_state_city ASC;
 
 
 INSERT INTO products(id_product,cnpj_seller,name,code_state_city,code_address,quantity,description,price)VALUES
-(1, "18984552000147", "Televisão 60 Polegadas - 4K", 2, 3,10,"Por meio da Televisão de 60 Polegadas é possivel ter uma melhor experencias ao assistir programas,series e filmes. A Qualidade em 4K permite que as cores sejam mais vivas e intensas.", 8000.00),
+(1, "18984552000147", "Televisão 60 Polegadas - 4K", 2, 3,10,"Por meio da Televisão de 60 Polegadas é possivel ter uma melhor experencias ao assistir programas,series e filmes. A Qualidade em 4K permite que as cores sejam mais vivas e intensas.", 1000000000.00),
 (2, "12345679000123", "Mesa de Jantar - 6 Lugares", 2, 3,20,"Esta mesa pode atender 6 Pessoas com conforto. Mesa de Madeira Bruta, feita a partir de arvores reflorestavel e com baixa emissão de Carbono na sua produção", 8010.80),
 (3, "90896136000114", "Arte Digital - Desenho por Encomenda", 4, 5,40,"Encomende um desenho a partir de uma foto do objeto, pessoa ou animal desejado", 5);
 SELECT * FROM products;
@@ -122,7 +122,6 @@ SELECT * FROM products;
 
 /* 
 - CEP (Normalização e PK)
-- Mascara (CEP, Preço)
-- Verificar Script
-
+- Mascara (CEP)
+- Verificar Script Database
  */
