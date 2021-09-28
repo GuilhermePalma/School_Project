@@ -2,6 +2,12 @@
 name: 🚀 Deploy Site With FTP - Test
 
 on:
+  # Executa quando ha Push ou Pull Request na Branch Develop
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+    
   # Executa somente Manualmente
   workflow_dispatch:
 
