@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Resultado da Operação";
+    string controler = "Product";
+
+    <br />
+
+    if (ViewBag.Erro != null)
+    {
+        // Caso houve algum erro
+        <div class="alert alert-danger" role="alert">
+            <h4><b>@ViewBag.Message</b></h4>
+            <p><i>@ViewBag.Erro</i></p>
+            <br />
+
+            @Html.ActionLink("Produtos", "Catalogo", controler, new { }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Pagina Inicial", "Index", "Home", new { }, new { @class = "btn btn-default" })
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success" role="alert">
+            <h4><b>@ViewBag.Message</b></h4>
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                <button type="submit" value="Index" class="btn btn-default">
+                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                    Pagina Inicial
+                </button>
+            }
+        </div>
+    }
+}

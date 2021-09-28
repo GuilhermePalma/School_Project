@@ -1,17 +1,17 @@
 DROP DATABASE IF EXISTS school_project;
-CREATE DATABASE if not exists school_project;
+CREATE DATABASE IF NOT EXISTS school_project;
 use school_project;
 
 CREATE TABLE IF NOT EXISTS state_city(
   code_state_city INT NOT NULL AUTO_INCREMENT,
-  city VARCHAR(80),
-  state VARCHAR(2),
+  city VARCHAR(80) NOT NULL,
+  state VARCHAR(2) NOT NULL,
   PRIMARY KEY(code_state_city)
 );
 
 CREATE TABLE IF NOT EXISTS address(
   code_address INT NOT NULL AUTO_INCREMENT,
-  logradouro VARCHAR(80) NOT NULL,
+  logradouro VARCHAR(80) NOT NULL UNIQUE,
   PRIMARY KEY(code_address)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE if not exists seller(
 );
 
 CREATE TABLE if not exists products(
-  id_product INT NOT NULL,
+  id_product INT NOT NULL AUTO_INCREMENT,
   cnpj_seller VARCHAR(14) NOT NULL,
   name VARCHAR(80) NOT NULL,
   code_state_city INT NOT NULL,
@@ -48,9 +48,6 @@ CREATE TABLE if not exists products(
   quantity INT NOT NULL,
   description TEXT NOT NULL,
   price DECIMAL(8,2) NOT NULL,
-  weight DECIMAL(8,2) NOT NULL,
-  heigth DECIMAL(8,2) NOT NULL,
-  width DECIMAL(8,2) NOT NULL,
   PRIMARY KEY(id_product)
 );
 
@@ -87,12 +84,12 @@ SELECT * FROM address;
 
 INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,complement,phone,ddd)VALUES
 ("12345678901", "Roberta", 3,1,1202,"Apto 12, Bl 9","996315236","011"),
-("15963452810", "Julian Lopa", 2, 3, 652,"Bl 8, Apto 62","98351315625","016"),
-("32084613252", "Ian", 1, 4, 156,"Bl 1 Apto365","9975863245","021"),
+("15963452810", "Julian Lopa", 2, 3, 652,"Bl 8, Apto 62","965236542","016"),
+("32084613252", "Ian", 1, 4, 156,"Bl 1 Apto365","997586324","021"),
 ("24932085105", "Juan Mius", 4,5,56, "Bl 5 Apto203","168735495","091"),
-("12048631065", "Olis", 5,2,995,"Apto 103, Bl 1","27863142258","073");
+("12048631065", "Olis", 5,2,995,"Apto 103, Bl 1","278631422","073");
 INSERT INTO client(cpf,name,code_state_city,code_address,residential_number,phone,ddd)VALUES
-("65894632386", "Roberto", 4,5,369,"6058624752","044"),
+("65894632386", "Roberto", 4,5,369,"605862475","044"),
 ("10541320834", "Marcia Nupi", 4,5,278,"120267895","037"),
 ("15386305564", "Liana Kilas", 1,4,399,"284103862","054"),
 ("46108634186", "Polar", 5,2,106,"856324318","064");
@@ -116,8 +113,16 @@ SELECT * FROM client ORDER BY code_state_city ASC;
 SELECT * FROM seller ORDER BY code_state_city ASC;
 
 
-INSERT INTO products(id_product,cnpj_seller,name,code_state_city,code_address,quantity,description,price,weight,heigth,width)VALUES
-(1, "18984552000147", "Televisão 60 Polegadas - 4K", 2, 3,10,"Por meio da Televisão de 60 Polegadas é possivel ter uma melhor experencias ao assistir programas,series e filmes. A Qualidade em 4K permite que as cores sejam mais vivas e intensas.", 8000.00, 19.00,857.00, 1368.00),
-(2, "12345679000123", "Mesa de Jantar - 6 Lugares", 2, 3,20,"Esta mesa pode atender 6 Pessoas com conforto. Mesa de Madeira Bruta, feita a partir de arvores reflorestavel e com baixa emissão de Carbono na sua produção", 8010.80, 24.9,79.6, 160.00),
-(3, "90896136000114", "Arte Digital - Desenho por Encomenda", 4, 5,40,"Encomende um desenho a partir de uma foto", 5, 1, 29.7, 21);
+INSERT INTO products(id_product,cnpj_seller,name,code_state_city,code_address,quantity,description,price)VALUES
+(1, "18984552000147", "Televisão 60 Polegadas - 4K", 2, 3,10,"Por meio da Televisão de 60 Polegadas é possivel ter uma melhor experencias ao assistir programas,series e filmes. A Qualidade em 4K permite que as cores sejam mais vivas e intensas.", 8000.00),
+(2, "12345679000123", "Mesa de Jantar - 6 Lugares", 2, 3,20,"Esta mesa pode atender 6 Pessoas com conforto. Mesa de Madeira Bruta, feita a partir de arvores reflorestavel e com baixa emissão de Carbono na sua produção", 8010.80),
+(3, "90896136000114", "Arte Digital - Desenho por Encomenda", 4, 5,40,"Encomende um desenho a partir de uma foto do objeto, pessoa ou animal desejado", 5);
 SELECT * FROM products;
+
+
+/* 
+- CEP (Normalização e PK)
+- Mascara (CEP, Preço)
+- Verificar Script
+
+ */

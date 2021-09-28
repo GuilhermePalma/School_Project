@@ -1,0 +1,97 @@
+﻿@model SchoolProject.Models.Product
+
+@{
+    ViewBag.Title = "Detalhes do Produto";
+    string controllerProduct = "Product";
+    string controllerSeller = "Seller";
+
+
+    <h2>@ViewBag.Title</h2>
+    <hr />
+
+    // Formatação e Censura do CNPJ
+    string cnpj_formatted = new SchoolProject.Models.Seller().Formatted_Cnpj(Model.Cnpj_Seller);
+
+    <div>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Id_product)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Id_product)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Cnpj_Seller)
+            </dt>
+
+            <dd>
+                @Html.HiddenFor(model => model.Cnpj_Seller, new { htmlAttributes = new { @class = "form-control" } })
+                @cnpj_formatted
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.DisplayNameFor(model => model.Quantity)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Quantity)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Price)
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.DisplayNameFor(model => model.Cidade)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Logradouro)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Logradouro)
+            </dd>
+
+        </dl>
+    </div>
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-10">
+                @Html.ActionLink("Editar Produto", "Atualizar", controllerProduct, 
+                    new { id_product = Model.Id_product }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+
+    using (Html.BeginForm("Login", controllerSeller, new { Cnpj = Model.Cnpj_Seller }, FormMethod.Post))
+    {
+        <button type="submit" value="Login" class="btn btn-default">« Voltar</button>
+    }
+}

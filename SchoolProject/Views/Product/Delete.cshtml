@@ -1,0 +1,103 @@
+﻿@model SchoolProject.Models.Product
+
+@{
+    ViewBag.Title = "Excluir Produto";
+    string controllerProduct = "Product";
+    string controllerSeller = "Seller";
+
+    string cnpj_formatted = new SchoolProject.Models.Seller().Formatted_Cnpj(Model.Cnpj_Seller);
+
+    <h2>@ViewBag.Title</h2>
+    <hr />
+
+    <h3>Você tem certeza que deseja Excluir ?</h3>
+    <p class="alert alert-warning">Após Clicar no botão "Excluir", não é possivel reverter o Processo</p>
+
+    using (Html.BeginForm("Excluir", controllerProduct, FormMethod.Post))
+    {
+        Html.AntiForgeryToken();
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cnpj_Seller)
+            </dt>
+
+            <dd>
+                @Html.HiddenFor(model => model.Cnpj_Seller, new { htmlAttributes = new { @class = "form-control" } })
+                @cnpj_formatted
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Id_product)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Id_product)
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.HiddenFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Quantity)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Price)
+            </dd>
+
+            <dt style="margin-top:35px">
+                @Html.DisplayNameFor(model => model.Logradouro)
+            </dt>
+
+            <dd style="margin-top:35px">
+                @Html.DisplayFor(model => model.Logradouro)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Cidade)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Cidade) - @Html.DisplayFor(model => model.Estado)
+            </dd>
+        </dl>
+
+        <div class="col-md-offset-1">
+            <button type="submit" value="Excluir" class="btn btn-default" style="margin-left:10px">Excluir</button>
+        </div>
+    }
+
+    <br />
+
+    using (Html.BeginForm("Login", controllerSeller, new { Cnpj = Model.Cnpj_Seller }, FormMethod.Post))
+    {
+        <button type="submit" value="Login" class="btn btn-default">« Voltar</button>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

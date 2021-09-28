@@ -1,0 +1,122 @@
+﻿@model IEnumerable<SchoolProject.Models.Product>
+
+@{
+    ViewBag.Title = "Lista de Produtos";
+    string controllerProduct = "Product";
+    string controllerSeller = "Seller";
+
+    <style type="text/css">
+        h3 {
+            text-align: center;
+            margin: 3% 0%;
+        }
+
+        #table_seller th {
+            text-align: center;
+        }
+    </style>
+
+    <h3 class="text-center">Lista de Produos</h3>
+
+    <div class="row">
+        <table id="table_seller" class="table table-hover">
+
+            <tr>
+                <th>#</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cnpj_Seller)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Quantity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cidade)
+                </th>
+                <th> </th>
+                <th>Detalhes</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+            </tr>
+
+            @foreach (var productItem in Model)
+            {
+                string cnpj = new SchoolProject.Models.Seller().Formatted_Cnpj(productItem.Cnpj_Seller);
+
+                <tr>
+                    <th>
+                        @Model.ToList().IndexOf(productItem)
+                    </th>
+                    <th>
+                        @Html.ActionLink(productItem.Name, "Detalhes", controllerProduct,
+                            new { id_product = productItem.Id_product }, new { })
+                    </th>
+                    <th>
+                        @Html.ActionLink(cnpj, "Detalhes", controllerSeller, new { Cnpj = productItem.Cnpj_Seller }, new { })
+                    </th>
+                    <th>
+                        @Html.DisplayFor(model => productItem.Price)
+                    </th>
+                    <th>
+                        @Html.DisplayFor(model => productItem.Quantity)
+                    </th>
+                    <th>
+                        @Html.DisplayFor(model => productItem.Cidade) - @Html.DisplayFor(model => productItem.Estado)
+                    </th>
+                    <th> </th>
+                    <th>
+                        @using (Html.BeginForm("Detalhes", controllerProduct,
+                            new { id_product = productItem.Id_product }, FormMethod.Get))
+                        {
+                            <button class="btn-link">
+                                <img src="~/Images/Icons/IconShowProduct.png" width="28" height="28" />
+                            </button>
+                        }
+                    </th>
+                    <th>
+                        @using (Html.BeginForm("Atualizar", controllerProduct,
+                            new { id_product = productItem.Id_product }, FormMethod.Get))
+                        {
+                            <button class="btn-link">
+                                <img src="~/Images/Icons/IconEdit.svg" />
+                            </button>
+                        }
+                    </th>
+                    <th>
+                        @using (Html.BeginForm("Excluir", controllerProduct,
+                            new { id_product = productItem.Id_product }, FormMethod.Get))
+                        {
+                            <button class="btn-link">
+                                <img src="~/Images/Icons/IconDelete.svg" />
+                            </button>
+                        }
+                    </th>
+                </tr>
+            }
+        </table>
+    </div>
+
+    string cnpj_seller = ViewBag.SellerCNPJ;
+    if (!string.IsNullOrEmpty(cnpj_seller))
+    {
+        using (Html.BeginForm("Login", controllerSeller, new { Cnpj = cnpj_seller }, FormMethod.Post))
+        {
+            <button type="submit" value="Login" class="btn btn-default">« Voltar</button>
+        }
+        <br />
+    }
+
+    using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        <button type="submit" value="Index" class="btn btn-default">
+            <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+            Pagina Inicial
+        </button>
+    }
+
+}

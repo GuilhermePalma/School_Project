@@ -164,9 +164,11 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SellerController.cs" />
     <Compile Include="Models\Database\ADO\Database.cs" />
     <Compile Include="Models\Database\DAO\AddressDAO.cs" />
+    <Compile Include="Models\Database\DAO\ProductDAO.cs" />
     <Compile Include="Models\Database\DAO\SellerDAO.cs" />
     <Compile Include="Models\Database\DAO\StateCityDAO.cs" />
     <Compile Include="Models\Database\DAO\ClientDAO.cs" />
@@ -175,6 +177,7 @@
     </Compile>
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Phone.cs" />
+    <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Seller.cs" />
     <Compile Include="Models\StateCity.cs" />
     <Compile Include="Models\Client.cs" />
@@ -209,6 +212,7 @@
     <Content Include="Images\Icons\IconDelete.svg" />
     <Content Include="Images\Icons\IconEdit.svg" />
     <Content Include="Images\Icons\IconUser.svg" />
+    <Content Include="Images\Icons\IconShowProduct.png" />
     <Content Include="Images\Seller.jpg" />
     <Content Include="Images\Client.jpg" />
     <Content Include="Images\Purchases.jpg" />
@@ -266,6 +270,12 @@
     <Content Include="Views\Seller\ResultOperation.cshtml" />
     <Content Include="Views\Seller\ListSeller.cshtml" />
     <Content Include="Views\Client\ListClient.cshtml" />
+    <Content Include="Views\Product\Delete.cshtml" />
+    <Content Include="Views\Product\ResultOperation.cshtml" />
+    <Content Include="Views\Product\ListProducts.cshtml" />
+    <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Product\Register.cshtml" />
+    <Content Include="Views\Product\Update.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

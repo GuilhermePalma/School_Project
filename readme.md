@@ -28,13 +28,11 @@ Projeto desnvolvido para as aulas de Programação Web II. Este Projeto visa ate
 	- [X] Documento de Registro (CPF/CNPJ)
 	- [X] Endereço (Logradouro, Cidade, Estado)
 	- [X] Numero de Telefone 
-- [ ] Desenvolver Interfaces Web de "Produtos", com os atributos
-	- [ ] Nome
-	- [ ] Nome do Vendedor
-	- [ ] Descrição
-	- [ ] Preço
-	- [ ] Dimensões (Largura x Altura)
-	- [ ] Peso
+- [X] Desenvolver Interfaces Web de "Produtos", com os atributos
+	- [X] Nome
+	- [X] Nome do Vendedor
+	- [X] Descrição
+	- [X] Preço
 - [ ] Disponibilziar o Site de Forma Online
 
 
@@ -102,6 +100,7 @@ $ cd School_Project
     - Cliente - Pagina Inicial  → [FlatIcon](https://www.flaticon.com/free-icon/shopper_835900)
     - Vendedor - Pagina Inicial  → [FlatIcon](https://www.flaticon.com/free-icon/business-person_1256183)
     - Produtos - Pagina Inicial  → [FlatIcon](https://www.flaticon.com/free-icon/shopping-bag_1255280)
+    - Produtos - Tabela Produtos  → [FlatIcon](https://www.flaticon.com/free-icon/online-shopping_3081415)
     - Icone do Dropdown Menu: [StackOverflow](https://pt.stackoverflow.com/questions/330840/bootstrap-3-dropdown-toggle-mudar-de-menu-com-ele-aberto-é-possível)
 
 - Imagens:
@@ -113,3 +112,4 @@ $ cd School_Project
 ### Correções
 
 - Correção IDispose C#: [StackOverflow](https://pt.stackoverflow.com/questions/6913/fechar-conexão-com-banco-de-dados-c)
+- Correção Metodo POST: [TI-Enxame](https://www.ti-enxame.com/pt/asp.net-mvc/como-tornar-o-html.editorfor-desativado/1043356389/)
