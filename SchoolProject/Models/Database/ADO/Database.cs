@@ -100,7 +100,7 @@ namespace SchoolProject.Models.Database
             {
                 Error_operation = "Houve um Erro (Exceção SQL) ao Executar o Comando.";
                 System.Diagnostics.Debug.WriteLine(Error_operation +
-                    " Exception: " + ex);
+                    " Exception: " + ex + " Comando SQL: " + query);
                 return ERROR;
             }
             catch (Exception ex)
@@ -153,15 +153,40 @@ namespace SchoolProject.Models.Database
             {
                 Error_operation = "Houve um Erro (Exceção SQL) ao Executar o Comando.";
                 System.Diagnostics.Debug.WriteLine(Error_operation +
-                    " Exception: " + ex);
+                    " Exception: " + ex + " Comando SQL: " + query);
                 return null;
             }
             catch (Exception ex)
             {
                 Error_operation = "Não foi Possivel acessar o Banco de Dados";
                 System.Diagnostics.Debug.WriteLine(Error_operation +
-                    " Exception: " + ex);
+                    " Exception: " + ex + " Comando SQL: " + query);
                 return null;
+            }
+        }
+
+        public string FormattedSQL(string string_format, string[] parameters)
+        {
+            string string_formatted;
+            try
+            {
+                // Insere os Parametros na String e Retorna
+                string_formatted = string.Format(string_format, parameters);
+                return !string.IsNullOrEmpty(string_formatted) ? string_formatted : string.Empty;
+            }
+            catch (ArgumentNullException ex)
+            {
+                // Caso algum Parametro da String seja nulo
+                Error_operation = "Erro: Argumento Nulo na Criação da Query";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return string.Empty;
+            }
+            catch (FormatException ex)
+            {
+                // Formatação ou Argumentos Invalidos na string recevida
+                Error_operation = "Erro: Formação da String SQL Invalida";
+                System.Diagnostics.Debug.WriteLine(Error_operation + " Exceção: " + ex);
+                return string.Empty;
             }
         }
 
