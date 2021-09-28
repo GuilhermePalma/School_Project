@@ -16,7 +16,7 @@ jobs:
   web-deploy:
     # Configuração do Ambiente 
     # Referencia: https://github.com/gabrielfroes/github-actions-ftp
-    name: 🎉 Deploy Site
+    name: 🎉 Deploy Site - Debug
     runs-on: [windows-latest]
     steps:
     
@@ -26,7 +26,7 @@ jobs:
       
       # Mudança na String Connection
       # XPath https://qastack.com.br/programming/4531995/getting-attribute-using-xpath
-      - name: Set-Up Production String Connection
+      - name: ✒️ Set-Up Production String Connection
         uses: rvolo/xml-replace-action@v0.2
         with:
           filepath: "SchoolProject/Web.config"
@@ -40,5 +40,5 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_KEY }}
-          server-dir: public_html/schoolproject_debug
+          server-dir: public_html/schoolproject_debug/
           
