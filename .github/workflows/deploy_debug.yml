@@ -1,5 +1,5 @@
 
-name: 🚀 Deploy Site With FTP - Test
+name: 🚀 Deploy Site With FTP - Debug
 
 on:
   # Executa quando ha Push ou Pull Request na Branch Develop
@@ -26,19 +26,19 @@ jobs:
       
       # Mudança na String Connection
       # XPath https://qastack.com.br/programming/4531995/getting-attribute-using-xpath
-      - name: Set logback env values
+      - name: Set-Up Production String Connection
         uses: rvolo/xml-replace-action@v0.2
         with:
           filepath: "SchoolProject/Web.config"
-          xpath: "/*/configuration/connectionStrings/add/@connectionString()"
-          replace: ${{secrets.CONNECTION_DATABASE}}
+          xpath: "/*/configuration/connectionStrings/add/@connectionString"
+          replace: ${{ secrets.CONNECTION_DATABASE }}
       
       # Deploy com FTP
-      - name: 📂 Sync files
+      - name: 📂 Deploy FTP Files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          server: ${{secrets.FTP_HOST}}
-          username: ${{secrets.FTP_USER}}
-          password: ${{secrets.FTP_KEY}}
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_KEY }}
           server-dir: public_html/schoolproject_debug
           
