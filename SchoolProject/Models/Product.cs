@@ -36,6 +36,7 @@ namespace SchoolProject.Models
             catch(Exception ex)
             {
                 Error_Validation = "Não Foi possivel Validar o Preço";
+                System.Diagnostics.Debug.WriteLine(Error_Validation + " Exceção: " + ex);
                 return false;
             }
         }
