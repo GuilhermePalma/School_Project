@@ -31,7 +31,7 @@ jobs:
         with:
           files: 'SchoolProject/Web.config'
         env:
-          connectionStrings.connectionString: ${{ secrets.CONNECTION_DATABASE }}
+          configuration.connectionStrings.add.connectionString: ${{ secrets.CONNECTION_DATABASE }}
       
       # Deploy com FTP
       - name: 📂 Deploy FTP Files
