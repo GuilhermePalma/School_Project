@@ -25,13 +25,13 @@ jobs:
         uses: actions/checkout@v2
       
       # Mudança na String Connection
-      # XPath https://qastack.com.br/programming/4531995/getting-attribute-using-xpath
+      # https://stackoverflow.com/questions/60521929
       - name: ✒️ Set-Up Production String Connection
-        uses: rvolo/xml-replace-action@v0.2
+        uses: microsoft/variable-substitution@v1
         with:
-          filepath: "SchoolProject/Web.config"
-          xpath: "/*/configuration/connectionStrings/add/@connectionString"
-          replace: ${{ secrets.CONNECTION_DATABASE }}
+          files: 'SchoolProject/Web.config'
+        env:
+          add.connectionString: ${{ secrets.CONNECTION_DATABASE }}
       
       # Deploy com FTP
       - name: 📂 Deploy FTP Files
